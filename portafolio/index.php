@@ -34,7 +34,7 @@
         <div class="container">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Portafolio</li>
+                <!--li class="breadcrumb-item active" aria-current="page">Portafolio</li-->
             </ol>
         </div>
     </nav>
@@ -46,16 +46,16 @@
                 <div class="position-sticky">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" href="#">Dashboard</a>
+                            <a class="nav-link active" href="#">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Proyectos</a>
+                            <a class="nav-link" href="#">Juan</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Acerca de</a>
+                            <a class="nav-link" href="#">Luis</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Contacto</a>
+                            <a class="nav-link" href="#">Maria</a>
                         </li>
                     </ul>
                 </div>
