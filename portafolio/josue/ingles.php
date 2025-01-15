@@ -33,7 +33,10 @@
     <nav aria-label="breadcrumb" class="bg-light py-2">
         <div class="container">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item active" aria-current="page">Home</li>
+                <li class="breadcrumb-item"><a href="../index.php">Home</a></li>
+                <li class="breadcrumb-item"><a href="josue.php">Josué</a></li>
+                <li class="breadcrumb-item"><a href="materias.php">Materias</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Inglés</li>
                 <!--li class="breadcrumb-item active" aria-current="page">Portafolio</li-->
             </ol>
         </div>
@@ -46,10 +49,10 @@
                 <div class="position-sticky">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link active" href="index.php">Home</a>
+                            <a class="nav-link" href="../index.php">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="./josue/josue.php">Josué</a>
+                            <a class="nav-link active" href="josue.php">Josué</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#">Luis</a>
@@ -63,8 +66,11 @@
 
             <!-- Main Content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <h2 class="my-4">Welcome to My Portfolio</h2>
-                <p>Here you can find all my work, projects, and more about me.</p>
+                <h2 class="my-4"><b>Inglés</b></h2>
+                <h5>Unidades: 2.</h5>
+                <h5>Horas prácticas: 10 hrs.</h5>
+                <h5>Horas teóricas: 14 hrs.</h5>
+                <h5>Horas totales: 24 hrs.</h5>
             </main>
         </div>
     </div>

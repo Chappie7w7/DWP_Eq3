@@ -33,10 +33,10 @@
     <nav aria-label="breadcrumb" class="bg-light py-2">
         <div class="container">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="index.php">Home</a></li>
+                <li class="breadcrumb-item"><a href="../index.php">Home</a></li>
                 <li class="breadcrumb-item"><a href="josue.php">Josué</a></li>
-                <li class="breadcrumb-item"><a href="juegos.php">Juegos</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Call of Duty</li>
+                <li class="breadcrumb-item"><a href="materias.php">Materias</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Matemáticas</li>
                 <!--li class="breadcrumb-item active" aria-current="page">Portafolio</li-->
             </ol>
         </div>
@@ -49,7 +49,7 @@
                 <div class="position-sticky">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link" href="index.php">Home</a>
+                            <a class="nav-link" href="../index.php">Home</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link active" href="josue.php">Josué</a>
@@ -66,9 +66,11 @@
 
             <!-- Main Content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <h2 class="my-4"><b>Call of Duty Mobile</b></h2>
-                <h5>Onlyne</h5>
-                <h5>-20 GB</h5>
+                <h2 class="my-4"><b>Matemáticas</b></h2>
+                <h5>Unidades: 3.</h5>
+                <h5>Horas prácticas: 12 hrs.</h5>
+                <h5>Horas teóricas: 13 hrs.</h5>
+                <h5>Horas totales: 25 hrs.</h5>
             </main>
         </div>
     </div>
