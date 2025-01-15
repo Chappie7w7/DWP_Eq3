@@ -33,7 +33,8 @@
     <nav aria-label="breadcrumb" class="bg-light py-2">
         <div class="container">
             <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item active" aria-current="page">Home</li>
+                <li class="breadcrumb-item"><a href="index.php">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Josué</li>
                 <!--li class="breadcrumb-item active" aria-current="page">Portafolio</li-->
             </ol>
         </div>
@@ -63,7 +64,7 @@
 
             <!-- Main Content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <h2 class="my-4">Welcome to My Portfolio</h2>
+                <h2 class="my-4">Josué López Cruz</h2>
                 <p>Here you can find all my work, projects, and more about me.</p>
             </main>
         </div>
