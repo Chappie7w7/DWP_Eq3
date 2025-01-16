@@ -51,9 +51,19 @@
                         <li class="nav-item">
                             <a class="nav-link" href="../index.php">Home</a>
                         </li>
-                        <li class="nav-item">
+                        <div class="dropdown">
+                            <button class="btn text-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Josué
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item text-primary" href="materias.php">Materias</a></li>
+                                <li><a class="dropdown-item text-primary" href="juegos.php">Juegos</a></li>
+                                <li><a class="dropdown-item text-primary" href="proyectos.php">Proyectos</a></li>
+                            </ul>
+                        </div>
+                        <!--li class="nav-item">
                             <a class="nav-link active" href="josue.php">Josué</a>
-                        </li>
+                        </li-->
                         <li class="nav-item">
                             <a class="nav-link" href="#">Luis</a>
                         </li>
