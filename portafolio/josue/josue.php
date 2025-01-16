@@ -66,9 +66,9 @@
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <h2 class="my-4"><b>Josué López Cruz</b></h2>
                 <p>Here you can find all my work, projects, and more about me.</p>
-                <a class="nav-link" href="materias.php"><h5>-Materia</h5></a>
-                <a class="nav-link" href="juegos.php"><h5>-Juegos</h5></a>
-                <a class="nav-link" href="proyectos.php"><h5>-Proyectos</h5></a>
+                <a class="nav-link" href="materias.php"><h5><span class="badge text-bg-primary">Materias</span></h5></a>
+                <a class="nav-link" href="juegos.php"><h5><span class="badge text-bg-primary">Juegos</span></h5></a>
+                <a class="nav-link" href="proyectos.php"><h5><span class="badge text-bg-primary">Proyectos</span></h5></a>
             </main>
         </div>
     </div>

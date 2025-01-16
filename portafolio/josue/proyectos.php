@@ -35,7 +35,7 @@
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="../index.php">Home</a></li>
                 <li class="breadcrumb-item"><a href="josue.php">Josué</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Juegos</li>
+                <li class="breadcrumb-item active" aria-current="page">Proyectos</li>
                 <!--li class="breadcrumb-item active" aria-current="page">Portafolio</li-->
             </ol>
         </div>
@@ -65,10 +65,9 @@
 
             <!-- Main Content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <h2 class="my-4"><b>Mis juegos</b></h2>
-                <a class="nav-link" href="callofduty.php"><h5><span class="badge text-bg-danger">Call of Duty</span></h5></a>
-                <a class="nav-link" href="brawl.php"><h5><span class="badge text-bg-danger">Brawl Stars</span></h5></a>
-                <a class="nav-link" href="clash.php"><h5><span class="badge text-bg-danger">Clash Royale</span></h5></a>
+                <h2 class="my-4"><b>Mis proyectos</b></h2>
+                <a class="nav-link" href="pweb.php"><h5><span class="badge text-bg-success">Pagina Web</span></h5></a>
+                <a class="nav-link" href="appmovil.php"><h5><span class="badge text-bg-success">App Móvil</span></h5></a>
             </main>
         </div>
     </div>
