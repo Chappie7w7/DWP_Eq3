@@ -68,7 +68,7 @@
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <h2 class="my-4"><b>Call of Duty Mobile</b></h2>
                 <h5>Onlyne</h5>
-                <h5>-20 GB</h5>
+                <h5>20 GB</h5>
             </main>
         </div>
     </div>

@@ -66,9 +66,9 @@
             <!-- Main Content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <h2 class="my-4"><b>Mis juegos</b></h2>
-                <a class="nav-link" href="callofduty.php"><h5>-Call of Duty</h5></a>
-                <a class="nav-link" href="brawl.php"><h5>-Brawl Stars</h5></a>
-                <a class="nav-link" href="clash.php"><h5>-Clash Royale</h5></a>
+                <a class="nav-link" href="callofduty.php"><h5><span class="badge text-bg-info">Call of Duty</span></h5></a>
+                <a class="nav-link" href="brawl.php"><h5><span class="badge text-bg-secondary">Brawl Stars</span></h5></a>
+                <a class="nav-link" href="clash.php"><h5><span class="badge text-bg-success">Clash Royale</span></h5></a>
             </main>
         </div>
     </div>

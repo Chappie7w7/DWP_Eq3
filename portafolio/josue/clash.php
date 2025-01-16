@@ -36,7 +36,7 @@
                 <li class="breadcrumb-item"><a href="../index.php">Home</a></li>
                 <li class="breadcrumb-item"><a href="josue.php">Josué</a></li>
                 <li class="breadcrumb-item"><a href="juegos.php">Juegos</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Brawl Stars</li>
+                <li class="breadcrumb-item active" aria-current="page">Clash Royale</li>
                 <!--li class="breadcrumb-item active" aria-current="page">Portafolio</li-->
             </ol>
         </div>
@@ -66,9 +66,10 @@
 
             <!-- Main Content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-                <h2 class="my-4"><b>Brawl Stars</b></h2>
+                <h2 class="my-4"><b>Clash Royale</b></h2>
                 <h5>Onlyne</h5>
-                <h5>2 GB</h5>
+                <h5>3 GB</h5>
+                <h5>Juego de cartas</h5>
             </main>
         </div>
     </div>

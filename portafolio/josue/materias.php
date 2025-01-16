@@ -66,9 +66,9 @@
             <!-- Main Content -->
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <h2 class="my-4"><b>Mis materias</b></h2>
-                <a class="nav-link" href="matematicas.php"><h5>-Matemáticas</h5></a>
-                <a class="nav-link" href="ingles.php"><h5>-Inglés</h5></a>
-                <a class="nav-link" href="bdnube.php"><h5>-BD en la nube</h5></a>
+                <a class="nav-link" href="matematicas.php"><h5><span class="badge text-bg-warning">Matemáticas</span></h5></a>
+                <a class="nav-link" href="ingles.php"><h5><span class="badge text-bg-primary">Inglés</span></h5></a>
+                <a class="nav-link" href="bdnube.php"><h5><span class="badge text-bg-dark">BD en la nube</span></h5></a>
             </main>
         </div>
     </div>
