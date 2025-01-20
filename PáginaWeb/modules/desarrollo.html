@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>Mi Página</title>
+
+	<!-- Normalize V8.0.1 -->
+	<link rel="stylesheet" href="../css/normalize.css">
+
+	<!-- Bootstrap V4.3 -->
+	<link rel="stylesheet" href="../css/bootstrap.min.css">
+
+	<!-- Bootstrap Material Design V4.0 -->
+	<link rel="stylesheet" href="../css/bootstrap-material-design.min.css">
+
+	<!-- Font Awesome V5.9.0 -->
+	<link rel="stylesheet" href="../css/all.css">
+
+	<!-- Sweet Alerts V8.13.0 CSS file -->
+	<link rel="stylesheet" href="../css/sweetalert2.min.css">
+
+	<!-- Sweet Alert V8.13.0 JS file-->
+	<script src="../js/sweetalert2.min.js"></script>
+
+	<!-- jQuery Custom Content Scroller V3.1.5 -->
+	<link rel="stylesheet" href="../css/jquery.mCustomScrollbar.css">
+
+	<!-- General Styles -->
+	<link rel="stylesheet" href="../css/style.css">
+
+
+</head>
+
+<body>
+
+	<!-- Main container -->
+	<main class="full-box main-container">
+		<!-- Nav lateral -->
+		<section class="full-box nav-lateral">
+			<div class="full-box nav-lateral-bg show-nav-lateral"></div>
+			<div class="full-box nav-lateral-content">
+				<figure class="full-box nav-lateral-avatar text-light">
+					<i class="far fa-times-circle show-nav-lateral"></i>
+					<img src="../assets/avatar/5.jpg" class="img-fluid" alt="Avatar">
+					<figcaption class="roboto-medium text-center">
+						Carlos Yahir <br><small class="roboto-condensed-light">Web Developer</small>
+					</figcaption>
+				</figure>
+				<div class="full-box nav-lateral-bar"></div>
+				<nav class="full-box nav-lateral-menu">
+					<ul>
+						<li>
+							<a href="../home.html"><i class="fas fa-home fa-fw"></i> &nbsp; Home</a>
+						</li>
+
+						<li>
+							<a href="#" class="nav-btn-submenu"><i class="fas fa-users fa-fw"></i> &nbsp; Integrantes <i
+									class="fas fa-chevron-down"></i></a>
+							<ul>
+								<li><a href="../yahir.html"><i class="fas fa-user fa-fw"></i> &nbsp; Yahir</a></li>
+								<li><a href="../josue.html"><i class="fas fa-user fa-fw"></i> &nbsp; Josue</a></li>
+								<li><a href="#"><i class="fas fa-user fa-fw"></i> &nbsp; Alexis</a></li>
+								<li><a href="#"><i class="fas fa-user fa-fw"></i> &nbsp; Gerardo</a></li>
+							</ul>
+						</li>
+
+						<li>
+							<a href="#" class="nav-btn-submenu"><i class="fas fa-book fa-fw"></i> &nbsp; Materias <i
+									class="fas fa-chevron-down"></i></a>
+							<ul>
+								<li><a href="matematicas.html"><i class="fas fa-file-pdf fa-fw"></i> &nbsp;
+										Matematicas</a></li>
+								<li><a href="ingles.html"><i class="fas fa-file-word fa-fw"></i> &nbsp; Ingles</a></li>
+								<li><a href="desarrollo.html"><i class="fas fa-file-powerpoint fa-fw"></i> &nbsp; Desarrollo</a></li>
+							</ul>
+						</li>
+
+						<li>
+							<a href="#" class="nav-btn-submenu"><i class="fas fa-gamepad fa-fw"></i> &nbsp; Juegos <i
+									class="fas fa-chevron-down"></i></a>
+							<ul>
+								<li><a href="free.html"><i class="fas fa-mobile fa-fw"></i> &nbsp; Free Fire</a></li>
+								<li><a href="aspha.html"><i class="fas fa-play fa-fw"></i> &nbsp; Asphalt</a></li>
+								<li><a href="fifa.html"><i class="fas fa-futbol fa-fw"></i> &nbsp; Fifa</a></li>
+							</ul>
+						</li>
+
+						<li>
+							<a href="#" class="nav-btn-submenu"><i class="fas fa-folder fa-fw"></i> &nbsp; Proyectos <i
+									class="fas fa-chevron-down"></i></a>
+							<ul>
+								<li><a href="#"><i class="fas fa-file-code fa-fw"></i> &nbsp; Estadia</a></li>
+								<li><a href="#"><i class="fas fa-boxes fa-fw"></i> &nbsp; Integradora</a></li>
+								<li><a href="#"><i class="fas fa-database fa-fw"></i> &nbsp; Alumnado</a></li>
+							</ul>
+						</li>
+
+						<!--li>
+							<a href="base.html"><i class="fas fa-columns fa-fw"></i> &nbsp; Base template</a>
+						</li-->
+
+					</ul>
+				</nav>
+			</div>
+		</section>
+
+		<!-- Page content -->
+		<section class="full-box page-content">
+			<nav class="full-box navbar-info">
+				<a href="#" class="float-left show-nav-lateral"><i class="fas fa-exchange-alt"></i></a>
+				<a href="#" data-toggle="modal" data-target="#ModalHelp"><i class="far fa-question-circle"></i></a>
+				<a href="#"><i class="fas fa-user-cog"></i></a>
+				<a href="#" class="btn-exit-system"><i class="fas fa-power-off"></i></a>
+			</nav>
+
+			<!-- Page header -->
+			<nav aria-label="breadcrumb">
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item"><a href="../home.html">Inicio</a></li>
+					<li class="breadcrumb-item"><a href="materia.html">Materias</a></li>
+					<li class="breadcrumb-item active" aria-current="page">Desarrollo</li>
+				</ol>
+			</nav>
+			
+			<div class="page-header">
+                <h1 class="text-center">Puntos Básicos de Desarrollo</h1>
+            </div>
+            
+            <!-- Desarrollo Section -->
+            <div class="container mt-4">
+                <h2>1. Conceptos Claves</h2>
+                <ul>
+                    <li><strong>Front-end:</strong> Desarrollo visual e interactivo del sitio web.</li>
+                    <li><strong>Back-end:</strong> Desarrollo lógico y manejo de datos en el servidor.</li>
+                    <li><strong>Base de datos:</strong> Almacenamiento y gestión de información.</li>
+                </ul>
+                <div class="alert alert-info">
+                    <p><strong>Ejemplo:</strong> Componentes de una página web:</p>
+                    <p>HTML para la estructura, CSS para el estilo, JavaScript para la interacción.</p>
+                </div>
+            
+                <h2>2. Tecnologías Comunes</h2>
+                <p>Algunas herramientas populares en desarrollo web incluyen:</p>
+                <ul>
+                    <li>HTML5, CSS3, JavaScript</li>
+                    <li>Frameworks: React, Angular, Vue.js</li>
+                    <li>Lenguajes de servidor: PHP, Python, Node.js</li>
+                </ul>
+                <div class="alert alert-info">
+                    <p><strong>Ejemplo:</strong> Un stack típico:</p>
+                    <p>HTML y CSS para el diseño, JavaScript para el cliente, y Node.js en el servidor.</p>
+                </div>
+            
+                <h2>3. Metodologías de Desarrollo</h2>
+                <p>Algunas metodologías comunes incluyen:</p>
+                <ul>
+                    <li><strong>Agile:</strong> Desarrollo iterativo y colaborativo.</li>
+                    <li><strong>Scrum:</strong> Organización en sprints con roles definidos.</li>
+                    <li><strong>Kanban:</strong> Gestión de tareas visual mediante tableros.</li>
+                </ul>
+                <div class="alert alert-info">
+                    <p><strong>Ejemplo:</strong> Usando Scrum:</p>
+                    <p>Un proyecto se divide en sprints de 2 semanas con entregas incrementales.</p>
+                </div>
+            </div>
+
+
+	</main>
+
+
+	<!--=============================================
+	=            Include JavaScript files           =
+	==============================================-->
+	<!-- jQuery V3.4.1 -->
+	<script src="../js/jquery-3.4.1.min.js"></script>
+
+	<!-- popper -->
+	<script src="../js/popper.min.js"></script>
+
+	<!-- Bootstrap V4.3 -->
+	<script src="../js/bootstrap.min.js"></script>
+
+	<!-- jQuery Custom Content Scroller V3.1.5 -->
+	<script src="../js/jquery.mCustomScrollbar.concat.min.js"></script>
+
+	<!-- Bootstrap Material Design V4.0 -->
+	<script src="../js/bootstrap-material-design.min.js"></script>
+	<script>$(document).ready(function () { $('body').bootstrapMaterialDesign(); });</script>
+
+	<script src="../js/main.js"></script>
+</body>
+
+</html>
