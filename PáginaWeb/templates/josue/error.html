@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Error - Página no encontrada</title>
+    <title>Error</title>
     <style>
         body {
             margin: 0;
@@ -21,7 +21,7 @@
             padding: 20px;
         }
         .error-image {
-            max-width: 40%;
+            max-width: 80%;
             height: auto;
             margin-bottom: 20px;
         }
@@ -55,14 +55,14 @@
 </head>
 <body>
     <div class="error-container">
-        <img src="https://img.freepik.com/vector-gratis/ups-error-404-ilustracion-concepto-robot-roto_114360-5529.jpg" alt="Error Imagen" class="error-image">
-        <!--div class="error-code">404</div-->
-        <div class="error-message">Página no encontrada</div>
+        <img src="https://davidferfer.es/wp-content/uploads/2019/08/imagen-de-error-400-bad-request-error-de-servidor.jpg" alt="Error Imagen" class="error-image">
+        <!--div class="error-code">400</div-->
+        <div class="error-message">Solicitud Incorrecta</div>
         <div class="error-details">
-            Lo sentimos, la página que buscas no está disponible o no existe.
+            La solicitud no pudo ser procesada debido a un error en los datos enviados.
         </div>
         <div class="error-actions">
-            <a href="home.html">Volver al inicio</a>
+            <a href="{{ url_for('inicio') }}">Volver al inicio</a>
         </div>
     </div>
 </body>
