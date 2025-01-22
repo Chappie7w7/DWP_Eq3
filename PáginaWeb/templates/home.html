@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>Home</title>
+
+	<!-- Normalize V8.0.1 -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
+
+	<!-- Bootstrap V4.3 -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+
+	<!-- Bootstrap Material Design V4.0 -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-material-design.min.css') }}">
+
+	<!-- Font Awesome V5.9.0 -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/all.css') }}">
+
+	<!-- Sweet Alerts V8.13.0 CSS file -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/sweetalert2.min.css') }}">
+
+	<!-- Sweet Alert V8.13.0 JS file-->
+	<script src="../static/js/sweetalert2.min.js"></script>
+
+	<!-- jQuery Custom Content Scroller V3.1.5 -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/jquery.mCustomScrollbar.css') }}">
+
+	<!-- General Styles -->
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+	<!-- Main container -->
+	<main class="full-box main-container">
+		<!-- Nav lateral -->
+		<section class="full-box nav-lateral">
+			<div class="full-box nav-lateral-bg show-nav-lateral"></div>
+			<div class="full-box nav-lateral-content">
+				<figure class="full-box nav-lateral-avatar text-light">
+					<i class="far fa-times-circle show-nav-lateral"></i>
+					<img src="../static/assets/avatar/5.jpg" class="img-fluid" alt="Avatar">
+					<figcaption class="roboto-medium text-center">
+						Nombre Integrante <br><small class="roboto-condensed-light">Web Developer</small>
+					</figcaption>
+				</figure>
+				<div class="full-box nav-lateral-bar"></div>
+				<nav class="full-box nav-lateral-menu">
+					<ul>
+						<li>
+							<a href="{{ url_for('inicio') }}"><i class="fas fa-home fa-fw"></i> &nbsp; Home</a>
+						</li>
+
+						<li>
+							<a href="#" class="nav-btn-submenu"><i class="fas fa-users fa-fw"></i> &nbsp; Integrantes <i
+									class="fas fa-chevron-down"></i></a>
+							<ul>
+								<a href="#" class="nav-btn-submenu"><i class="fas fa-user fa-fw"></i> &nbsp; Josué <i
+										class="fas fa-chevron-down"></i></a>
+								<ul>
+									<li><a href="{{ url_for('materias') }}"><i class="fas fa-book fa-fw"></i> &nbsp; Materias</a>
+									</li>
+									<li><a href="{{ url_for('juegos') }}"><i class="fas fa-gamepad fa-fw"></i> &nbsp; Juegos</a>
+									</li>
+									<li><a href="{{ url_for('proyectos') }}"><i class="fas fa-folder fa-fw"></i> &nbsp;
+											Proyectos</a></li>
+								</ul>
+								<!--li><a href="josue.html"><i class="fas fa-user fa-fw"></i> &nbsp; Josué</a></li-->
+								<li><a href="#"><i class="fas fa-user fa-fw"></i> &nbsp; Yahir</a></li>
+								<li><a href="#"><i class="fas fa-user fa-fw"></i> &nbsp; Alexis</a></li>
+								<li><a href="#"><i class="fas fa-user fa-fw"></i> &nbsp; Gerardo</a></li>
+							</ul>
+						</li>
+
+						<li>
+							<a href="#" class="nav-btn-submenu"><i class="fas fa-book fa-fw"></i> &nbsp; Materias <i
+									class="fas fa-chevron-down"></i></a>
+							<ul>
+								<li><a href="ingles.html"><i class="fas fa-list fa-fw"></i> &nbsp; Inglés</a></li>
+								<li><a href="matematicas.html"><i class="fas fa-table fa-fw"></i> &nbsp; Matemáticas</a>
+								</li>
+								<li><a href="bdnube.html"><i class="fas fa-cloud fa-fw"></i> &nbsp; BD en la nube</a>
+								</li>
+							</ul>
+						</li>
+
+						<li>
+							<a href="#" class="nav-btn-submenu"><i class="fas fa-gamepad fa-fw"></i> &nbsp; Juegos <i
+									class="fas fa-chevron-down"></i></a>
+							<ul>
+								<li><a href="cod.html"><i class="fas fa-desktop fa-fw"></i> &nbsp; Call of duty</a></li>
+								<li><a href="brawl.html"><i class="fas fa-mobile fa-fw"></i> &nbsp; Brawl stars</a></li>
+								<li><a href="clash.html"><i class="fas fa-laptop fa-fw"></i> &nbsp; Clash royale</a>
+								</li>
+							</ul>
+						</li>
+
+						<li>
+							<a href="#" class="nav-btn-submenu"><i class="fas fa-folder fa-fw"></i> &nbsp; Proyectos <i
+									class="fas fa-chevron-down"></i></a>
+							<ul>
+								<li><a href="paginaweb.html"><i class="fas fa-file-code fa-fw"></i> &nbsp; Página
+										web</a></li>
+								<li><a href="appmovil.html"><i class="fas fa-boxes fa-fw"></i> &nbsp; App móvil</a></li>
+								<li><a href="puntov.html"><i class="fas fa-database fa-fw"></i> &nbsp; Punto de
+										venta</a>
+								</li>
+							</ul>
+						</li>
+
+						<!--li>
+							<a href="base.html"><i class="fas fa-columns fa-fw"></i> &nbsp; Base template</a>
+						</li-->
+
+					</ul>
+				</nav>
+			</div>
+		</section>
+
+		<!-- Page content -->
+		<section class="full-box page-content">
+			<nav class="full-box navbar-info">
+				<a href="#" class="float-left show-nav-lateral"><i class="fas fa-exchange-alt"></i></a>
+				<a href="#" data-toggle="modal" data-target="#ModalHelp"><i class="far fa-question-circle"></i></a>
+				<a href="#"><i class="fas fa-user-cog"></i></a>
+				<a href="#" class="btn-exit-system"><i class="fas fa-power-off"></i></a>
+			</nav>
+
+			<!-- Breadcrumbs -->
+			<nav aria-label="breadcrumb" class="full-box">
+				<ol class="breadcrumb">
+					<li class="breadcrumb-item active" aria-current="page">Home</li>
+				</ol>
+			</nav>
+
+			<!-- Page header -->
+			<div class="full-box page-header">
+				<h3 class="text-left">
+					<i class="fas fa-laptop fa-fw"></i> &nbsp; Mi Página Web
+				</h3>
+				<p class="text-justify">
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Suscipit nostrum rerum animi natus beatae
+					ex. Culpa blanditiis tempore amet alias placeat, obcaecati quaerat ullam, sunt est, odio aut veniam
+					ratione.
+				</p>
+			</div>
+
+		</section>
+	</main>
+
+
+	<!--=============================================
+	=            Include JavaScript files           =
+	==============================================-->
+	<!-- jQuery V3.4.1 -->
+	<script src="../static/js/jquery-3.4.1.min.js"></script>
+
+	<!-- popper -->
+	<script src="../static/js/popper.min.js"></script>
+
+	<!-- Bootstrap V4.3 -->
+	<script src="../static/js/bootstrap.min.js"></script>
+
+	<!-- jQuery Custom Content Scroller V3.1.5 -->
+	<script src="../static/js/jquery.mCustomScrollbar.concat.min.js"></script>
+
+	<!-- Bootstrap Material Design V4.0 -->
+	<script src="../static/js/bootstrap-material-design.min.js"></script>
+	<script>$(document).ready(function () { $('body').bootstrapMaterialDesign(); });</script>
+
+	<script src="../static/js/main.js"></script>
+</body>
+
+</html>
