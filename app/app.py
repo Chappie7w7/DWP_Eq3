@@ -5,12 +5,12 @@ app = Flask(__name__)
 # Ruta principal
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('index.jinja')
 
 # Ruta de inicio
 @app.route('/inicio')
 def inicio():
-    return render_template('home.html')
+    return render_template('home.jinja')
 
 # Ruta para vista Josué
 @app.route('/josue')
