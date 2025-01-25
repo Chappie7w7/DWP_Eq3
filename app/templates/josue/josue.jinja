@@ -1,0 +1,56 @@
+{% extends 'base.jinja' %}
+
+{% block title %}
+Josué
+{% endblock %}
+
+{% block content %}
+<!-- Breadcrumbs -->
+<nav aria-label="breadcrumb" class="full-box">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('main.inicio') }}">Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Josué</li>
+    </ol>
+</nav>
+
+<!-- Page header -->
+<div class="full-box page-header">
+    <h3 class="text-left">
+        <i class="fas fa-laptop fa-fw"></i> &nbsp; Mi Página Web
+    </h3>
+    <p class="text-justify">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Suscipit nostrum rerum animi natus beatae
+        ex. Culpa blanditiis tempore amet alias placeat, obcaecati quaerat ullam, sunt est, odio aut veniam
+        ratione.
+    </p>
+</div>
+
+<!-- Content -->
+<div class="full-box tile-container">
+
+    <a href="{{ url_for('main.materias') }}" class="tile">
+        <div class="tile-tittle">Materias</div>
+        <div class="tile-icon">
+            <i class="fas fa-book fa-fw"></i>
+            <p>3 Materias</p>
+        </div>
+    </a>
+
+    <a href="{{ url_for('main.juegos') }}" class="tile">
+        <div class="tile-tittle">Juegos</div>
+        <div class="tile-icon">
+            <i class="fas fa-gamepad fa-fw"></i>
+            <p>3 Juegos</p>
+        </div>
+    </a>
+
+    <a href="{{ url_for('main.proyectos') }}" class="tile">
+        <div class="tile-tittle">Proyectos</div>
+        <div class="tile-icon">
+            <i class="fas fa-folder fa-fw"></i>
+            <p>3 Proyectos</p>
+        </div>
+    </a>
+
+</div>
+{% endblock %}

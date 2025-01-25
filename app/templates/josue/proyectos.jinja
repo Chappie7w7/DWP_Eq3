@@ -1,0 +1,55 @@
+{% extends 'base.jinja' %}
+
+{% block title %}
+Proyectos
+{% endblock %}
+
+{% block content %}
+<!-- Breadcrumbs -->
+<nav aria-label="breadcrumb" class="full-box">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('main.inicio') }}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('main.josue') }}">Josué</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Proyectos</li>
+    </ol>
+</nav>
+
+<!-- Page header -->
+<div class="full-box page-header">
+    <h3 class="text-left">
+        <i class="fas fa-folder fa-fw"></i> &nbsp; Mis Proyectos
+    </h3>
+    <p class="text-justify">
+        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Suscipit nostrum rerum animi natus beatae
+        ex. Culpa blanditiis tempore amet alias placeat, obcaecati quaerat ullam, sunt est, odio aut veniam
+        ratione.
+    </p>
+</div>
+
+<!-- Content -->
+<div class="full-box tile-container">
+    <a href="paginaweb.html" class="tile">
+        <div class="tile-tittle">Página Web</div>
+        <div class="tile-icon">
+            <i class="fas fa-file-code fa-fw"></i>
+            <p>7 Archivos</p>
+        </div>
+    </a>
+
+    <a href="appmovil.html" class="tile">
+        <div class="tile-tittle">App Móvil</div>
+        <div class="tile-icon">
+            <i class="fas fa-boxes fa-fw"></i>
+            <p>3 Archivos</p>
+        </div>
+    </a>
+
+    <a href="puntov.html" class="tile">
+        <div class="tile-tittle">Punto de Venta</div>
+        <div class="tile-icon">
+            <i class="fas fa-database fa-fw"></i>
+            <p>12 Archivos</p>
+        </div>
+    </a>
+</div>
+{% endblock %}

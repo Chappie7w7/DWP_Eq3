@@ -1,6 +1,5 @@
 # DWP_Eq3
  
-# Task Manager
 #crea entono virtual 
  python -m venv .venv       
 
