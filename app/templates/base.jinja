@@ -43,7 +43,8 @@
                 <div class="full-box nav-lateral-bar"></div>
                 <nav class="full-box nav-lateral-menu">
                     <ul>
-                        <li><a href="{{ url_for('inicio') }}"><i class="fas fa-home fa-fw"></i> &nbsp; Home</a></li>
+                        <li><a href="{{ url_for('main.home') }}"><i class="fas fa-home fa-fw"></i> &nbsp; Home</a></li>
+
                         <li>
                             <a href="#" class="nav-btn-submenu"><i class="fas fa-users fa-fw"></i> &nbsp; Integrantes <i class="fas fa-chevron-down"></i></a>
                             <ul>
@@ -69,7 +70,6 @@
         <!-- Page content -->
         <section class="full-box page-content">
             {% block content %}
-            <!-- Aquí va el contenido específico de cada página -->
             {% endblock %}
         </section>
     </main>
