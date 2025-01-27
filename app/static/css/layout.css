@@ -1,0 +1,27 @@
+/* Estilo del botón del menú */
+.menu-toggle {
+    position: absolute; /* Posición absoluta para controlarlo con top/left */
+    top: 15px; /* Ajusta según la altura de la barra superior */
+    left: 20px; /* Separación del borde izquierdo */
+    color: #fff; /* Color del ícono */
+    font-size: 1.5rem; /* Tamaño del ícono */
+    cursor: pointer; /* Cambia el cursor al pasar sobre él */
+    z-index: 1001; /* Asegúrate de que esté encima del contenido */
+    text-decoration: none;
+}
+
+.menu-toggle:hover {
+    color: #ffbf00; /* Cambia el color al pasar el mouse */
+}
+
+/* Asegúrate de que la barra superior tenga posición relativa */
+.navbar-info {
+    position: relative;
+    height: 60px; /* Ajusta la altura de la barra */
+    background: #333; /* Fondo de la barra superior */
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    justify-content: space-between; /* Distribuye el contenido */
+    z-index: 1000;
+}

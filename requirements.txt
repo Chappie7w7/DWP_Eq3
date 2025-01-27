@@ -3,4 +3,5 @@ Flask-SQLAlchemy
 python-dotenv
 pymysql
 flask-jwt-extended
-flask-login
+Flask-Login
+Flask-wtf

@@ -1,0 +1,19 @@
+{% extends 'base.jinja' %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('main.inicio') }}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('main.proyectos') }}">Proyectos</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Prototipos</li>
+    </ol>
+</nav>
+
+<!-- Contenido de Prototipos -->
+<div class="container text-center">
+    <h1>Prototipos</h1>
+    <p><strong>Descripción:</strong> Los prototipos son herramientas visuales o interactivas que permiten validar y probar ideas en las primeras etapas del diseño.</p>
+    <p><strong>Objetivo:</strong> Ayudar a los equipos a identificar problemas y áreas de mejora antes del desarrollo final.</p>
+</div>
+{% endblock %}

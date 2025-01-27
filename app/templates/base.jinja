@@ -22,14 +22,18 @@
 
     <!-- jQuery Custom Content Scroller V3.1.5 -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery.mCustomScrollbar.css') }}">
-
+    
     <!-- General Styles -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/menu.css') }}">
 </head>
 <body>
     <!-- Main container -->
     <main class="full-box main-container">
         <!-- Nav lateral -->
+        {% if show_sidebar is not defined or show_sidebar %}
+
+        
         <section class="full-box nav-lateral">
             <div class="full-box nav-lateral-bg show-nav-lateral"></div>
             <div class="full-box nav-lateral-content">
@@ -37,49 +41,110 @@
                     <i class="far fa-times-circle show-nav-lateral"></i>
                     <img src="{{ url_for('static', filename='assets/avatar/5.jpg') }}" class="img-fluid" alt="Avatar">
                     <figcaption class="roboto-medium text-center">
-                        Nombre Integrante <br><small class="roboto-condensed-light">Web Developer</small>
+                        Web Developer <br><small class="roboto-condensed-light">Web Developer</small>
                     </figcaption>
                 </figure>
                 <div class="full-box nav-lateral-bar"></div>
-                <nav class="full-box nav-lateral-menu">
+<nav class="full-box nav-lateral-menu">
+    <ul>
+        <li>
+            <a href="#"><i class="fas fa-home fa-fw"></i> &nbsp; Home</a>
+        </li>
+        <li>
+            <a href="#" class="nav-btn-submenu"><i class="fas fa-users fa-fw"></i> &nbsp; Integrantes <i class="fas fa-chevron-down"></i></a>
+            <ul>
+                <li><a href="#"><i class="fas fa-user fa-fw"></i> &nbsp; Josué</a></li>
+                <li><a href="#"><i class="fas fa-user fa-fw"></i> &nbsp; Yahir</a></li>
+                <li>
+                    <a href="#" class="nav-btn-submenu"><i class="fas fa-user fa-fw"></i> &nbsp; Alexis <i class="fas fa-chevron-down"></i></a>
                     <ul>
-                        <li><a href="{{ url_for('main.home') }}"><i class="fas fa-home fa-fw"></i> &nbsp; Home</a></li>
-
-                        <li>
-                            <a href="#" class="nav-btn-submenu"><i class="fas fa-users fa-fw"></i> &nbsp; Integrantes <i class="fas fa-chevron-down"></i></a>
-                            <ul>
-                                <li><a href="#"><i class="fas fa-user fa-fw"></i> &nbsp; Josué</a></li>
-                                <li><a href="#"><i class="fas fa-user fa-fw"></i> &nbsp; Yahir</a></li>
-                                <li><a href="#"><i class="fas fa-user fa-fw"></i> &nbsp; Alexis</a></li>
-                                <li><a href="#"><i class="fas fa-user fa-fw"></i> &nbsp; Gerardo</a></li>
-                            </ul>
-                        </li>
                         <li>
                             <a href="#" class="nav-btn-submenu"><i class="fas fa-book fa-fw"></i> &nbsp; Materias <i class="fas fa-chevron-down"></i></a>
                             <ul>
-                                <li><a href="#"><i class="fas fa-list fa-fw"></i> &nbsp; Inglés</a></li>
-                                <li><a href="#"><i class="fas fa-table fa-fw"></i> &nbsp; Matemáticas</a></li>
-                                <li><a href="#"><i class="fas fa-cloud fa-fw"></i> &nbsp; BD en la nube</a></li>
+                                <li><a href="{{ url_for('main.ingles') }}"><i class="fas fa-angle-right fa-fw"></i> &nbsp; Inglés</a></li>
+                                <li><a href="{{ url_for('main.matematicas') }}"><i class="fas fa-angle-right fa-fw"></i> &nbsp; Matemáticas</a></li>
+
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-btn-submenu"><i class="fas fa-gamepad fa-fw"></i> &nbsp; Juegos <i class="fas fa-chevron-down"></i></a>
+                            <ul>
+                                <li><a href="{{ url_for('main.clash_royale') }}"><i class="fas fa-angle-right fa-fw"></i> &nbsp; Clash Royale</a></li>
+                                <li><a href="{{ url_for('main.gta_v') }}"><i class="fas fa-angle-right fa-fw"></i> &nbsp; GTA V</a></li>
+
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="#" class="nav-btn-submenu"><i class="fas fa-folder fa-fw"></i> &nbsp; Proyectos <i class="fas fa-chevron-down"></i></a>
+                            <ul>
+                                <li><a href="{{ url_for('main.prototipos') }}"><i class="fas fa-angle-right fa-fw"></i> &nbsp; Prototipos</a></li>
+                                <li><a href="{{ url_for('main.app_movil') }}"><i class="fas fa-angle-right fa-fw"></i> &nbsp; App Móvil</a></li>
                             </ul>
                         </li>
                     </ul>
-                </nav>
+                </li>
+                <li><a href="#"><i class="fas fa-user fa-fw"></i> &nbsp; Gerardo</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#" class="nav-btn-submenu"><i class="fas fa-book fa-fw"></i> &nbsp; Materias <i class="fas fa-chevron-down"></i></a>
+            <ul>
+                <li><a href="#"><i class="fas fa-file-pdf fa-fw"></i> &nbsp; New product</a></li>
+                <li><a href="#"><i class="fas fa-file-word fa-fw"></i> &nbsp; List products</a></li>
+                <li><a href="#"><i class="fas fa-file-powerpoint fa-fw"></i> &nbsp; List products</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#" class="nav-btn-submenu"><i class="fas fa-gamepad fa-fw"></i> &nbsp; Juegos <i class="fas fa-chevron-down"></i></a>
+            <ul>
+                <li><a href="#"><i class="fas fa-mobile fa-fw"></i> &nbsp; New product</a></li>
+                <li><a href="#"><i class="fas fa-play fa-fw"></i> &nbsp; List products</a></li>
+                <li><a href="#"><i class="fas fa-futbol fa-fw"></i> &nbsp; List products</a></li>
+            </ul>
+        </li>
+        <li>
+            <a href="#" class="nav-btn-submenu"><i class="fas fa-folder fa-fw"></i> &nbsp; Proyectos <i class="fas fa-chevron-down"></i></a>
+            <ul>
+                <li><a href="#"><i class="fas fa-file-code fa-fw"></i> &nbsp; New product</a></li>
+                <li><a href="#"><i class="fas fa-boxes fa-fw"></i> &nbsp; List products</a></li>
+                <li><a href="#"><i class="fas fa-database fa-fw"></i> &nbsp; List products</a></li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+
             </div>
         </section>
+        {% endif %}
 
         <!-- Page content -->
         <section class="full-box page-content">
+            <nav class="full-box navbar-info">
+                <a href="#" class="float-left show-nav-lateral"><i class="fas fa-exchange-alt"></i></a>
+                <a href="#" data-toggle="modal" data-target="#ModalHelp"><i class="far fa-question-circle"></i></a>
+                <a href="#"><i class="fas fa-user-cog"></i></a>
+                <a href="{{ url_for('auth.login') }}" class="btn-exit-system" onclick="console.log('Logout button clicked')">
+                    <i class="fas fa-power-off"></i>
+                </a>
+                
+                
+            </nav>
+
             {% block content %}
             {% endblock %}
         </section>
     </main>
 
-    <!-- JavaScript -->
+    <!--=============================================
+    =            Include JavaScript files           =
+    ==============================================-->
     <script src="{{ url_for('static', filename='js/jquery-3.4.1.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/jquery.mCustomScrollbar.concat.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap-material-design.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         $(document).ready(function() {
             $('body').bootstrapMaterialDesign();
