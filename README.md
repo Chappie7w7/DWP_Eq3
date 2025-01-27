@@ -13,4 +13,6 @@
 
 Ejecutar
   flask run --debug
+         O
+  flask run
   

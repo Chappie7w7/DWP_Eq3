@@ -1,0 +1,21 @@
+{% extends 'base.jinja' %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('main.inicio') }}">Home</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('main.juegos') }}">Juegos</a></li>
+        <li class="breadcrumb-item active" aria-current="page">GTA V</li>
+    </ol>
+</nav>
+
+<!-- Contenido de GTA V -->
+<div class="container text-center">
+    <h1>GTA V</h1>
+    <p><strong>Género:</strong> Acción y aventura</p>
+    <p><strong>Desarrollador:</strong> Rockstar North</p>
+    <p><strong>Plataformas:</strong> PlayStation, Xbox, PC</p>
+    <p><strong>Descripción:</strong> Un juego de mundo abierto que ofrece una experiencia de acción y aventura en una ciudad ficticia. Los jugadores pueden completar misiones o explorar libremente.</p>
+</div>
+{% endblock %}
