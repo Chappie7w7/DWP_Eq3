@@ -5,3 +5,4 @@ pymysql
 flask-jwt-extended
 Flask-Login
 Flask-wtf
+flask-bcrypt
