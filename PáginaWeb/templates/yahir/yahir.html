@@ -5,7 +5,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport"
 		content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-	<title>Home</title>
+	<title>Mi Página</title>
 
 	<!-- Normalize V8.0.1 -->
 	<link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
@@ -34,7 +34,7 @@
 </head>
 
 <body>
-
+	
 	<!-- Main container -->
 	<main class="full-box main-container">
 		<!-- Nav lateral -->
@@ -45,7 +45,7 @@
 					<i class="far fa-times-circle show-nav-lateral"></i>
 					<img src="../static/assets/avatar/5.jpg" class="img-fluid" alt="Avatar">
 					<figcaption class="roboto-medium text-center">
-						Nombre Integrante <br><small class="roboto-condensed-light">Web Developer</small>
+						Carlos Yahir <br><small class="roboto-condensed-light">Web Developer</small>
 					</figcaption>
 				</figure>
 				<div class="full-box nav-lateral-bar"></div>
@@ -56,59 +56,39 @@
 						</li>
 
 						<li>
-							<a href="#" class="nav-btn-submenu"><i class="fas fa-users fa-fw"></i> &nbsp; Integrantes <i
-									class="fas fa-chevron-down"></i></a>
+							<a href="#" class="nav-btn-submenu"><i class="fas fa-users fa-fw"></i> &nbsp; Integrantes <i class="fas fa-chevron-down"></i></a>
 							<ul>
-								<a href="#" class="nav-btn-submenu"><i class="fas fa-user fa-fw"></i> &nbsp; Josué <i
-										class="fas fa-chevron-down"></i></a>
-								<ul>
-									<li><a href="{{ url_for('materias') }}"><i class="fas fa-book fa-fw"></i> &nbsp; Materias</a>
-									</li>
-									<li><a href="{{ url_for('juego') }}"><i class="fas fa-gamepad fa-fw"></i> &nbsp; Juegos</a>
-									</li>
-									<li><a href="{{ url_for('proyectos') }}"><i class="fas fa-folder fa-fw"></i> &nbsp;
-											Proyectos</a></li>
-								</ul>
-								<!--li><a href="josue.html"><i class="fas fa-user fa-fw"></i> &nbsp; Josué</a></li-->
 								<li><a href="{{ url_for('yahir') }}"><i class="fas fa-user fa-fw"></i> &nbsp; Yahir</a></li>
+								<li><a href="error.html"><i class="fas fa-user fa-fw"></i> &nbsp; Josue</a></li>
 								<li><a href="#"><i class="fas fa-user fa-fw"></i> &nbsp; Alexis</a></li>
 								<li><a href="#"><i class="fas fa-user fa-fw"></i> &nbsp; Gerardo</a></li>
 							</ul>
 						</li>
 
 						<li>
-							<a href="#" class="nav-btn-submenu"><i class="fas fa-book fa-fw"></i> &nbsp; Materias <i
-									class="fas fa-chevron-down"></i></a>
+							<a href="#" class="nav-btn-submenu"><i class="fas fa-book fa-fw"></i> &nbsp; Materias <i class="fas fa-chevron-down"></i></a>
 							<ul>
-								<li><a href="ingles.html"><i class="fas fa-list fa-fw"></i> &nbsp; Inglés</a></li>
-								<li><a href="matematicas.html"><i class="fas fa-table fa-fw"></i> &nbsp; Matemáticas</a>
-								</li>
-								<li><a href="bdnube.html"><i class="fas fa-cloud fa-fw"></i> &nbsp; BD en la nube</a>
-								</li>
+								<li><a href="{{ url_for('matematicas') }}"><i class="fas fa-file-pdf fa-fw"></i> &nbsp; Matematicas</a></li>
+								<li><a href="{{ url_for('ingles') }}"><i class="fas fa-file-word fa-fw"></i> &nbsp; Ingles</a></li>
+								<li><a href="{{ url_for('desarrollo') }}"><i class="fas fa-file-powerpoint fa-fw"></i> &nbsp; Desarrollo</a></li>
 							</ul>
 						</li>
 
 						<li>
-							<a href="#" class="nav-btn-submenu"><i class="fas fa-gamepad fa-fw"></i> &nbsp; Juegos <i
-									class="fas fa-chevron-down"></i></a>
+							<a href="#" class="nav-btn-submenu"><i class="fas fa-gamepad fa-fw"></i> &nbsp; Juegos <i class="fas fa-chevron-down"></i></a>
 							<ul>
-								<li><a href="cod.html"><i class="fas fa-desktop fa-fw"></i> &nbsp; Call of duty</a></li>
-								<li><a href="brawl.html"><i class="fas fa-mobile fa-fw"></i> &nbsp; Brawl stars</a></li>
-								<li><a href="clash.html"><i class="fas fa-laptop fa-fw"></i> &nbsp; Clash royale</a>
-								</li>
+								<li><a href="{{ url_for('free') }}"><i class="fas fa-mobile fa-fw"></i> &nbsp; Free Fire</a></li>
+								<li><a href="{{ url_for('aspa') }}"><i class="fas fa-play fa-fw"></i> &nbsp; Asphalt</a></li>
+								<li><a href="{{ url_for('fifa') }}"><i class="fas fa-futbol fa-fw"></i> &nbsp; Fifa</a></li>
 							</ul>
 						</li>
 
 						<li>
-							<a href="#" class="nav-btn-submenu"><i class="fas fa-folder fa-fw"></i> &nbsp; Proyectos <i
-									class="fas fa-chevron-down"></i></a>
+							<a href="#" class="nav-btn-submenu"><i class="fas fa-folder fa-fw"></i> &nbsp; Proyectos <i class="fas fa-chevron-down"></i></a>
 							<ul>
-								<li><a href="paginaweb.html"><i class="fas fa-file-code fa-fw"></i> &nbsp; Página
-										web</a></li>
-								<li><a href="appmovil.html"><i class="fas fa-boxes fa-fw"></i> &nbsp; App móvil</a></li>
-								<li><a href="puntov.html"><i class="fas fa-database fa-fw"></i> &nbsp; Punto de
-										venta</a>
-								</li>
+								<li><a href="modules/estadia.html"><i class="fas fa-file-code fa-fw"></i> &nbsp; Estadia</a></li>
+								<li><a href="modules/integradora.html"><i class="fas fa-boxes fa-fw"></i> &nbsp; Integradora</a></li>
+								<li><a href="modules/alumnado.html"><i class="fas fa-database fa-fw"></i> &nbsp; Alumnado</a></li>
 							</ul>
 						</li>
 
@@ -130,24 +110,54 @@
 				<a href="#" class="btn-exit-system"><i class="fas fa-power-off"></i></a>
 			</nav>
 
-			<!-- Breadcrumbs -->
-			<nav aria-label="breadcrumb" class="full-box">
-				<ol class="breadcrumb">
-					<li class="breadcrumb-item active" aria-current="page">Home</li>
-				</ol>
-			</nav>
-
 			<!-- Page header -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="home.html">Inicio</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('integrantes') }}">Integrantes</a></li>
+					<li class="breadcrumb-item active" aria-current="page">Yahir</li>
+					
+                </ol>
+            </nav>
+            
 			<div class="full-box page-header">
 				<h3 class="text-left">
 					<i class="fas fa-laptop fa-fw"></i> &nbsp; Mi Página Web
 				</h3>
 				<p class="text-justify">
-					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Suscipit nostrum rerum animi natus beatae
-					ex. Culpa blanditiis tempore amet alias placeat, obcaecati quaerat ullam, sunt est, odio aut veniam
-					ratione.
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit. Suscipit nostrum rerum animi natus beatae ex. Culpa blanditiis tempore amet alias placeat, obcaecati quaerat ullam, sunt est, odio aut veniam ratione.
 				</p>
 			</div>
+			
+			<!-- Content -->
+			<div class="full-box tile-container">
+
+				<a href="{{ url_for('materia_yahir') }}" class="tile">
+					<div class="tile-tittle">Materias</div>
+					<div class="tile-icon">
+						<i class="fas fa-book fa-fw"></i>
+						<p>3 Materias</p>
+					</div>
+				</a>
+
+				<a href="{{ url_for('juego') }}" class="tile">
+					<div class="tile-tittle">Juegos</div>
+					<div class="tile-icon">
+						<i class="fas fa-gamepad fa-fw"></i>
+						<p>3 Juegos</p>
+					</div>
+				</a>
+
+				<a href="modules/proyectos.html" class="tile">
+					<div class="tile-tittle">Proyectos</div>
+					<div class="tile-icon">
+						<i class="fas fa-folder fa-fw"></i>
+						<p>3 Proyectos</p>
+					</div>
+				</a>
+
+			</div>
+			
 
 		</section>
 	</main>
