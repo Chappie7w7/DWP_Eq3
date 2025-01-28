@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 
 # Inicializar SQLAlchemy
@@ -20,5 +20,11 @@ def create_app():
     from app.routes.main import main_bp
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(main_bp)
+    
+      # Manejador de errores 404
+    @app.errorhandler(404)
+    def page_not_found(e):
+        return render_template('error_404.jinja'), 404
 
     return app
+

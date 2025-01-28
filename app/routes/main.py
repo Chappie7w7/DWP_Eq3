@@ -72,3 +72,5 @@ def app_movil():
 @main_bp.app_errorhandler(404)
 def page_not_found(error):
     return render_template('josue/error.jinja'), 404
+
+
