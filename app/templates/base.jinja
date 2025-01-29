@@ -58,6 +58,8 @@
         <li>
             <a href="{{ url_for('main.inicio') }}"><i class="fas fa-home fa-fw"></i> &nbsp; Home</a>
         </li>
+
+        {% if 'modulos' in session %}
         <li>
             <a href="#" class="nav-btn-submenu"><i class="fas fa-users fa-fw"></i> &nbsp; Integrantes <i class="fas fa-chevron-down"></i></a>
             <ul>
@@ -66,14 +68,18 @@
                 <li>
                     <a href="#" class="nav-btn-submenu"><i class="fas fa-user fa-fw"></i> &nbsp; Alexis <i class="fas fa-chevron-down"></i></a>
                     <ul>
+                        {% if 'materias' in session['modulos'] %}
                         <li>
                             <a href="#" class="nav-btn-submenu"><i class="fas fa-book fa-fw"></i> &nbsp; Materias <i class="fas fa-chevron-down"></i></a>
                             <ul>
                                 <li><a href="{{ url_for('main.ingles') }}"><i class="fas fa-angle-right fa-fw"></i> &nbsp; Inglés</a></li>
                                 <li><a href="{{ url_for('main.matematicas') }}"><i class="fas fa-angle-right fa-fw"></i> &nbsp; Matemáticas</a></li>
-
+                            
                             </ul>
                         </li>
+                        {% endif %}
+
+                        {% if 'juegos' in session['modulos'] %}
                         <li>
                             <a href="#" class="nav-btn-submenu"><i class="fas fa-gamepad fa-fw"></i> &nbsp; Juegos <i class="fas fa-chevron-down"></i></a>
                             <ul>
@@ -82,6 +88,9 @@
 
                             </ul>
                         </li>
+                        {% endif %}
+
+                        {% if 'proyectos' in session['modulos'] %}
                         <li>
                             <a href="#" class="nav-btn-submenu"><i class="fas fa-folder fa-fw"></i> &nbsp; Proyectos <i class="fas fa-chevron-down"></i></a>
                             <ul>
@@ -89,11 +98,13 @@
                                 <li><a href="{{ url_for('main.app_movil') }}"><i class="fas fa-angle-right fa-fw"></i> &nbsp; App Móvil</a></li>
                             </ul>
                         </li>
+                        {% endif %}
                     </ul>
                 </li>
                 <li><a href="#"><i class="fas fa-user fa-fw"></i> &nbsp; Gerardo</a></li>
             </ul>
         </li>
+            {% endif %}
         <li>
             <a href="#" class="nav-btn-submenu"><i class="fas fa-book fa-fw"></i> &nbsp; Materias <i class="fas fa-chevron-down"></i></a>
             <ul>
