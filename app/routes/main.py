@@ -17,6 +17,17 @@ def inicio():
 def josue():
     return render_template('josue/josue.jinja')
 
+@main_bp.route('/josue_materias')
+def josue_materias():
+    return render_template('josue/materias.jinja')
+
+@main_bp.route('/josue_games')
+def josue_games():
+    return render_template('josue/juegos.jinja')
+
+@main_bp.route('/josue_pycts')
+def josue_pycts():
+    return render_template('josue/proyectos.jinja')
 
 
 @main_bp.route('/juegos')

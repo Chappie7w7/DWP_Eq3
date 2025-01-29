@@ -41,8 +41,14 @@
                     <i class="far fa-times-circle show-nav-lateral"></i>
                     <img src="{{ url_for('static', filename='assets/avatar/5.jpg') }}" class="img-fluid" alt="Avatar">
                     <figcaption class="roboto-medium text-center">
-                        Web Developer <br><small class="roboto-condensed-light">Web Developer</small>
-                    </figcaption>
+                        {% if session['usuario_nombre'] %}
+                            {{ session['usuario_nombre'] }} <br>
+                            <small class="roboto-condensed-light">Web Developer</small>
+                        {% else %}
+                            Web Developer <br>
+                            <small class="roboto-condensed-light">Web Developer</small>
+                        {% endif %}
+                    </figcaption>
                 </figure>
                 <div class="full-box nav-lateral-bar"></div>
 <nav class="full-box nav-lateral-menu">
@@ -53,7 +59,15 @@
         <li>
             <a href="#" class="nav-btn-submenu"><i class="fas fa-users fa-fw"></i> &nbsp; Integrantes <i class="fas fa-chevron-down"></i></a>
             <ul>
-                <li><a href="#"><i class="fas fa-user fa-fw"></i> &nbsp; Josué</a></li>
+				<a href="#" class="nav-btn-submenu"><i class="fas fa-user fa-fw"></i> &nbsp; Josué <i class="fas fa-chevron-down"></i></a>
+					<ul>
+						<li><a href="{{ url_for('main.josue_materias') }}"><i class="fas fa-book fa-fw"></i> &nbsp; Materias</a>
+						</li>
+						<li><a href="josue_games"><i class="fas fa-gamepad fa-fw"></i> &nbsp; Juegos</a>
+						</li>
+						<li><a href="josue_pycts"><i class="fas fa-folder fa-fw"></i> &nbsp;
+											Proyectos</a></li>
+					</ul>
                 <li><a href="#"><i class="fas fa-user fa-fw"></i> &nbsp; Yahir</a></li>
                 <li>
                     <a href="#" class="nav-btn-submenu"><i class="fas fa-user fa-fw"></i> &nbsp; Alexis <i class="fas fa-chevron-down"></i></a>

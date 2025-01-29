@@ -9,7 +9,7 @@ with app.app_context():
     print("Tablas creadas correctamente.")
 
     # Crear un usuario de prueba
-    usuario = Usuario(nombre="Alexis", email="alexis@example.com", password="1234")
+    usuario = Usuario(nombre="Josué", email="chappie@gmail.com", password="qwerty")
     db.session.add(usuario)
     db.session.commit()
 
