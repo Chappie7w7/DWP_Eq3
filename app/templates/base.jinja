@@ -40,9 +40,17 @@
                 <figure class="full-box nav-lateral-avatar text-light">
                     <i class="far fa-times-circle show-nav-lateral"></i>
                     <img src="{{ url_for('static', filename='assets/avatar/5.jpg') }}" class="img-fluid" alt="Avatar">
+                    
                     <figcaption class="roboto-medium text-center">
-                        Web Developer <br><small class="roboto-condensed-light">Web Developer</small>
+                        {% if session['usuario_nombre'] %}
+                            {{ session['usuario_nombre'] }} <br>
+                            <small class="roboto-condensed-light">Web Developer</small>
+                        {% else %}
+                            Web Developer <br>
+                            <small class="roboto-condensed-light">Web Developer</small>
+                        {% endif %}
                     </figcaption>
+                    
                 </figure>
                 <div class="full-box nav-lateral-bar"></div>
 <nav class="full-box nav-lateral-menu">

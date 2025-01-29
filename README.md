@@ -25,5 +25,5 @@ Type "help", "copyright", "credits" or "license" for more information.
 4a15b75b799645eb3c35b2b4845418d2ff966c48294bbc4fc32758fd3cf0e239
 
 
-ejecutar antes de iniciar la app
+#ejecutar antes de iniciar la app para creación de tablas
 python init_db.py
