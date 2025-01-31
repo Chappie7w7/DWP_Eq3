@@ -1,84 +1,82 @@
 from flask import Blueprint, render_template, session, abort
-from functools import wraps
+from app.models.md_seccion import Seccion
+from app.models.md_usuario_modulo import UsuarioModulo
 
 main_bp = Blueprint('main', __name__)
 
-# Función decoradora para restringir acceso a módulos según los permisos
-def requiere_modulo(modulo_nombre):
-    """Verifica si el usuario tiene acceso al módulo"""
-    def decorator(f):
-        @wraps(f)
-        def wrapper(*args, **kwargs):
-            if 'modulos' not in session or modulo_nombre not in session['modulos']:
-                abort(403)  # Retorna error 403 si el usuario no tiene permiso
-            return f(*args, **kwargs)
-        return wrapper
-    return decorator
-
-# Ruta para el login
 @main_bp.route('/')
 def home():
+    """
+    Página principal del sistema.
+    """
     return render_template('auth/login.jinja')
 
-# Ruta para el inicio (dashboard)
 @main_bp.route('/inicio')
 def inicio():
+    """
+    Página de inicio (dashboard).
+    """
     return render_template('dashboard/home.jinja')
 
-# 🔹 Materias (Protegido)
-@main_bp.route('/materias')
-@requiere_modulo('materias')
-def materias():
-    return render_template('alexis/materias/materias.jinja')
+@main_bp.route('/<modulo>')
+def mostrar_modulo(modulo):
+    """
+    Muestra todas las secciones de un módulo específico para el usuario actual.
+    """
+    usuario_id = session.get('usuario_id')
 
-@main_bp.route('/materias/ingles')
-@requiere_modulo('materias')
-def ingles():
-    return render_template('alexis/materias/ingles.jinja')
+    # Validar si el usuario tiene acceso al módulo
+    secciones = Seccion.query.join(UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id).filter(
+        Seccion.categoria == modulo,
+        UsuarioModulo.usuario_id == usuario_id
+    ).all()
 
-@main_bp.route('/materias/matematicas')
-@requiere_modulo('materias')
-def matematicas():
-    return render_template('alexis/materias/matematicas.jinja')
+    if not secciones:
+        abort(404)  # Si no hay secciones o el módulo no existe, muestra error 404
 
-# 🔹 Juegos (Protegido)
-@main_bp.route('/juegos')
-@requiere_modulo('juegos')
-def juegos():
-    return render_template('alexis/juegos/juegos.jinja')
+    # Construir breadcrumb
+    breadcrumb = [
+        {'name': 'Inicio', 'url': '/inicio'},
+        {'name': modulo.capitalize(), 'url': None},
+    ]
 
-@main_bp.route('/juegos/clash_royale')
-@requiere_modulo('juegos')
-def clash_royale():
-    return render_template('alexis/juegos/clash_royale.jinja')
+    return render_template(
+        'dinamico.jinja',
+        titulo=modulo.capitalize(),
+        secciones=secciones,
+        breadcrumb=breadcrumb
+    )
 
-@main_bp.route('/juegos/gta_v')
-@requiere_modulo('juegos')
-def gta_v():
-    return render_template('alexis/juegos/gta_v.jinja')
+@main_bp.route('/<modulo>/<seccion>')
+def mostrar_seccion(modulo, seccion):
+    """
+    Muestra una sección específica dentro de un módulo.
+    """
+    usuario_id = session.get('usuario_id')
 
-# 🔹 Proyectos (Protegido)
-@main_bp.route('/proyectos')
-@requiere_modulo('proyectos')
-def proyectos():
-    return render_template('alexis/proyectos/proyectos.jinja')
+    # Normalizar el nombre de la sección para manejar guiones bajos en la URL
+    seccion_normalizada = seccion.replace('_', ' ')
 
-@main_bp.route('/proyectos/prototipos')
-@requiere_modulo('proyectos')
-def prototipos():
-    return render_template('alexis/proyectos/prototipos.jinja')
+    # Validar si la sección pertenece al usuario actual
+    seccion_data = Seccion.query.join(UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id).filter(
+        Seccion.categoria == modulo,
+        Seccion.nombre == seccion_normalizada,
+        UsuarioModulo.usuario_id == usuario_id
+    ).first()
 
-@main_bp.route('/proyectos/app_movil')
-@requiere_modulo('proyectos')
-def app_movil():
-    return render_template('alexis/proyectos/app_movil.jinja')
+    if not seccion_data:
+        abort(404)
 
-# Ruta para Josué (Sin Restricción)
-@main_bp.route('/josue')
-def josue():
-    return render_template('josue/josue.jinja')
+    # Construir breadcrumb
+    breadcrumb = [
+        {'name': 'Inicio', 'url': '/inicio'},
+        {'name': modulo.capitalize(), 'url': f'/{modulo}'},
+        {'name': seccion_data.nombre, 'url': None},  # Último nivel
+    ]
 
-# Error 404
-@main_bp.app_errorhandler(404)
-def page_not_found(error):
-    return render_template('josue/error.jinja'), 404
+    return render_template(
+        'dinamico_seccion.jinja',
+        titulo=seccion_data.nombre,
+        seccion=seccion_data,
+        breadcrumb=breadcrumb
+    )

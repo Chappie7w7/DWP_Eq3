@@ -29,7 +29,6 @@ Type "help", "copyright", "credits" or "license" for more information.
 python init_db.py
 
 #crea archivo .env 
-
 FLASK_ENV=development
 SECRET_KEY=a15b75b799645eb3c35b2b4845418d2ff966c48294bbc4fc32758fd3cf0e239
 SQLALCHEMY_DATABASE_URI=mysql+pymysql://root:contraseña@127.0.0.1:3306/Nombre_BD
