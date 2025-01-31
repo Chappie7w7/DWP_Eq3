@@ -1,0 +1,36 @@
+{% extends "base.jinja" %}
+
+{% block title %}{{ titulo | default("Módulo") }}{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb dinámico -->
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        {% for item in breadcrumb %}
+            {% if item.url %}
+                <li class="breadcrumb-item"><a href="{{ item.url }}">{{ item.name }}</a></li>
+            {% else %}
+                <li class="breadcrumb-item active" aria-current="page">{{ item.name }}</li>
+            {% endif %}
+        {% endfor %}
+    </ol>
+</nav>
+
+<!-- Contenido dinámico -->
+<div class="container">
+    <h1 class="text-center">{{ titulo }}</h1>
+    <div class="row mt-4">
+        {% for seccion in secciones %}
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ seccion.nombre }}</h5>
+                    <p class="card-text">{{ seccion.descripcion }}</p>
+                    <a href="{{ seccion.url }}" class="btn btn-primary">Ver más</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

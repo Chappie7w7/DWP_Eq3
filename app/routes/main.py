@@ -1,76 +1,82 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, session, abort
+from app.models.md_seccion import Seccion
+from app.models.md_usuario_modulo import UsuarioModulo
 
 main_bp = Blueprint('main', __name__)
 
-# Ruta para el login
 @main_bp.route('/')
 def home():
+    """
+    Página principal del sistema.
+    """
     return render_template('auth/login.jinja')
 
-# Ruta para el inicio (dashboard)
 @main_bp.route('/inicio')
 def inicio():
+    """
+    Página de inicio (dashboard).
+    """
     return render_template('dashboard/home.jinja')
 
-# Ruta para Josué
-@main_bp.route('/josue')
-def josue():
-    return render_template('josue/josue.jinja')
+@main_bp.route('/<modulo>')
+def mostrar_modulo(modulo):
+    """
+    Muestra todas las secciones de un módulo específico para el usuario actual.
+    """
+    usuario_id = session.get('usuario_id')
 
+    # Validar si el usuario tiene acceso al módulo
+    secciones = Seccion.query.join(UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id).filter(
+        Seccion.categoria == modulo,
+        UsuarioModulo.usuario_id == usuario_id
+    ).all()
 
+    if not secciones:
+        abort(404)  # Si no hay secciones o el módulo no existe, muestra error 404
 
-@main_bp.route('/juegos')
-def juegos():
-    return render_template('alexis/juegos/juegos.jinja')
+    # Construir breadcrumb
+    breadcrumb = [
+        {'name': 'Inicio', 'url': '/inicio'},
+        {'name': modulo.capitalize(), 'url': None},
+    ]
 
+    return render_template(
+        'dinamico.jinja',
+        titulo=modulo.capitalize(),
+        secciones=secciones,
+        breadcrumb=breadcrumb
+    )
 
-@main_bp.route('/juegos/clash_royale')
-def clash_royale():
-    return render_template('alexis/juegos/clash_royale.jinja')
+@main_bp.route('/<modulo>/<seccion>')
+def mostrar_seccion(modulo, seccion):
+    """
+    Muestra una sección específica dentro de un módulo.
+    """
+    usuario_id = session.get('usuario_id')
 
-@main_bp.route('/juegos/gta_v')
-def gta_v():
-    return render_template('alexis/juegos/gta_v.jinja')
+    # Normalizar el nombre de la sección para manejar guiones bajos en la URL
+    seccion_normalizada = seccion.replace('_', ' ')
 
+    # Validar si la sección pertenece al usuario actual
+    seccion_data = Seccion.query.join(UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id).filter(
+        Seccion.categoria == modulo,
+        Seccion.nombre == seccion_normalizada,
+        UsuarioModulo.usuario_id == usuario_id
+    ).first()
 
+    if not seccion_data:
+        abort(404)
 
+    # Construir breadcrumb
+    breadcrumb = [
+        {'name': 'Inicio', 'url': '/inicio'},
+        {'name': modulo.capitalize(), 'url': f'/{modulo}'},
+        {'name': seccion_data.nombre, 'url': None},  # Último nivel
+    ]
 
-
-@main_bp.route('/materias')
-def materias():
-    return render_template('alexis/materias/materias.jinja')
-
-
-@main_bp.route('/materias/ingles')
-def ingles():
-    return render_template('alexis/materias/ingles.jinja')
-
-@main_bp.route('/materias/matematicas')
-def matematicas():
-    return render_template('alexis/materias/matematicas.jinja')
-
-
-
-
-@main_bp.route('/proyectos')
-def proyectos():
-    return render_template('alexis/proyectos/proyectos.jinja')
-
-
-@main_bp.route('/proyectos/prototipos')
-def prototipos():
-    return render_template('alexis/proyectos/prototipos.jinja')
-
-@main_bp.route('/proyectos/app_movil')
-def app_movil():
-    return render_template('alexis/proyectos/app_movil.jinja')
-
-
-
-
-# Error 404
-@main_bp.app_errorhandler(404)
-def page_not_found(error):
-    return render_template('josue/error.jinja'), 404
-
-
+    return render_template(
+        'dinamico_seccion.jinja',
+        titulo=seccion_data.nombre,
+        seccion=seccion_data,
+        breadcrumb=breadcrumb
+    )

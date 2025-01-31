@@ -5,35 +5,19 @@
     <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <title>{% block title %}Página Web{% endblock %}</title>
 
-    <!-- Normalize V8.0.1 -->
+    <!-- Estilos -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
-
-    <!-- Bootstrap V4.3 -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
-
-    <!-- Bootstrap Material Design V4.0 -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-material-design.min.css') }}">
-
-    <!-- Font Awesome V5.9.0 -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/all.css') }}">
-
-    <!-- Sweet Alerts V8.13.0 CSS file -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/sweetalert2.min.css') }}">
-
-    <!-- jQuery Custom Content Scroller V3.1.5 -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery.mCustomScrollbar.css') }}">
-    
-    <!-- General Styles -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/menu.css') }}">
 </head>
 <body>
-    <!-- Main container -->
     <main class="full-box main-container">
-        <!-- Nav lateral -->
         {% if show_sidebar is not defined or show_sidebar %}
-
-        
         <section class="full-box nav-lateral">
             <div class="full-box nav-lateral-bg show-nav-lateral"></div>
             <div class="full-box nav-lateral-content">
@@ -41,103 +25,62 @@
                     <i class="far fa-times-circle show-nav-lateral"></i>
                     <img src="{{ url_for('static', filename='assets/avatar/5.jpg') }}" class="img-fluid" alt="Avatar">
                     <figcaption class="roboto-medium text-center">
-                        Web Developer <br><small class="roboto-condensed-light">Web Developer</small>
+                        {{ session.get('usuario_nombre', 'Usuario') }} <br>
+                        <small class="roboto-condensed-light">{{ session.get('rol', 'Rol no definido') }}</small>
                     </figcaption>
                 </figure>
                 <div class="full-box nav-lateral-bar"></div>
-<nav class="full-box nav-lateral-menu">
-    <ul>
-        <li>
-            <a href="{{ url_for('main.inicio') }}"><i class="fas fa-home fa-fw"></i> &nbsp; Home</a>
-        </li>
-        <li>
-            <a href="#" class="nav-btn-submenu"><i class="fas fa-users fa-fw"></i> &nbsp; Integrantes <i class="fas fa-chevron-down"></i></a>
-            <ul>
-                <li><a href="#"><i class="fas fa-user fa-fw"></i> &nbsp; Josué</a></li>
-                <li><a href="#"><i class="fas fa-user fa-fw"></i> &nbsp; Yahir</a></li>
-                <li>
-                    <a href="#" class="nav-btn-submenu"><i class="fas fa-user fa-fw"></i> &nbsp; Alexis <i class="fas fa-chevron-down"></i></a>
+                <nav class="full-box nav-lateral-menu">
                     <ul>
                         <li>
-                            <a href="#" class="nav-btn-submenu"><i class="fas fa-book fa-fw"></i> &nbsp; Materias <i class="fas fa-chevron-down"></i></a>
-                            <ul>
-                                <li><a href="{{ url_for('main.ingles') }}"><i class="fas fa-angle-right fa-fw"></i> &nbsp; Inglés</a></li>
-                                <li><a href="{{ url_for('main.matematicas') }}"><i class="fas fa-angle-right fa-fw"></i> &nbsp; Matemáticas</a></li>
-
-                            </ul>
+                            <a href="{{ url_for('main.inicio') }}"><i class="fas fa-home fa-fw"></i> &nbsp; Home</a>
                         </li>
-                        <li>
-                            <a href="#" class="nav-btn-submenu"><i class="fas fa-gamepad fa-fw"></i> &nbsp; Juegos <i class="fas fa-chevron-down"></i></a>
-                            <ul>
-                                <li><a href="{{ url_for('main.clash_royale') }}"><i class="fas fa-angle-right fa-fw"></i> &nbsp; Clash Royale</a></li>
-                                <li><a href="{{ url_for('main.gta_v') }}"><i class="fas fa-angle-right fa-fw"></i> &nbsp; GTA V</a></li>
-
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="#" class="nav-btn-submenu"><i class="fas fa-folder fa-fw"></i> &nbsp; Proyectos <i class="fas fa-chevron-down"></i></a>
-                            <ul>
-                                <li><a href="{{ url_for('main.prototipos') }}"><i class="fas fa-angle-right fa-fw"></i> &nbsp; Prototipos</a></li>
-                                <li><a href="{{ url_for('main.app_movil') }}"><i class="fas fa-angle-right fa-fw"></i> &nbsp; App Móvil</a></li>
-                            </ul>
-                        </li>
+                        {% if session.get('modulos') %}
+                            {% for modulo in session['modulos'] %}
+                                <li>
+                                    <a href="#" class="nav-btn-submenu">
+                                        <i class="fas fa-folder fa-fw"></i> &nbsp; {{ modulo['nombre'] | capitalize }}
+                                        <i class="fas fa-chevron-down"></i>
+                                    </a>
+                                    <ul>
+                                        {% for seccion in modulo['secciones'] %}
+                                            <li>
+                                                <a href="{{ seccion['url'] }}"><i class="fas fa-angle-right fa-fw"></i> &nbsp; {{ seccion['nombre'] }}</a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                            <li><a href="#"><i class="fas fa-exclamation-circle"></i> &nbsp; Sin módulos asignados</a></li>
+                        {% endif %}
                     </ul>
-                </li>
-                <li><a href="#"><i class="fas fa-user fa-fw"></i> &nbsp; Gerardo</a></li>
-            </ul>
-        </li>
-        <li>
-            <a href="#" class="nav-btn-submenu"><i class="fas fa-book fa-fw"></i> &nbsp; Materias <i class="fas fa-chevron-down"></i></a>
-            <ul>
-                <li><a href="#"><i class="fas fa-file-pdf fa-fw"></i> &nbsp; New product</a></li>
-                <li><a href="#"><i class="fas fa-file-word fa-fw"></i> &nbsp; List products</a></li>
-                <li><a href="#"><i class="fas fa-file-powerpoint fa-fw"></i> &nbsp; List products</a></li>
-            </ul>
-        </li>
-        <li>
-            <a href="#" class="nav-btn-submenu"><i class="fas fa-gamepad fa-fw"></i> &nbsp; Juegos <i class="fas fa-chevron-down"></i></a>
-            <ul>
-                <li><a href="#"><i class="fas fa-mobile fa-fw"></i> &nbsp; New product</a></li>
-                <li><a href="#"><i class="fas fa-play fa-fw"></i> &nbsp; List products</a></li>
-                <li><a href="#"><i class="fas fa-futbol fa-fw"></i> &nbsp; List products</a></li>
-            </ul>
-        </li>
-        <li>
-            <a href="#" class="nav-btn-submenu"><i class="fas fa-folder fa-fw"></i> &nbsp; Proyectos <i class="fas fa-chevron-down"></i></a>
-            <ul>
-                <li><a href="#"><i class="fas fa-file-code fa-fw"></i> &nbsp; New product</a></li>
-                <li><a href="#"><i class="fas fa-boxes fa-fw"></i> &nbsp; List products</a></li>
-                <li><a href="#"><i class="fas fa-database fa-fw"></i> &nbsp; List products</a></li>
-            </ul>
-        </li>
-    </ul>
-</nav>
-
+                </nav>
             </div>
         </section>
         {% endif %}
 
-        <!-- Page content -->
         <section class="full-box page-content">
             <nav class="full-box navbar-info">
                 <a href="#" class="float-left show-nav-lateral"><i class="fas fa-exchange-alt"></i></a>
                 <a href="#" data-toggle="modal" data-target="#ModalHelp"><i class="far fa-question-circle"></i></a>
                 <a href="#"><i class="fas fa-user-cog"></i></a>
-                <a href="{{ url_for('auth.login') }}" class="btn-exit-system" onclick="console.log('Logout button clicked')">
+                <a href="{{ url_for('auth.logout') }}" class="btn-exit-system">
                     <i class="fas fa-power-off"></i>
                 </a>
-                
-                
             </nav>
+
+            <div>
+                {% block breadcrumb %}
+                {% endblock %}
+            </div>
+            
 
             {% block content %}
             {% endblock %}
         </section>
     </main>
 
-    <!--=============================================
-    =            Include JavaScript files           =
-    ==============================================-->
     <script src="{{ url_for('static', filename='js/jquery-3.4.1.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
@@ -151,5 +94,17 @@
         });
     </script>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const closeButtons = document.querySelectorAll('.close-btn');
+            closeButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    this.parentElement.style.display = 'none';
+                });
+            });
+        });
+    </script>
+    
 </body>
 </html>

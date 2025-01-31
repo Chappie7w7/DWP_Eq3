@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+.env text eol=lf
+migrations/* text eol=lf
+_pycache__ text eol=lf
