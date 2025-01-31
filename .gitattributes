@@ -3,3 +3,4 @@
 
 .env text eol=lf
 migrations/* text eol=lf
+_pycache__ text eol=lf
