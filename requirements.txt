@@ -7,3 +7,4 @@ Flask-Login
 Flask-wtf
 flask-bcrypt
 flask_migrate
+cryptography
