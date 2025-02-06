@@ -1,6 +1,9 @@
 from flask import Blueprint, flash, jsonify, redirect, render_template, request, session, url_for
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
+from app import db  
 from app.models import Usuario, UsuarioModulo, Modulo, Seccion
+from app.models.md_rol import Rol
+
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -61,6 +64,42 @@ def login():
         return redirect(url_for('main.inicio'))  # Redirigir al dashboard o página principal
 
     return render_template('auth/login.jinja')
+
+
+@auth_bp.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        nombre = request.form.get('nombre')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+
+        if not nombre or not email or not password or not confirm_password:
+            flash('Todos los campos son obligatorios.', 'danger')
+            return redirect(url_for('auth.register'))
+
+        if password != confirm_password:
+            flash('Las contraseñas no coinciden.', 'danger')
+            return redirect(url_for('auth.register'))
+
+        # Verificar si el usuario ya existe
+        existing_user = Usuario.query.filter_by(email=email).first()
+        if existing_user:
+            flash('El correo ya está registrado.', 'danger')
+            return redirect(url_for('auth.register'))
+
+        # Crear un nuevo usuario
+        hashed_password = generate_password_hash(password, method='scrypt')
+        nuevo_usuario = Usuario(nombre=nombre, email=email, password=hashed_password, rol_id=2)  # Asignar rol por defecto
+        db.session.add(nuevo_usuario)
+        db.session.commit()
+
+        flash('Cuenta creada exitosamente. Inicia sesión.', 'success')
+        return redirect(url_for('auth.login'))
+
+    return render_template('auth/register.jinja')
+
+
 
 @auth_bp.route('/auth/check-email', methods=['POST'])
 def check_email():
