@@ -1,4 +1,5 @@
-from flask import Flask, render_template
+from flask import Flask, app, render_template
+from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
@@ -6,6 +7,7 @@ from config import Config
 
 # Inicializar extensiones
 db = SQLAlchemy()
+mail = Mail()
 migrate = Migrate()
 login_manager = LoginManager()
 
@@ -15,6 +17,7 @@ def create_app():
 
     # Inicializar extensiones con la app
     db.init_app(app)
+    mail.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
 
