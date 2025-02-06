@@ -3,3 +3,6 @@ venv/
 __pycache__/
 migrations/
 .env
+__pycache__/
+*.pyc
+*.pyo
