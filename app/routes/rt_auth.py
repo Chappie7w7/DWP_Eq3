@@ -1,6 +1,9 @@
-from flask import Blueprint, flash, jsonify, redirect, render_template, request, session, url_for
+from datetime import datetime, timedelta 
+import secrets
+from flask import Blueprint, app, flash, jsonify, redirect, render_template, request, session, url_for
+from flask_mail import Message
 from werkzeug.security import check_password_hash, generate_password_hash
-from app import db  
+from app import db, mail 
 from app.models import Usuario, UsuarioModulo, Modulo, Seccion
 from app.models.md_rol import Rol
 
@@ -61,7 +64,7 @@ def login():
         session['modulos'] = modulos  # Guardar los módulos y secciones del usuario
 
         flash('Inicio de sesión exitoso.', 'success')
-        return redirect(url_for('main.inicio'))  # Redirigir al dashboard o página principal
+        return redirect(url_for('main.inicio'))  
 
     return render_template('auth/login.jinja')
 
@@ -90,7 +93,7 @@ def register():
 
         # Crear un nuevo usuario
         hashed_password = generate_password_hash(password, method='scrypt')
-        nuevo_usuario = Usuario(nombre=nombre, email=email, password=hashed_password, rol_id=2)  # Asignar rol por defecto
+        nuevo_usuario = Usuario(nombre=nombre, email=email, password=hashed_password, rol_id=2)  
         db.session.add(nuevo_usuario)
         db.session.commit()
 
@@ -100,6 +103,75 @@ def register():
     return render_template('auth/register.jinja')
 
 
+@auth_bp.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+
+        if not email:
+            flash('Por favor, ingresa tu correo electrónico.', 'danger')
+            return redirect(url_for('auth.forgot_password'))
+
+        usuario = Usuario.query.filter_by(email=email).first()
+        if not usuario:
+            flash('No existe una cuenta registrada con ese correo.', 'danger')
+            return redirect(url_for('auth.forgot_password'))
+
+        # Generar token de recuperación
+        usuario.reset_token = secrets.token_hex(16)
+        usuario.reset_token_expiration = datetime.utcnow() + timedelta(hours=1)
+        db.session.commit()
+
+        reset_link = url_for('auth.reset_password', token=usuario.reset_token, _external=True)
+
+        try:
+            msg = Message(
+                'Recuperación de contraseña',
+                sender='desarrollopractica0@gmail.com',  
+                recipients=[email],
+                body=f'Hola {usuario.nombre},\n\nPara restablecer tu contraseña, haz clic en el siguiente enlace: {reset_link}\n\nSi no solicitaste este cambio, ignora este mensaje.'
+            )
+            mail.send(msg)  
+            flash('Se ha enviado un correo con las instrucciones para restablecer tu contraseña.', 'success')
+        except Exception as e:
+            flash(f'Hubo un problema al enviar el correo: {e}', 'danger')
+
+        return redirect(url_for('auth.login'))
+
+    return render_template('auth/forgot_password.jinja')
+
+
+@auth_bp.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    usuario = Usuario.query.filter_by(reset_token=token).first()
+
+    # Verificar si el token es válido
+    if not usuario or usuario.reset_token_expiration < datetime.utcnow():
+        flash('El enlace para restablecer la contraseña ha expirado.', 'danger')
+        return redirect(url_for('auth.forgot_password'))
+
+    if request.method == 'POST':
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+
+        if not password or not confirm_password:
+            flash('Todos los campos son obligatorios.', 'danger')
+            return redirect(url_for('auth.reset_password', token=token))
+
+        if password != confirm_password:
+            flash('Las contraseñas no coinciden.', 'danger')
+            return redirect(url_for('auth.reset_password', token=token))
+
+        # Actualizar la contraseña y eliminar el token
+        usuario.set_password(password)
+        usuario.reset_token = None
+        usuario.reset_token_expiration = None
+        db.session.commit()
+
+        flash('Tu contraseña ha sido actualizada exitosamente.', 'success')
+        return redirect(url_for('auth.login'))
+
+    return render_template('auth/reset_password.jinja', token=token)
 
 @auth_bp.route('/auth/check-email', methods=['POST'])
 def check_email():

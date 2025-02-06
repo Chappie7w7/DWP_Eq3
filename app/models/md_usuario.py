@@ -13,6 +13,9 @@ class Usuario(db.Model, UserMixin):
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
     rol_id = db.Column(db.Integer, db.ForeignKey('rol.id', ondelete='CASCADE'), nullable=False)
+    
+    reset_token = db.Column(db.String(100), nullable=True)
+    reset_token_expiration = db.Column(db.DateTime, nullable=True)
 
     # Relación con la tabla 'rol'
     rol = db.relationship('Rol', back_populates='usuarios', lazy='joined')
