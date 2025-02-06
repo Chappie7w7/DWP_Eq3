@@ -31,22 +31,17 @@ def create_app():
         """Cargar el usuario por su ID desde la base de datos"""
         return Usuario.query.get(int(user_id))
 
-    # Registrar Blueprints
-    from app.routes.auth_routes import auth_bp
-    from app.routes.main import main_bp
-    from app.routes.roles_routes import roles_bp
-    from app.routes.permisos_routes import permisos_bp
-    from app.routes.dashboard_routes import dashboard_bp
 
-    app.register_blueprint(auth_bp, url_prefix='/auth')
-    app.register_blueprint(main_bp)
-    app.register_blueprint(roles_bp, url_prefix='/roles')
-    app.register_blueprint(permisos_bp, url_prefix='/permisos')
-    app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
+    from app.routes import register_blueprints
+    register_blueprints(app)
 
-    # Manejador de errores 404
+    
     @app.errorhandler(404)
     def page_not_found(e):
         return render_template('error_404.jinja'), 404
+
+    
+    with app.app_context():
+        db.create_all()
 
     return app

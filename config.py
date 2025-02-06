@@ -5,11 +5,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
+    # Clave secreta para la aplicación
     SECRET_KEY = os.getenv('SECRET_KEY')
 
-    
+    # Configuración de la base de datos
     SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
-    if not SQLALCHEMY_DATABASE_URI:
-        raise ValueError("No se encontró SQLALCHEMY_DATABASE_URI en .env")
 
+    # Desactivar seguimiento de modificaciones (optimización)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
