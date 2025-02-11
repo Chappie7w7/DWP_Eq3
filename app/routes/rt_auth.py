@@ -52,7 +52,7 @@ def login():
                 # Filtrar las secciones que pertenecen al módulo actual
                 secciones = Seccion.query.filter_by(modulo_id=modulo.id).all()
                 modulos.append({
-                    "nombre": modulo.nombre,
+                    "nombre_modulo": modulo.nombre_modulo,
                     "privilegio": um.privilegio,
                     "secciones": [{"nombre": s.nombre, "url": s.url} for s in secciones]
                 })

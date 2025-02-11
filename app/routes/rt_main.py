@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, session, abort
+from flask import Blueprint, flash, redirect, render_template, request, session, abort, url_for
+from app.models.md_modulo import Modulo
 from app.models.md_seccion import Seccion
 from app.models.md_usuario_modulo import UsuarioModulo
 
@@ -26,8 +27,10 @@ def mostrar_modulo(modulo):
     usuario_id = session.get('usuario_id')
 
     # Validar si el usuario tiene acceso al módulo
-    secciones = Seccion.query.join(UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id).filter(
-        Seccion.categoria == modulo,
+    secciones = Seccion.query.join(UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id).join(
+        Modulo, Modulo.id == Seccion.modulo_id
+    ).filter(
+        Modulo.nombre_modulo == modulo,  # Usar nombre_modulo del modelo Modulo
         UsuarioModulo.usuario_id == usuario_id
     ).all()
 
@@ -58,8 +61,10 @@ def mostrar_seccion(modulo, seccion):
     seccion_normalizada = seccion.replace('_', ' ')
 
     # Validar si la sección pertenece al usuario actual
-    seccion_data = Seccion.query.join(UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id).filter(
-        Seccion.categoria == modulo,
+    seccion_data = Seccion.query.join(UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id).join(
+        Modulo, Modulo.id == Seccion.modulo_id
+    ).filter(
+        Modulo.nombre_modulo == modulo,  # Cambiado
         Seccion.nombre == seccion_normalizada,
         UsuarioModulo.usuario_id == usuario_id
     ).first()
@@ -78,5 +83,73 @@ def mostrar_seccion(modulo, seccion):
         'dinamico_seccion.jinja',
         titulo=seccion_data.nombre,
         seccion=seccion_data,
+        breadcrumb=breadcrumb
+    )
+
+@main_bp.route('/buscar/<modulo>', methods=['GET'])
+def buscar(modulo):
+    usuario_id = session.get('usuario_id')
+    query = request.args.get('simple_query', '').strip()
+
+    if not query:
+        flash('Por favor, ingresa un término de búsqueda.', 'warning')
+        return redirect(url_for('main.mostrar_modulo', modulo=modulo))
+
+    # Filtrar las secciones del módulo basado en el término de búsqueda (nombre o descripción)
+    secciones = Seccion.query.join(UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id).join(
+        Modulo, Modulo.id == Seccion.modulo_id
+    ).filter(
+        Modulo.nombre_modulo == modulo,
+        UsuarioModulo.usuario_id == usuario_id,
+        (Seccion.nombre.ilike(f'%{query}%')) | (Seccion.descripcion.ilike(f'%{query}%'))  # Busca en nombre y descripción
+    ).all()
+
+    # Construir breadcrumb
+    breadcrumb = [
+        {'name': 'Inicio', 'url': '/inicio'},
+        {'name': modulo.capitalize(), 'url': f'/{modulo}'},
+        {'name': f'Resultados de búsqueda: "{query}"', 'url': None},
+    ]
+
+    return render_template(
+        'dinamico.jinja',
+        titulo=modulo.capitalize(),
+        secciones=secciones,
+        breadcrumb=breadcrumb
+    )
+
+
+@main_bp.route('/buscar-avanzada', methods=['GET'])
+def buscar_avanzada():
+    """
+    Realiza una búsqueda avanzada en todas las categorías y módulos.
+    """
+    usuario_id = session.get('usuario_id')
+    query = request.args.get('advanced_query', '').strip()  # Cambiado de 'query' a 'advanced_query'
+    categoria = request.args.get('categoria', '').strip()
+
+    if not query:
+        flash('Por favor, ingresa un término de búsqueda.', 'warning')
+        return redirect(url_for('main.inicio'))
+
+    # Filtrar secciones según el término de búsqueda y categoría
+    secciones = Seccion.query.join(UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id).join(
+        Modulo, Modulo.id == Seccion.modulo_id
+    ).filter(
+        UsuarioModulo.usuario_id == usuario_id,
+        (Seccion.nombre.ilike(f'%{query}%')) | (Seccion.descripcion.ilike(f'%{query}%')),
+        (Seccion.categoria == categoria if categoria else True)
+    ).all()
+
+    # Construir breadcrumb
+    breadcrumb = [
+        {'name': 'Inicio', 'url': '/inicio'},
+        {'name': f'Resultados de búsqueda: "{query}"', 'url': None},
+    ]
+
+    return render_template(
+        'resultados.jinja',
+        titulo='Resultados de búsqueda',
+        secciones=secciones,
         breadcrumb=breadcrumb
     )
