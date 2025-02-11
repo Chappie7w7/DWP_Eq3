@@ -1,9 +1,8 @@
 {% extends "base.jinja" %}
 
-{% block title %}{{ titulo | default("Módulo") }}{% endblock %}
+{% block title %}Resultados de búsqueda{% endblock %}
 
 {% block content %}
-<!-- Breadcrumb dinámico -->
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         {% for item in breadcrumb %}
@@ -16,33 +15,11 @@
     </ol>
 </nav>
 
-<!-- Campo de búsqueda -->
-<div class="search-bar-container">
-    <form method="GET" action="{{ url_for('main.buscar', modulo=titulo) }}" class="search-bar">
-        <div class="input-group">
-            <input 
-            type="text" 
-            class="form-control" 
-            name="simple_query"  
-            placeholder="Buscar en {{ titulo | default('este módulo') }}..." 
-            value="{{ request.args.get('simple_query', '') }}"
-            aria-label="Buscar"
-            >
-
-            <button class="btn" type="submit">
-                <i class="fas fa-search"></i> <!-- Ícono de lupa -->
-            </button>
-        </div>
-    </form>
-    
-    
-</div>
 
 
-
-<!-- Contenido dinámico, resultado busqueda simple -->
+<!-- resultado busqueda avanzada -->
 <div class="container">
-    <h1 class="text-center">{{ titulo }}</h1>
+    <h1 class="text-center">Resultados de búsqueda</h1>
     <div class="row mt-4">
         {% if secciones|length > 0 %}
             {% for seccion in secciones %}
@@ -58,7 +35,7 @@
             {% endfor %}
         {% else %}
             <div class="col-12 text-center">
-                <p class="text-muted">No se encontraron resultados para tu búsqueda.</p>
+                <p class="text-muted">No se encontraron resultados.</p>
             </div>
         {% endif %}
     </div>
