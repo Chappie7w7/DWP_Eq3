@@ -18,49 +18,53 @@
 
 <!-- Campo de búsqueda -->
 <div class="search-bar-container">
-    <form method="GET" action="{{ url_for('main.buscar', modulo=titulo) }}" class="search-bar">
+    <form method="GET" action="{{ url_for('main.buscar', modulo=titulo.lower()) }}" class="search-bar">
         <div class="input-group">
             <input 
-            type="text" 
-            class="form-control" 
-            name="simple_query"  
-            placeholder="Buscar en {{ titulo | default('este módulo') }}..." 
-            value="{{ request.args.get('simple_query', '') }}"
-            aria-label="Buscar"
+                type="text" 
+                class="form-control" 
+                name="simple_query"  
+                placeholder="Buscar en {{ titulo | default('este módulo') }}..." 
+                value="{{ request.args.get('simple_query', '') }}"
+                aria-label="Buscar"
             >
-
-            <button class="btn" type="submit">
+            <button class="btn btn-primary" type="submit">
                 <i class="fas fa-search"></i> <!-- Ícono de lupa -->
             </button>
         </div>
     </form>
-    
-    
 </div>
 
-
-
-<!-- Contenido dinámico, resultado busqueda simple -->
+<!-- Contenedor de secciones -->
 <div class="container">
     <h1 class="text-center">{{ titulo }}</h1>
-    <div class="row mt-4">
-        {% if secciones|length > 0 %}
+    <div id="secciones-container" class="row mt-4">
+        {% if secciones %}
             {% for seccion in secciones %}
-            <div class="col-md-4 mb-3">
-                <div class="card">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">{{ seccion.nombre }}</h5>
-                        <p class="card-text">{{ seccion.descripcion }}</p>
-                        <a href="{{ seccion.url }}" class="btn btn-primary">Ver más</a>
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ seccion.nombre }}</h5>
+                            <p class="card-text">{{ seccion.descripcion }}</p>
+                            <a href="{{ url_for('main.mostrar_seccion', modulo=titulo.lower(), seccion=seccion.nombre.replace(' ', '_')) }}" class="btn btn-primary">Ver más</a>
+                        </div>
                     </div>
                 </div>
-            </div>
             {% endfor %}
         {% else %}
-            <div class="col-12 text-center">
-                <p class="text-muted">No se encontraron resultados para tu búsqueda.</p>
-            </div>
+            <p class="text-muted text-center">No se encontraron resultados para "<strong>{{ request.args.get('simple_query', '') }}</strong>".</p>
         {% endif %}
     </div>
 </div>
+
+{% if request.args.get("simple_query") %}
+    <script src="{{ url_for('static', filename='js/buscar.js') }}"></script>
+{% elif request.endpoint == "main.mostrar_seccion" %}
+    <script src="{{ url_for('static', filename='js/seccion.js') }}"></script>
+{% else %}
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endif %}
+
+
+
 {% endblock %}

@@ -59,3 +59,57 @@ $(document).ready(function(){
         });
     });
 })(jQuery);
+
+
+
+//api de modulo
+// Evitar ejecutar fetch en búsqueda avanzada
+document.addEventListener("DOMContentLoaded", function () {
+    if (["/inicio", "/buscar-avanzada"].includes(window.location.pathname)) {
+        console.log("🛑 `main.js` no ejecuta fetch en `/inicio` ni en búsqueda avanzada");
+        return;
+    }
+
+    const pathParts = window.location.pathname.split("/").filter(Boolean);
+    if (pathParts.length > 1) return; // Evita ejecutarse si es una sección
+
+    const modulo = pathParts[0]; // Primer segmento (Ejemplo: "materias")
+    cargarSecciones(modulo);
+});
+
+function cargarSecciones(modulo) {
+    fetch(`/api/secciones/${modulo}`)
+        .then(response => response.json())
+        .then(secciones => {
+            const contenedor = document.getElementById("secciones-container");
+            if (!contenedor) {
+                console.error("Error: No se encontró el contenedor #secciones-container.");
+                return;
+            }
+
+            contenedor.innerHTML = ""; // Limpiar antes de agregar elementos nuevos
+
+            if (secciones.length === 0) {
+                contenedor.innerHTML = "<p class='text-muted'>No se encontraron secciones.</p>";
+                return;
+            }
+
+            secciones.forEach(seccion => {
+                const div = document.createElement("div");
+                div.classList.add("col-md-4", "mb-3");
+
+                div.innerHTML = `
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">${seccion.nombre}</h5>
+                            <p class="card-text">${seccion.descripcion}</p>
+                            <a href="${seccion.url}" class="btn btn-primary">Ver más</a>
+                        </div>
+                    </div>
+                `;
+
+                contenedor.appendChild(div);
+            });
+        })
+        .catch(error => console.error("Error al cargar secciones:", error));
+}

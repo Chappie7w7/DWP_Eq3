@@ -20,7 +20,7 @@
 <!-- resultado busqueda avanzada -->
 <div class="container">
     <h1 class="text-center">Resultados de búsqueda</h1>
-    <div class="row mt-4">
+    <div id="secciones-container" class="row mt-4">  
         {% if secciones|length > 0 %}
             {% for seccion in secciones %}
             <div class="col-md-4 mb-3">
@@ -40,4 +40,8 @@
         {% endif %}
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{ url_for('static', filename='js/buscar_avanzado.js') }}"></script>
 {% endblock %}
