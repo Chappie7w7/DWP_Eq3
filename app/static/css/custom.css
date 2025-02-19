@@ -68,3 +68,75 @@
     background-color: #0056b3;
     border-color: #0056b3;
 }
+
+/* Estilos para las tarjetas */
+.card {
+    width: 100%;  /* Asegura que ocupen el ancho disponible en la columna */
+    max-width: 250px;  /* Evita que se hagan demasiado grandes */
+    min-height: 180px;  /* Reduce la altura de las tarjetas */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    margin: auto;
+}
+
+/* Ajusta el tamaño de los textos dentro de la tarjeta */
+.card-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.card-text {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Ajusta la altura del contenedor principal */
+#secciones-container {
+    min-height: 60vh; /* Mantiene el espacio para el scroll */
+    max-height: 75vh; /* Evita que crezca demasiado */
+    overflow-y: auto !important; /* Fuerza a que el scroll siempre esté visible */
+    padding-right: 15px; /* Ajusta el padding para evitar que el scroll quede en medio */
+}
+
+/* Asegurar que el contenedor principal no oculte el scroll */
+.main-content {
+    height: 100vh; /* Que ocupe toda la altura disponible */
+    overflow: hidden; /* Evita scroll innecesario */
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* Hace que el scroll siempre esté visible, incluso si no es necesario */
+#secciones-container::-webkit-scrollbar {
+    width: 10px; /* Ancho del scroll */
+}
+
+#secciones-container::-webkit-scrollbar-thumb {
+    background: #cfd8dc;  /* Color gris claro */
+    border-radius: 5px;
+}
+
+#secciones-container::-webkit-scrollbar-thumb:hover {
+    background: #90a4ae;  /* Oscurece al pasar el mouse */
+}
+
+#secciones-container::-webkit-scrollbar-track {
+    background: #eceff1;  /* Fondo claro */
+}
+
+
+/* Indicador de carga */
+#loading-indicator {
+    text-align: center;
+    font-size: 16px;
+    color: #666;
+    padding: 10px;
+}
+

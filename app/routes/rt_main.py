@@ -158,24 +158,33 @@ def buscar_avanzada():
 @main_bp.route('/api/secciones/<modulo>', methods=['GET'])
 def api_obtener_secciones(modulo):
     """
-    API para obtener todas las secciones de un módulo en formato JSON.
+    API para obtener las secciones de un módulo con scroll infinito.
     """
     usuario_id = session.get('usuario_id')
+    if not usuario_id:
+        return jsonify({"error": "Usuario no autenticado"}), 403
 
-    # Buscar todas las secciones dentro del módulo
+    offset = request.args.get('offset', default=0, type=int)  # 🔹 Usamos `offset` en lugar de `page`
+    limit = 6  # 🔹 Número de registros por petición
+
+    # Filtrar las secciones del usuario en el módulo solicitado
     secciones = Seccion.query.join(UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id).join(
         Modulo, Modulo.id == Seccion.modulo_id
     ).filter(
         Modulo.nombre_modulo == modulo,
         UsuarioModulo.usuario_id == usuario_id
-    ).all()
+    ).offset(offset).limit(limit).all()  # 🔹 `offset` y `limit` reemplazan `paginate()`
 
     secciones_json = [
         {"nombre": s.nombre, "descripcion": s.descripcion, "url": s.url}
         for s in secciones
     ]
 
-    return jsonify(secciones_json)
+    return jsonify({
+        "secciones": secciones_json,
+        "has_more": len(secciones) == limit  # 🔹 Si hay menos de `limit`, ya no hay más datos
+    })
+
 
 @main_bp.route('/api/seccion/<modulo>/<seccion>', methods=['GET'])
 def api_obtener_seccion(modulo, seccion):
@@ -208,41 +217,54 @@ def api_obtener_seccion(modulo, seccion):
 @main_bp.route('/api/buscar/<modulo>', methods=['GET'])
 def api_buscar(modulo):
     """
-    API para buscar secciones dentro de un módulo en formato JSON.
+    API para buscar secciones dentro de un módulo en formato JSON con paginación (scroll infinito).
     """
     usuario_id = session.get('usuario_id')
     query = request.args.get('q', '').strip()
+    offset = request.args.get('offset', default=0, type=int)  # 🔹 Usa `offset` para manejar el scroll infinito
+    limit = 6  # 🔹 Número de resultados por petición
 
     if not query:
-        return jsonify([])  # Devuelve un array vacío si no hay búsqueda
+        return jsonify({"secciones": [], "has_more": False})  # 🔹 Devuelve un JSON vacío si no hay búsqueda
 
     # Filtrar las secciones del módulo basado en el término de búsqueda
-    secciones = Seccion.query.join(UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id).join(
+    secciones_query = Seccion.query.join(UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id).join(
         Modulo, Modulo.id == Seccion.modulo_id
     ).filter(
         Modulo.nombre_modulo == modulo,
         UsuarioModulo.usuario_id == usuario_id,
-        (Seccion.nombre.ilike(f'%{query}%')) | (Seccion.descripcion.ilike(f'%{query}%'))  # Busca en nombre y descripción
-    ).all()
+        (Seccion.nombre.ilike(f'%{query}%')) | (Seccion.descripcion.ilike(f'%{query}%'))
+    )
+
+    total_secciones = secciones_query.count()  # 🔹 Total de coincidencias
+    secciones = secciones_query.offset(offset).limit(limit).all()  # 🔹 Obtiene los resultados paginados
 
     secciones_json = [
         {"nombre": s.nombre, "descripcion": s.descripcion, "url": url_for('main.mostrar_seccion', modulo=modulo, seccion=s.nombre.replace(" ", "_"))}
         for s in secciones
     ]
 
-    return jsonify(secciones_json)
+    return jsonify({
+        "secciones": secciones_json,
+        "has_more": offset + limit < total_secciones  # 🔹 Si hay más datos, devuelve `True`
+    })
+
+
+
 
 @main_bp.route('/api/buscar-avanzada', methods=['GET'])
 def api_buscar_avanzada():
     """
-    API para realizar una búsqueda avanzada en todas las categorías y módulos.
+    API para realizar una búsqueda avanzada en todas las categorías y módulos con paginación.
     """
     usuario_id = session.get('usuario_id')
     query = request.args.get('q', '').strip()
     categoria = request.args.get('categoria', '').strip()
+    offset = request.args.get('offset', default=0, type=int)  # 🔹 Iniciar en 0
+    limit = 6  # 🔹 Máximo de 6 resultados por petición
 
     if not query:
-        return jsonify([])  # Devuelve un array vacío si no hay búsqueda
+        return jsonify({"secciones": [], "has_more": False})  # 🔹 Ahora devuelve estructura completa
 
     # Filtrar secciones según el término de búsqueda y categoría
     secciones = Seccion.query.join(UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id).join(
@@ -250,8 +272,8 @@ def api_buscar_avanzada():
     ).filter(
         UsuarioModulo.usuario_id == usuario_id,
         (Seccion.nombre.ilike(f'%{query}%')) | (Seccion.descripcion.ilike(f'%{query}%')),
-        (Seccion.categoria == categoria if categoria else True)  # Si hay categoría, filtrar por ella
-    ).all()
+        (Seccion.categoria == categoria if categoria else True)  # 🔹 Filtrar por categoría si existe
+    ).offset(offset).limit(limit).all()  # 🔹 Agregar paginación con `offset` y `limit`
 
     secciones_json = [
         {
@@ -262,4 +284,7 @@ def api_buscar_avanzada():
         for s in secciones
     ]
 
-    return jsonify(secciones_json)
+    return jsonify({
+        "secciones": secciones_json,
+        "has_more": len(secciones) == limit  # 🔹 Si se obtienen menos de `limit`, ya no hay más datos
+    })
