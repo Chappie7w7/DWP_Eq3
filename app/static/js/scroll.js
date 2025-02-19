@@ -1,16 +1,12 @@
 $(document).ready(function () {
-    let offset = 0;
+    let offset = 0;  // 🔹 Iniciamos en 0 en vez de `page=1`
     let loading = false;
     let hasMore = true;
-    const queryString = new URLSearchParams(window.location.search);
-    const query = queryString.get("simple_query");
-    const modulo = window.location.pathname.split("/").filter(Boolean)[1];
+    const modulo = window.location.pathname.split("/").filter(Boolean)[0];
 
-    if (!query || !modulo) return;
+    cargarSecciones(modulo); // Cargar los primeros 6 registros
 
-    cargarResultados(modulo, query); // Cargar los primeros 6 registros
-
-    // 📌 Evento de scroll en el contenedor, no en el documento entero
+    // 📌 Evento de scroll para detectar el final del contenedor en lugar del documento entero
     $("#secciones-container").on("scroll", function () {
         if (!hasMore || loading) return;
 
@@ -20,13 +16,13 @@ $(document).ready(function () {
 
         console.log(`🖱️ Scroll detectado - scrollTop: ${scrollTop}, containerHeight: ${containerHeight}, scrollHeight: ${scrollHeight}`);
 
-        if (scrollTop + containerHeight >= scrollHeight - 50) {
-            console.log("📌 Detectado scroll al final, cargando más resultados...");
-            cargarResultados(modulo, query, true);
+        if (scrollTop + containerHeight >= scrollHeight - 50) { 
+            console.log("📌 Detectado scroll al final, cargando más datos...");
+            cargarSecciones(modulo, true);
         }
     });
 
-    function cargarResultados(modulo, query, append = false) {
+    function cargarSecciones(modulo, append = false) {
         if (loading || !hasMore) return;
         loading = true;
 
@@ -35,7 +31,7 @@ $(document).ready(function () {
         // 🔹 Mostrar indicador de carga
         $("#secciones-container").append('<div id="loading-indicator" class="text-center">Cargando más...</div>');
 
-        $.getJSON(`/api/buscar/${modulo}?q=${query}&offset=${offset}`, function (data) {
+        $.getJSON(`/api/secciones/${modulo}?offset=${offset}`, function (data) {
             $("#loading-indicator").remove(); // Eliminar indicador de carga
 
             console.log("📌 Respuesta de la API:", data);
@@ -71,7 +67,7 @@ $(document).ready(function () {
                 contenedor.append(tarjeta);
             });
 
-            offset += data.secciones.length;
+            offset += data.secciones.length;  
             hasMore = data.has_more;
             console.log(`✅ hasMore actualizado a: ${hasMore}, Nuevo offset: ${offset}`);
             loading = false;
