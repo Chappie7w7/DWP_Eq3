@@ -56,15 +56,4 @@
         {% endif %}
     </div>
 </div>
-
-{% if request.args.get("simple_query") %}
-    <script src="{{ url_for('static', filename='js/buscar.js') }}"></script>
-{% elif request.endpoint == "main.mostrar_seccion" %}
-    <script src="{{ url_for('static', filename='js/seccion.js') }}"></script>
-{% else %}
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-{% endif %}
-
-
-
 {% endblock %}

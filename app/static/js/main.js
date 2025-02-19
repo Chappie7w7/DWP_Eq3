@@ -54,7 +54,7 @@ $(document).ready(function(){
         $(".page-content, .nav-lateral-content").mCustomScrollbar({
         	theme:"light-thin",
         	scrollbarPosition: "inside",
-        	autoHideScrollbar: true,
+        	autoHideScrollbar: false,
         	scrollButtons: {enable: true}
         });
     });
@@ -80,7 +80,21 @@ document.addEventListener("DOMContentLoaded", function () {
 function cargarSecciones(modulo) {
     fetch(`/api/secciones/${modulo}`)
         .then(response => response.json())
-        .then(secciones => {
+        .then(data => {
+            console.log("📌 Respuesta de la API:", data);  // Imprimir la respuesta en consola
+
+            // Si la API no devuelve un objeto con `secciones`, mostramos el error y detenemos la ejecución
+            if (!data || typeof data !== "object" || !data.hasOwnProperty("secciones")) {
+                console.error("❌ Error: La API no devolvió un objeto válido con `secciones`. Respuesta:", data);
+                return;
+            }
+
+            // Verificar si `secciones` es un array antes de aplicar `.forEach()`
+            if (!Array.isArray(data.secciones)) {
+                console.error("❌ Error: `secciones` no es un array. Tipo recibido:", typeof data.secciones, "Valor:", data.secciones);
+                return;
+            }
+
             const contenedor = document.getElementById("secciones-container");
             if (!contenedor) {
                 console.error("Error: No se encontró el contenedor #secciones-container.");
@@ -89,12 +103,12 @@ function cargarSecciones(modulo) {
 
             contenedor.innerHTML = ""; // Limpiar antes de agregar elementos nuevos
 
-            if (secciones.length === 0) {
+            if (data.secciones.length === 0) {
                 contenedor.innerHTML = "<p class='text-muted'>No se encontraron secciones.</p>";
                 return;
             }
 
-            secciones.forEach(seccion => {
+            data.secciones.forEach(seccion => {
                 const div = document.createElement("div");
                 div.classList.add("col-md-4", "mb-3");
 
