@@ -7,11 +7,11 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         {% for item in breadcrumb %}
-        {% if item.url %}
-        <li class="breadcrumb-item"><a href="{{ item.url }}">{{ item.name }}</a></li>
-        {% else %}
-        <li class="breadcrumb-item active" aria-current="page">{{ item.name }}</li>
-        {% endif %}
+            {% if item.url %}
+                <li class="breadcrumb-item"><a href="{{ item.url }}">{{ item.name }}</a></li>
+            {% else %}
+                <li class="breadcrumb-item active" aria-current="page">{{ item.name }}</li>
+            {% endif %}
         {% endfor %}
     </ol>
 </nav>
@@ -20,9 +20,14 @@
 <div class="search-bar-container">
     <form method="GET" action="{{ url_for('main.buscar', modulo=titulo.lower()) }}" class="search-bar">
         <div class="input-group">
-            <input type="text" class="form-control" name="simple_query"
-                placeholder="Buscar en {{ titulo | default('este módulo') }}..."
-                value="{{ request.args.get('simple_query', '') }}" aria-label="Buscar">
+            <input 
+                type="text" 
+                class="form-control" 
+                name="simple_query"  
+                placeholder="Buscar en {{ titulo | default('este módulo') }}..." 
+                value="{{ request.args.get('simple_query', '') }}"
+                aria-label="Buscar"
+            >
             <button class="btn btn-primary" type="submit">
                 <i class="fas fa-search"></i> <!-- Ícono de lupa -->
             </button>
@@ -31,60 +36,24 @@
 </div>
 
 <!-- Contenedor de secciones -->
-<!--div class="container">
+<div class="container">
     <h1 class="text-center">{{ titulo }}</h1>
     <div id="secciones-container" class="row mt-4">
         {% if secciones %}
-        {% for seccion in secciones %}
-        <div class="col-md-4 mb-3">
-            <div class="card">
-                <div class="card-body text-center">
-                    <h5 class="card-title">{{ seccion.nombre }}</h5>
-                    <p class="card-text">{{ seccion.descripcion }}</p>
-                    <a href="{{ url_for('main.mostrar_seccion', modulo=titulo.lower(), seccion=seccion.nombre.replace(' ', '_')) }}"
-                        class="btn btn-primary">Ver más</a>
+            {% for seccion in secciones %}
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ seccion.nombre }}</h5>
+                            <p class="card-text">{{ seccion.descripcion }}</p>
+                            <a href="{{ url_for('main.mostrar_seccion', modulo=titulo.lower(), seccion=seccion.nombre.replace(' ', '_')) }}" class="btn btn-primary">Ver más</a>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        {% endfor %}
+            {% endfor %}
         {% else %}
-        <p class="text-muted text-center">No se encontraron resultados para "<strong>{{ request.args.get('simple_query',
-                '') }}</strong>".</p>
+            <p class="text-muted text-center">No se encontraron resultados para "<strong>{{ request.args.get('simple_query', '') }}</strong>".</p>
         {% endif %}
     </div>
-</div-->
-
-
-<h1 class="text-center">{{ titulo }}</h1>
-<div class="full-box tile-container">
-    {% if secciones %}
-    {% for seccion in secciones %}
-    <a href="{{ url_for('main.mostrar_seccion', modulo=titulo.lower(), seccion=seccion.nombre.replace(' ', '_')) }}"
-        class="tile">
-        <div class="tile-tittle">{{ seccion.nombre }}</div>
-        <div class="tile-icon">
-            <i class="fas fa-list fa-fw"></i>
-            <p>{{ seccion.descripcion }}</p>
-        </div>
-        {% endfor %}
-        {% else %}
-        <p class="text-muted text-center">No se encontraron resultados para "<strong>{{
-                request.args.get('simple_query',
-                '') }}</strong>".</p>
-        {% endif %}
-    </a>
 </div>
-
-
-
-{% if request.args.get("simple_query") %}
-<script src="{{ url_for('static', filename='js/buscar.js') }}"></script>
-{% elif request.endpoint == "main.mostrar_seccion" %}
-<script src="{{ url_for('static', filename='js/seccion.js') }}"></script>
-{% else %}
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
-{% endif %}
-
-
-
 {% endblock %}
