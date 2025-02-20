@@ -1,21 +1,22 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const form = document.getElementById('login-form');
             const emailInput = document.getElementById('UserName');
             const passwordInput = document.getElementById('UserPassword');
             const alertContainer = document.getElementById('alert-container');
-    
-            form.addEventListener('submit', async function(event) {
+
+            form.addEventListener('submit', async function (event) {
                 // Limpiar mensajes de alerta
                 alertContainer.innerHTML = '';
-    
+
                 // Validar campos vacíos
                 let errors = [];
                 if (!emailInput.value.trim()) {
@@ -29,11 +30,11 @@
                         errors.push('El correo no está registrado.');
                     }
                 }
-    
+
                 if (!passwordInput.value.trim()) {
                     errors.push('El campo de contraseña es obligatorio.');
                 }
-    
+
                 // Si hay errores, prevenir envío y mostrar mensajes
                 if (errors.length > 0) {
                     event.preventDefault();
@@ -45,13 +46,13 @@
                     });
                 }
             });
-    
+
             // Función para validar formato de correo
             function validateEmail(email) {
                 const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
                 return re.test(email);
             }
-    
+
             // Función para verificar si el correo existe usando el endpoint
             async function checkEmailExists(email) {
                 const response = await fetch('/auth/check-email', {
@@ -59,20 +60,21 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email })
                 });
-    
+
                 // Verificar si el servidor responde correctamente
                 if (response.ok) {
                     const data = await response.json();
                     return data.exists;
                 }
-    
+
                 // Si la respuesta no es correcta, simplemente retorna falso
                 return false;
             }
         });
     </script>
-    
+
 </head>
+
 <body>
     <div class="login-container">
         <div class="avatar">
@@ -83,13 +85,13 @@
         <!-- Contenedor para mensajes de error -->
         <div id="alert-container">
             {% with messages = get_flashed_messages(with_categories=True) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
             {% endwith %}
         </div>
 
@@ -97,12 +99,42 @@
         <form id="login-form" action="{{ url_for('auth.login') }}" method="POST" autocomplete="off">
             <div class="form-group">
                 <label for="UserName">Usuario</label>
-                <input type="text" id="UserName" name="username" placeholder="Email o nombre de usuario" autocomplete="off">
+                <input type="text" id="UserName" name="username" placeholder="Email o nombre de usuario"
+                    autocomplete="off">
             </div>
             <div class="form-group">
                 <label for="UserPassword">Contraseña</label>
-                <input type="password" id="UserPassword" name="password" placeholder="Contraseña" autocomplete="new-password">
+                <div style="position: relative; display: flex; align-items: center; width: 100%;">
+                    <input type="password" id="UserPassword" name="password" placeholder="Contraseña"
+                        autocomplete="new-password" style="width: 100%; padding-right: 35px;">
+                    <button type="button" id="togglePassword"
+                        style="position: absolute; right: 10px; background: none; border: none; cursor: pointer;">
+                        <i id="eyeIcon" class="fas fa-eye"></i>
+                    </button>
+                </div>
             </div>
+
+            <!-- Usa la CDN pública de FontAwesome -->
+            <link rel="stylesheet"
+                href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+            <script>
+                document.getElementById("togglePassword").addEventListener("click", function () {
+                    let passwordInput = document.getElementById("UserPassword");
+                    let eyeIcon = document.getElementById("eyeIcon");
+
+                    if (passwordInput.type === "password") {
+                        passwordInput.type = "text";
+                        eyeIcon.classList.remove("fa-eye");
+                        eyeIcon.classList.add("fa-eye-slash");
+                    } else {
+                        passwordInput.type = "password";
+                        eyeIcon.classList.remove("fa-eye-slash");
+                        eyeIcon.classList.add("fa-eye");
+                    }
+                });
+            </script>
+
+
             <button type="submit" class="btn-login">Iniciar Sesión</button>
         </form>
 
@@ -110,4 +142,5 @@
         <p>¿Olvidaste tu contraseña? <a href="{{ url_for('auth.forgot_password') }}">Recupérala aquí</a></p>
     </div>
 </body>
+
 </html>
