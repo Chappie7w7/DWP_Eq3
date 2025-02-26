@@ -1,28 +1,4 @@
-/* Estilo general del cuerpo */
-body, html {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    font-family: 'Roboto', sans-serif;
-    background: linear-gradient(45deg, #6a11cb, #2575fc); /* Gradiente de morado a azul */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #fff;
-}
 
-/* Contenedor principal del login */
-.login-container {
-    background: rgba(255, 255, 255, 0.15);
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-    width: 100%;
-    max-width: 400px;
-    text-align: center;
-    position: relative;
-}
 
 /* Avatar superior */
 .login-container .avatar {
@@ -117,4 +93,153 @@ body, html {
     .login-container .btn-login {
         font-size: 14px;
     }
+}
+
+
+/* Estilos generales */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+}
+
+.login-container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    width: 350px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    color: #fff;
+}
+
+.avatar img {
+    width: 80px;
+    border-radius: 50%;
+}
+
+h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+label {
+    font-size: 14px;
+    font-weight: 500;
+    display: block;
+    margin-bottom: 5px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* Botón de inicio de sesión */
+.btn-login {
+    width: 100%;
+    padding: 12px;
+    background: #ff6b6b;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-login:hover {
+    background: #e63946;
+}
+
+/* Links */
+p a {
+    color: #ffcccb;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+p a:hover {
+    text-decoration: underline;
+    color: white;
+}
+
+/* Icono de mostrar contraseña */
+#togglePassword {
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* Alertas de error */
+.alert {
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.alert-danger {
+    background: rgba(255, 0, 0, 0.8);
+    color: white;
+}
+
+/* Estilos para el contenedor del formulario */
+.form-group {
+    margin-bottom: 1.5rem; /* Espacio entre elementos */
+}
+
+/* Estilos para la etiqueta */
+.form-group label {
+    display: block; /* Hace que la etiqueta ocupe toda la línea */
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333; /* Color del texto */
+    margin-bottom: 0.5rem; /* Espacio entre la etiqueta y el select */
+}
+
+/* Estilos para el select */
+.form-group select {
+    width: 100%; /* Ocupa todo el ancho disponible */
+    padding: 0.75rem; /* Espacio interno */
+    font-size: 1rem;
+    color: #555; /* Color del texto */
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: 1px solid #ccc; /* Borde gris */
+    border-radius: 4px; /* Esquinas redondeadas */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* Sombra interior */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Transición suave */
+}
+
+/* Estilos cuando el select está enfocado */
+.form-group select:focus {
+    border-color: #66afe9; /* Borde azul al enfocar */
+    outline: none; /* Quita el outline predeterminado */
+    box-shadow: 0 0 8px rgba(102, 175, 233, 0.6); /* Sombra azul al enfocar */
+}
+
+/* Estilos para las opciones del select */
+.form-group select option {
+    padding: 0.5rem; /* Espacio interno para las opciones */
+    font-size: 1rem;
 }
