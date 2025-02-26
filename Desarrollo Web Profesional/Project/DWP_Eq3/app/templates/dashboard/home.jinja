@@ -1,0 +1,69 @@
+{% extends 'base.jinja' %}
+
+{% block title %}Home{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/carrusel.css') }}">
+{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item active" aria-current="page">Home/</li>
+    </ol>
+</nav>
+
+<!-- Page header -->
+<div class="full-box page-header">
+    <h3 class="text-left">
+        <i class="fas fa-laptop fa-fw"></i> &nbsp; Mi Página Web
+    </h3>
+    <p class="text-justify">
+        Explora las diferentes secciones de la plataforma. Aquí podrás encontrar materias, juegos educativos y proyectos innovadores.
+    </p>
+</div>
+
+<!-- 🎠 Carrusel Mejorado -->
+<div class="carrusel-container">
+    <div id="carruselModulos" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <div class="carrusel-card" onclick="window.location.href='{{ url_for('main.mostrar_modulo', modulo='materias') }}'">
+                    <i class="fas fa-book fa-4x"></i>
+                    <h5>Materias</h5>
+                    <p>Aprende diferentes materias académicas.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="carrusel-card" onclick="window.location.href='{{ url_for('main.mostrar_modulo', modulo='juegos') }}'">
+                    <i class="fas fa-gamepad fa-4x"></i>
+                    <h5>Juegos</h5>
+                    <p>Diviértete y aprende con juegos interactivos.</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="carrusel-card" onclick="window.location.href='{{ url_for('main.mostrar_modulo', modulo='proyectos') }}'">
+                    <i class="fas fa-rocket fa-4x"></i>
+                    <h5>Proyectos</h5>
+                    <p>Descubre y desarrolla proyectos innovadores.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🔽 Botones de navegación -->
+        <button class="carousel-control-prev custom-arrow" type="button" data-bs-target="#carruselModulos" data-bs-slide="prev">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="carousel-control-next custom-arrow" type="button" data-bs-target="#carruselModulos" data-bs-slide="next">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+
+        <!-- 🔽 Indicadores -->
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carruselModulos" data-bs-slide-to="0" class="active"></button>
+            <button type="button" data-bs-target="#carruselModulos" data-bs-slide-to="1"></button>
+            <button type="button" data-bs-target="#carruselModulos" data-bs-slide-to="2"></button>
+        </div>
+    </div>
+</div>
+{% endblock %}

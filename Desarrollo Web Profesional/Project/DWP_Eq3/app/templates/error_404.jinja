@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error 404 - Página no encontrada</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/error404.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+            <div class="image-container">
+                <img src="{{ url_for('static', filename='assets/dadea5f740a58a0f63565f1295854a98.gif') }}" alt="Error 404">
+            </div>
+            <h1>¡Oh no! Página no encontrada</h1>
+            <h2>El proyecto que buscas pudo haber sido eliminado o nunca existió.</h2>
+            <a href="{{ url_for('main.inicio') }}" class="btn">Volver al Inicio</a>
+        </div>
+    </div>
+</body>
+</html>

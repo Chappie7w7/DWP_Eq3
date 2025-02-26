@@ -1,0 +1,64 @@
+/* Contenedor para breadcrumb y búsqueda avanzada */
+.header-container {
+    display: flex;
+    justify-content: space-between; /* Breadcrumb a la izquierda y búsqueda a la derecha */
+    align-items: center; /* Centrar verticalmente */
+    padding: 10px 20px; /* Espaciado interno */
+    background-color: #f8f9fa; /* Fondo claro */
+    border-bottom: 1px solid #ddd; /* Línea divisoria */
+}
+
+/* Estilo del breadcrumb */
+.breadcrumb {
+    margin: 0; /* Eliminar márgenes */
+    padding: 5px 0; /* Espaciado interno */
+    font-size: 14px; /* Tamaño del texto */
+    background: transparent; /* Sin fondo */
+}
+
+/* Estilo de los enlaces del breadcrumb */
+.breadcrumb .breadcrumb-item a {
+    color: #007bff; /* Azul */
+    text-decoration: none; /* Sin subrayado */
+}
+
+.breadcrumb .breadcrumb-item a:hover {
+    text-decoration: underline; /* Subrayado al pasar el mouse */
+}
+
+/* Barra de búsqueda avanzada */
+.search-bar-advanced {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Espaciado entre los elementos */
+}
+
+.search-bar-advanced .form-select,
+.search-bar-advanced .form-control {
+    height: 35px; /* Altura uniforme */
+    font-size: 14px; /* Tamaño del texto */
+    color: #000; /* Texto negro */
+    border: 1px solid #ccc; /* Borde sutil */
+    border-radius: 4px; /* Bordes redondeados */
+    padding: 5px; /* Espaciado interno */
+    width: auto; /* Ajuste dinámico */
+}
+
+.search-bar-advanced .form-control {
+    width: 250px; /* Ancho del campo de búsqueda */
+}
+
+.search-bar-advanced .btn {
+    height: 35px; /* Altura igual a los campos */
+    font-size: 14px; /* Texto más pequeño */
+    background-color: #007bff; /* Azul */
+    color: #fff; /* Texto blanco */
+    border: 1px solid #007bff; /* Borde azul */
+    border-radius: 4px; /* Bordes redondeados */
+    padding: 0 15px; /* Espaciado horizontal */
+}
+
+.search-bar-advanced .btn:hover {
+    background-color: #0056b3; /* Azul más oscuro */
+    border-color: #0056b3; /* Borde más oscuro */
+}

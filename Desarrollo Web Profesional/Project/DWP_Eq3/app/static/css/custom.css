@@ -1,0 +1,143 @@
+
+/* Contenedor general de la barra superior */
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Separa la barra de búsqueda de los iconos */
+    padding: 10px 20px;
+    position: relative;
+}
+
+/* Estilos para los iconos en la parte superior derecha */
+.top-icons {
+    display: flex;
+    gap: 15px; /* Espaciado entre iconos */
+    position: absolute;
+    top: 5px; /* Ubicación en la parte superior */
+    right: 20px; /* Alineación a la derecha */
+    z-index: 1000;
+}
+
+.top-icons a {
+    color: #333; /* Color de los iconos */
+    font-size: 18px;
+    text-decoration: none;
+}
+
+.top-icons a:hover {
+    color: #007bff; /* Cambio de color al pasar el mouse */
+}
+
+/* Contenedor de la barra de búsqueda */
+.search-bar-container {
+    display: flex;
+    justify-content: flex-start; /* Mantiene la barra de búsqueda alineada */
+    align-items: center;
+    flex-grow: 1;
+}
+
+/* Barra de búsqueda más pequeña */
+.search-bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.search-bar .form-control {
+    height: 30px;
+    width: 300px;
+    font-size: 14px;
+    color: #000;
+    border: 1px solid #ccc;
+    border-radius: 4px 0 0 4px;
+    padding: 5px;
+}
+
+/* Botón de búsqueda */
+.search-bar .btn {
+    height: 30px;
+    font-size: 14px;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 0 4px 4px 0;
+    border: 1px solid #007bff;
+    padding: 0 10px;
+}
+
+/* Efecto hover en el botón */
+.search-bar .btn:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+/* Estilos para las tarjetas */
+.card {
+    width: 100%;  /* Asegura que ocupen el ancho disponible en la columna */
+    max-width: 250px;  /* Evita que se hagan demasiado grandes */
+    min-height: 180px;  /* Reduce la altura de las tarjetas */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    margin: auto;
+}
+
+/* Ajusta el tamaño de los textos dentro de la tarjeta */
+.card-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.card-text {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Ajusta la altura del contenedor principal */
+#secciones-container {
+    min-height: 60vh; /* Mantiene el espacio para el scroll */
+    max-height: 75vh; /* Evita que crezca demasiado */
+    overflow-y: auto !important; /* Fuerza a que el scroll siempre esté visible */
+    padding-right: 15px; /* Ajusta el padding para evitar que el scroll quede en medio */
+}
+
+/* Asegurar que el contenedor principal no oculte el scroll */
+.main-content {
+    height: 100vh; /* Que ocupe toda la altura disponible */
+    overflow: hidden; /* Evita scroll innecesario */
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* Hace que el scroll siempre esté visible, incluso si no es necesario */
+#secciones-container::-webkit-scrollbar {
+    width: 10px; /* Ancho del scroll */
+}
+
+#secciones-container::-webkit-scrollbar-thumb {
+    background: #cfd8dc;  /* Color gris claro */
+    border-radius: 5px;
+}
+
+#secciones-container::-webkit-scrollbar-thumb:hover {
+    background: #90a4ae;  /* Oscurece al pasar el mouse */
+}
+
+#secciones-container::-webkit-scrollbar-track {
+    background: #eceff1;  /* Fondo claro */
+}
+
+
+/* Indicador de carga */
+#loading-indicator {
+    text-align: center;
+    font-size: 16px;
+    color: #666;
+    padding: 10px;
+}
+

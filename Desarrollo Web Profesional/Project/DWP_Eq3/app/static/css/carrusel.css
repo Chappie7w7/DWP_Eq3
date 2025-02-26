@@ -1,0 +1,92 @@
+/* 📌 Contenedor del carrusel */
+.carrusel-container {
+    max-width: 700px;
+    margin: 40px auto;
+    position: relative;
+}
+
+/* 📌 Tarjetas dentro del carrusel */
+.carrusel-card {
+    width: 100%;
+    height: 270px;
+    background: #ffffff;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 25px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.15);
+    border: none;
+    cursor: pointer;
+}
+
+/* 📌 Efecto hover */
+.carrusel-card:hover {
+    transform: scale(1.08);
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.25);
+    background: linear-gradient(135deg, #8ecae6, #219ebc);
+    color: white;
+}
+
+.carrusel-card:hover i {
+    color: white;
+}
+
+/* 📌 Iconos */
+.carrusel-card i {
+    color: #219ebc;
+    transition: color 0.3s ease;
+}
+
+/* 📌 Botones de navegación del carrusel */
+.custom-arrow {
+    width: 50px;
+    height: 50px;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: background 0.3s ease;
+}
+
+.custom-arrow i {
+    color: white;
+    font-size: 24px;
+}
+
+/* 📌 Hover en botones de navegación */
+.custom-arrow:hover {
+    background: #023047;
+}
+
+/* 📌 Posicionamiento de los botones */
+.carousel-control-prev {
+    left: -60px;
+}
+
+.carousel-control-next {
+    right: -60px;
+}
+
+/* 📌 Indicadores del carrusel */
+.carousel-indicators button {
+    background-color: #219ebc;
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    margin: 5px;
+    border: none;
+    transition: background 0.3s ease;
+}
+
+.carousel-indicators .active {
+    background-color: #023047;
+}

@@ -1,0 +1,117 @@
+/*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
+
+/* Document ========================================================================== */
+
+/* 1. Correct the line height in all browsers. */
+/* 2. Prevent adjustments of font size after orientation changes in iOS. */
+html {
+  line-height: 1.15; /* 1 */
+  -webkit-text-size-adjust: none; /* 2 Mejora para navegadores modernos */
+}
+
+/* Sections ========================================================================== */
+
+/* Remove the margin in all browsers */
+body {
+  margin: 0;
+}
+
+/* Render the `main` element consistently in IE */
+main {
+  display: block;
+}
+
+/* Correct the font size and margin on `h1` elements within `section` and `article` */
+h1 {
+  font-size: 2em;
+  margin: 0.67em 0;
+}
+
+/* Grouping content ================================================================== */
+
+/* Add the correct box sizing in Firefox */
+hr {
+  box-sizing: content-box;
+  height: 0;
+  overflow: visible;
+}
+
+/* Correct the inheritance and scaling of font size in all browsers */
+pre {
+  font-family: monospace;
+  font-size: 1em;
+}
+
+/* Text-level semantics ============================================================= */
+
+/* Remove the gray background on active links in IE 10 */
+a {
+  background-color: transparent;
+}
+
+/* Add the correct font weight in Chrome, Edge, and Safari */
+b,
+strong {
+  font-weight: bolder;
+}
+
+/* Forms ============================================================================ */
+
+/* Remove the margin in Firefox and Safari */
+button,
+input,
+optgroup,
+select,
+textarea {
+  font-family: inherit;
+  font-size: 100%;
+  line-height: 1.15;
+  margin: 0;
+}
+
+/* Remove text-transform inheritance in Edge and Firefox */
+button,
+select {
+  text-transform: none;
+}
+
+/* Correct the inability to style clickable types in iOS and Safari */
+button,
+[type="button"],
+[type="reset"],
+[type="submit"] {
+  -webkit-appearance: button;
+}
+
+/* Correct the padding in Firefox */
+fieldset {
+  padding: 0.35em 0.75em 0.625em;
+}
+
+/* Add the correct vertical alignment in Chrome, Firefox, and Opera */
+progress {
+  vertical-align: baseline;
+}
+
+/* Remove the default vertical scrollbar in IE 10+ */
+textarea {
+  overflow: auto;
+}
+
+/* Correct the cursor style of increment and decrement buttons in Chrome */
+[type="number"]::-webkit-inner-spin-button,
+[type="number"]::-webkit-outer-spin-button {
+  height: auto;
+}
+
+/* Correct the odd appearance in Chrome and Safari */
+[type="search"] {
+  -webkit-appearance: textfield;
+  outline-offset: -2px;
+}
+
+/* Misc ============================================================================ */
+
+[hidden] {
+  display: none;
+}

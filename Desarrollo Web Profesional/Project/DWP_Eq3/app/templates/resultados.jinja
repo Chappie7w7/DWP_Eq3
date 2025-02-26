@@ -1,0 +1,43 @@
+{% extends "base.jinja" %}
+
+{% block title %}Resultados de búsqueda{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        {% for item in breadcrumb %}
+            {% if item.url %}
+                <li class="breadcrumb-item"><a href="{{ item.url }}">{{ item.name }}</a></li>
+            {% else %}
+                <li class="breadcrumb-item active" aria-current="page">{{ item.name }}</li>
+            {% endif %}
+        {% endfor %}
+    </ol>
+</nav>
+
+
+
+<!-- resultado busqueda avanzada -->
+<div class="container">
+    <h1 class="text-center">Resultados de búsqueda</h1>
+    <div id="secciones-container" class="row mt-4">  
+        {% if secciones|length > 0 %}
+            {% for seccion in secciones %}
+            <div class="col-md-4 mb-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">{{ seccion.nombre }}</h5>
+                        <p class="card-text">{{ seccion.descripcion }}</p>
+                        <a href="{{ seccion.url }}" class="btn btn-primary">Ver más</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center">
+                <p class="text-muted">No se encontraron resultados.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
