@@ -184,3 +184,89 @@ def check_email():
 
     usuario = Usuario.query.filter_by(email=email).first()
     return jsonify({'exists': bool(usuario)}), 200 if usuario else 404
+    
+
+#ruta para recupercion con telefono
+@auth_bp.route('/forgot-password-phone', methods=['GET', 'POST'])
+def forgot_password_phone():
+    if request.method == 'POST':
+        phone = request.form.get('phone')
+
+        if not phone:
+            flash('Por favor, ingresa tu número de teléfono.', 'danger')
+            return render_template('auth/forgot_password_phone.jinja')
+
+        usuario = Usuario.query.filter_by(telefono=phone).first()
+        if not usuario:
+            flash('No existe una cuenta registrada con ese número de teléfono.', 'danger')
+            return render_template('auth/forgot_password_phone.jinja')
+
+        # Generar un código de verificación (ejemplo: 6 dígitos aleatorios)
+        verification_code = ''.join(secrets.choice('0123456789') for _ in range(6))
+        usuario.reset_token = verification_code
+        usuario.reset_token_expiration = datetime.utcnow() + timedelta(minutes=15)
+        db.session.commit()
+
+        # Enviar el código por SMS (integrar con Twilio u otro servicio)
+        flash(f'Se ha enviado un código de recuperación a tu teléfono: {phone}', 'success')
+
+        return redirect(url_for('auth.verify_phone_code'))
+
+    return render_template('auth/forgot_password_phone.jinja')
+
+
+
+
+@auth_bp.route('/verify-phone-code', methods=['GET', 'POST'])
+def verify_phone_code():
+    if request.method == 'POST':
+        phone = request.form.get('phone')
+        code = request.form.get('code')
+
+        usuario = Usuario.query.filter_by(telefono=phone).first()
+
+        if not usuario:
+            flash('No existe una cuenta registrada con ese número de teléfono.', 'danger')
+            return redirect(url_for('auth.forgot_password_phone'))
+
+        if usuario.reset_token != code or usuario.reset_token_expiration < datetime.utcnow():
+            flash('Código inválido o expirado.', 'danger')
+            return render_template('auth/verify_phone_code.jinja')
+
+        # Redirigir a la página para cambiar la contraseña
+        return redirect(url_for('auth.reset_password_phone', phone=usuario.telefono))
+
+    return render_template('auth/verify_phone_code.jinja')
+
+
+
+@auth_bp.route('/reset-password-phone/<phone>', methods=['GET', 'POST'])
+def reset_password_phone(phone):
+    usuario = Usuario.query.filter_by(telefono=phone).first()
+
+    if not usuario:
+        flash('Hubo un error, intenta nuevamente.', 'danger')
+        return redirect(url_for('auth.forgot_password_phone'))
+
+    if request.method == 'POST':
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+
+        if not password or not confirm_password:
+            flash('Todos los campos son obligatorios.', 'danger')
+            return redirect(url_for('auth.reset_password_phone', phone=phone))
+
+        if password != confirm_password:
+            flash('Las contraseñas no coinciden.', 'danger')
+            return redirect(url_for('auth.reset_password_phone', phone=phone))
+
+        # Actualizar la contraseña y eliminar el código de verificación
+        usuario.set_password(password)
+        usuario.reset_token = None
+        usuario.reset_token_expiration = None
+        db.session.commit()
+
+        flash('Tu contraseña ha sido actualizada exitosamente.', 'success')
+        return redirect(url_for('auth.login'))
+
+    return render_template('auth/reset_password_phone.jinja', phone=phone)
