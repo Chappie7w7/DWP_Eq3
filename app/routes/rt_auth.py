@@ -6,6 +6,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from app import db, mail 
 from app.models import Usuario, UsuarioModulo, Modulo, Seccion
 from app.models.md_rol import Rol
+from app.utils.sms_helper import enviar_codigo_sms  # Importar la función de envío de SMS
 
 
 auth_bp = Blueprint('auth', __name__)
@@ -201,16 +202,24 @@ def forgot_password_phone():
             flash('No existe una cuenta registrada con ese número de teléfono.', 'danger')
             return render_template('auth/forgot_password_phone.jinja')
 
-        # Generar un código de verificación (ejemplo: 6 dígitos aleatorios)
+        # Generar código de verificación
         verification_code = ''.join(secrets.choice('0123456789') for _ in range(6))
-        usuario.reset_token = verification_code
-        usuario.reset_token_expiration = datetime.utcnow() + timedelta(minutes=15)
-        db.session.commit()
 
-        # Enviar el código por SMS (integrar con Twilio u otro servicio)
-        flash(f'Se ha enviado un código de recuperación a tu teléfono: {phone}', 'success')
+        try:
+            usuario.reset_token = verification_code
+            usuario.reset_token_expiration = datetime.utcnow() + timedelta(minutes=2)
+            db.session.commit()
 
-        return redirect(url_for('auth.verify_phone_code'))
+            # Aquí aseguramos que estamos usando la función con ClickSend
+            if enviar_codigo_sms(phone, verification_code):
+                flash(f'Se ha enviado un código de recuperación a tu teléfono: {phone}', 'success')
+                return redirect(url_for('auth.verify_phone_code'))
+            else:
+                flash('Error al enviar el SMS. Inténtalo nuevamente.', 'danger')
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error al guardar el código de verificación: {str(e)}', 'danger')
 
     return render_template('auth/forgot_password_phone.jinja')
 
