@@ -1,4 +1,5 @@
 from flask import Blueprint, flash, jsonify, redirect, render_template, request, session, abort, url_for
+from flask_login import login_required
 from sqlalchemy import func
 from app.models.md_modulo import Modulo
 from app.models.md_seccion import Seccion
@@ -14,6 +15,7 @@ def home():
     return render_template('auth/login.jinja')
 
 @main_bp.route('/inicio')
+@login_required
 def inicio():
     """
     Página de inicio (dashboard).
@@ -21,6 +23,7 @@ def inicio():
     return render_template('dashboard/home.jinja')
 
 @main_bp.route('/<modulo>')
+@login_required
 def mostrar_modulo(modulo):
     """
     Muestra todas las secciones de un módulo específico para el usuario actual.
@@ -52,6 +55,7 @@ def mostrar_modulo(modulo):
     )
 
 @main_bp.route('/<modulo>/<seccion>')
+@login_required
 def mostrar_seccion(modulo, seccion):
     """
     Muestra una sección específica dentro de un módulo.

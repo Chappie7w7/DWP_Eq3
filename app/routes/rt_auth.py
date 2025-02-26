@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta 
 import secrets
 from flask import Blueprint, app, flash, jsonify, redirect, render_template, request, session, url_for
+from flask_login import login_user, logout_user
 from flask_mail import Message
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import db, mail 
@@ -15,6 +16,7 @@ def logout():
     """
     Cerrar sesión y limpiar datos de la sesión.
     """
+    logout_user()
     session.clear()  # Limpiar la sesión
     flash('Has cerrado sesión correctamente.', 'info')  # Mensaje para cerrar sesión
     return redirect(url_for('auth.login'))  # Redirigir al login
@@ -41,6 +43,8 @@ def login():
         if not check_password_hash(usuario.password, password):
             flash('La contraseña es incorrecta.', 'danger')
             return redirect(url_for('auth.login'))
+        
+        login_user(usuario)
 
         # Obtener los módulos y secciones exclusivamente del usuario
         modulos_asignados = UsuarioModulo.query.filter_by(usuario_id=usuario.id).all()
@@ -63,8 +67,11 @@ def login():
         session['rol'] = usuario.rol.nombre
         session['modulos'] = modulos  # Guardar los módulos y secciones del usuario
 
-        flash('Inicio de sesión exitoso.', 'success')
         return redirect(url_for('main.inicio'))  
+    
+    if request.method == 'GET' and request.headers.get("Accept") == "application/json":
+        return jsonify({"message": "Por favor, inicia sesión para continuar."}), 401
+    
 
     return render_template('auth/login.jinja')
 
