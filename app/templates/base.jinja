@@ -101,9 +101,10 @@
     <div class="top-icons">
         <a href="#" data-toggle="modal" data-target="#ModalHelp"><i class="far fa-question-circle"></i></a>
         <a href="#"><i class="fas fa-user-cog"></i></a>
-        <a href="{{ url_for('auth.logout') }}" class="btn-exit-system">
+        <a href="#" class="btn-exit-system" data-logout-url="{{ url_for('auth.logout') }}">
             <i class="fas fa-power-off"></i>
         </a>
+        
     </div>
             </nav>
 
