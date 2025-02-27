@@ -5,7 +5,7 @@ from flask_login import login_user, logout_user
 from flask_mail import Message
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import db, mail 
-from app.models import Usuario, UsuarioModulo, Modulo, Seccion, PreguntaSecreta, RespuestasP
+from app.models import Usuario, UsuarioModulo, Modulo, Seccion, PreguntaSecreta, RespuestasP, IntentosRecuperacion
 from app.models.md_rol import Rol
 from app.utils.sms_helper import enviar_codigo_sms  # Importar la función de envío de SMS
 
@@ -323,4 +323,78 @@ def forgot_password_questions():
             flash('No existe una cuenta registrada con ese correo.', 'danger')
             return redirect(url_for('auth.forgot_password'))
         
+        preguntas = PreguntaSecreta.query.join(RespuestasP).filter(RespuestasP.usuario_id == usuario.id).all()
+        if len(preguntas) < 2:
+            flash('Este usuario no tiene preguntas de seguridad configuradas.', 'danger')
+            return redirect(url_for('auth.forgot_password'))
+        
+        mit = len(preguntas) // 2
+        pregunta_1 = preguntas[:mit]
+        pregunta_2 = preguntas[mit:]
+        
+        session['reset_email'] = email
+        return render_template('auth/forgot_password_questions.jinja', pregunta_1=pregunta_1, pregunta_2=pregunta_2)
+        
     return render_template('auth/forgot_password_questions.jinja')
+
+
+@auth_bp.route('/validate-security-questions', methods=['POST'])
+def validate_security_questions():
+    email = session.get('reset_email')
+    respuesta1 = request.form.get('respuesta1')
+    respuesta2 = request.form.get('respuesta2')
+    usuario = Usuario.query.filter_by(email=email).first()
+    
+    if not usuario:
+        flash('No existe una cuenta registrada con ese correo.', 'danger')
+        return redirect(url_for('auth.forgot_password_questions'))
+    
+    intentos = IntentosRecuperacion.query.filter_by(usuario_id=usuario.id).first()
+    # Si hay intentos registrados y han pasado más de 1 minuto, eliminamos el registro
+    if intentos and datetime.utcnow() >= intentos.ultimo_intento + timedelta(minutes=1):
+        db.session.delete(intentos)
+        db.session.commit()
+        intentos = None
+
+    if intentos and intentos.intentos >= 3:
+        flash('Demasiados intentos fallidos. Espera 1 minuto.', 'danger')
+        return redirect(url_for('auth.forgot_password'))
+    
+    preguntas_2 = PreguntaSecreta.query.join(RespuestasP).filter(RespuestasP.usuario_id == usuario.id).all()
+    mita = len(preguntas_2) // 2
+    pregunta_1 = preguntas_2[:mita]
+    pregunta_2 = preguntas_2[mita:]
+    preguntas = RespuestasP.query.filter_by(usuario_id=usuario.id).all()
+    respuestas = [respuesta1, respuesta2]
+
+    if not respuesta1 or not respuesta2:
+        flash('Debes responder ambas preguntas.', 'danger')
+        return render_template('auth/forgot_password_questions.jinja', pregunta_1=pregunta_1, pregunta_2=pregunta_2)
+
+    if len(respuestas) != len(preguntas):
+        flash('Respuestas inválidas.', 'danger')
+        return render_template('auth/forgot_password_questions.jinja', pregunta_1=pregunta_1, pregunta_2=pregunta_2)
+    
+    correctas = all(check_password_hash(pregunta.respuesta_hash, respuesta) for pregunta, respuesta in zip(preguntas, respuestas))
+    
+    if correctas:
+        if intentos:
+            db.session.delete(intentos)
+            flash('Respuestas correctas. Restablece tu contraseña.', 'success')
+            usuario.reset_token = secrets.token_hex(16)
+            usuario.reset_token_expiration = datetime.utcnow() + timedelta(hours=1)
+            db.session.commit()
+            return redirect(url_for('auth.reset_password', token=usuario.reset_token, _external=True))
+    else:
+        if not intentos:
+            intentos = IntentosRecuperacion(usuario_id=usuario.id, intentos=1, ultimo_intento=datetime.utcnow())
+            db.session.add(intentos)
+            db.session.commit()
+            flash('Respuestas incorrectas. Inténtalo de nuevo.', 'danger')
+            return render_template('auth/forgot_password_questions.jinja', pregunta_1=pregunta_1, pregunta_2=pregunta_2)
+        else:
+            intentos.intentos += 1
+            intentos.ultimo_intento = datetime.utcnow()
+            db.session.commit()
+            flash('Respuestas incorrectas. Inténtalo de nuevo.', 'danger')
+            return render_template('auth/forgot_password_questions.jinja', pregunta_1=pregunta_1, pregunta_2=pregunta_2)
