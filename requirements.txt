@@ -9,4 +9,9 @@ flask-bcrypt
 flask_migrate
 cryptography
 Flask-Mail
+<<<<<<< HEAD
 requests
+=======
+requests
+dotenv
+>>>>>>> main

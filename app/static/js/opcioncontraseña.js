@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
             emailForm.style.display = 'none';
             questionsForm.style.display = 'none';
             forgotPasswordForm.action = phoneUrl; // Usa la URL para teléfono
-        } else if (selectedMethod === 'questions') {
+        } else if (selectedMethod === 'preguntas') {
             questionsForm.style.display = 'block';
             emailForm.style.display = 'none';
             phoneForm.style.display = 'none';
