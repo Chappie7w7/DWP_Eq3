@@ -6,7 +6,7 @@ import base64
 # Cargar variables de entorno
 load_dotenv()
 
-USERNAME = os.getenv('USERNAME')
+USERNAME = 'yahir22feb@gmail.com'
 PASSWORD = os.getenv('PASSWORD')
 
 # Depuración: Verificar que las variables se están cargando correctamente

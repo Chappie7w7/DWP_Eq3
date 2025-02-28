@@ -64,7 +64,7 @@
         </div>
 
         <!-- Formulario de registro -->
-        <form id="register-form" action="{{ url_for('auth.register') }}" method="POST" autocomplete="off">
+        <form class="register-form" id="register-form" action="{{ url_for('auth.register') }}" method="POST" autocomplete="off" style="border:1px solid #ccc; padding: 10px; height: 150px; overflow-y: scroll;">
             <div class="form-group">
                 <label for="nombre">Nombre Completo</label>
                 <input type="text" id="nombre" name="nombre" placeholder="Tu nombre completo" required>
@@ -84,6 +84,10 @@
                     autocomplete="new-password" required>
             </div>
             <div class="form-group">
+                <label for="telefono">Nombre Completo</label>
+                <input type="text" id="telefono" name="telefono" placeholder="Ingresa tu telefono" required>
+            </div>
+            <div class="form-group" style="width: 98%;">
                 <label for="selecPregunta1">Selecciona una pregunta:</label>
                 <select id="selecPregunta1" name="selecPregunta1" required>
                     <option value="">-- Selecciona una pregunta --</option>
@@ -96,7 +100,7 @@
                 <label for="respuesta1">Respuesta</label>
                 <input type="text" id="respuesta1" name="respuesta1" placeholder="Escribe tu respuesta" required>
             </div>
-            <div class="form-group">
+            <div class="form-group" style="width: 98%;">
                 <label for="selecPregunta2">Selecciona una pregunta:</label>
                 <select id="selecPregunta2" name="selecPregunta2" required>
                     <option value="">-- Selecciona una pregunta --</option>
@@ -111,10 +115,9 @@
             </div>
 
             <!-- Contenedor del aviso de privacidad -->
-            <div class="form-group">
+            <div class="form-group" style="width: 98%;">
                 <label for="aviso-privacidad">Aviso de Privacidad</label>
-                <div id="aviso-privacidad"
-                    style="border: 1px solid #ccc; padding: 10px; height: 150px; overflow-y: scroll;">
+                <div id="aviso-privacidad" style="border: 1px solid #ccc; padding: 10px; height: 150px; overflow-y: scroll;">
                     <p><strong>Aviso de Privacidad:</strong> Este es el contenido completo del aviso de privacidad. Por
                         favor, léalo detenidamente antes de continuar con el registro. Este aviso detalla cómo
                         recopilamos, utilizamos, almacenamos y protegemos su información personal.</p>
