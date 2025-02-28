@@ -382,6 +382,9 @@ def validate_security_questions():
         if correctas:
             if intentos:
                 db.session.delete(intentos)
+                usuario.reset_token = secrets.token_hex(16)
+                usuario.reset_token_expiration = datetime.utcnow() + timedelta(hours=1)
+                db.session.commit()
                 return render_template('auth/reset_password.jinja', token=usuario.reset_token)
         else:
             if not intentos:
@@ -399,5 +402,5 @@ def validate_security_questions():
 
     usuario.reset_token = secrets.token_hex(16)
     usuario.reset_token_expiration = datetime.utcnow() + timedelta(hours=1)
-    db.session.commit()        
+    db.session.commit()
     return render_template('auth/reset_password.jinja', token=usuario.reset_token)
