@@ -84,12 +84,13 @@ def register():
         email = request.form.get('email')
         password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
+        num_tel = request.form.get('telefono')
         pregunta1_id = request.form.get('selecPregunta1')
         respuesta1 = request.form.get('respuesta1')
         pregunta2_id = request.form.get('selecPregunta2')
         respuesta2 = request.form.get('respuesta2')
 
-        if not nombre or not email or not password or not confirm_password or not pregunta1_id or not respuesta1 or not pregunta2_id or not respuesta2:
+        if not nombre or not email or not password or not confirm_password or not num_tel or not pregunta1_id or not respuesta1 or not pregunta2_id or not respuesta2:
             flash('Todos los campos son obligatorios.', 'danger')
             return redirect(url_for('auth.register'))
 
@@ -105,7 +106,7 @@ def register():
 
         # Crear un nuevo usuario
         hashed_password = generate_password_hash(password, method='scrypt')
-        nuevo_usuario = Usuario(nombre=nombre, email=email, password=hashed_password, rol_id=2)  
+        nuevo_usuario = Usuario(nombre=nombre, email=email, password=hashed_password, rol_id=2, telefono=num_tel)  
         db.session.add(nuevo_usuario)
         db.session.commit()
         
@@ -365,7 +366,7 @@ def validate_security_questions():
         mita = len(preguntas_2) // 2
         pregunta_1 = preguntas_2[:mita]
         pregunta_2 = preguntas_2[mita:]
-        preguntas = RespuestasP.query.filter_by(usuario_id=usuario.id).all()
+        preguntas = RespuestasP.query.join(PreguntaSecreta).filter(RespuestasP.usuario_id == usuario.id).all()
         respuestas = [respuesta1, respuesta2]
 
         if not respuesta1 or not respuesta2:
@@ -381,9 +382,6 @@ def validate_security_questions():
         if correctas:
             if intentos:
                 db.session.delete(intentos)
-                usuario.reset_token = secrets.token_hex(16)
-                usuario.reset_token_expiration = datetime.utcnow() + timedelta(hours=1)
-                db.session.commit()
                 return render_template('auth/reset_password.jinja', token=usuario.reset_token)
         else:
             if not intentos:
@@ -398,5 +396,8 @@ def validate_security_questions():
                 db.session.commit()
                 flash('Respuestas incorrectas. Inténtalo de nuevo.', 'danger')
                 return render_template('auth/forgot_password_questions.jinja', pregunta_1=pregunta_1, pregunta_2=pregunta_2)
-            
+
+    usuario.reset_token = secrets.token_hex(16)
+    usuario.reset_token_expiration = datetime.utcnow() + timedelta(hours=1)
+    db.session.commit()        
     return render_template('auth/reset_password.jinja', token=usuario.reset_token)

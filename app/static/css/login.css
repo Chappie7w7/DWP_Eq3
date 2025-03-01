@@ -113,7 +113,7 @@ body {
     border-radius: 15px;
     padding: 30px;
     text-align: center;
-    width: 350px;
+    width: 420px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     color: #fff;
 }
@@ -126,6 +126,13 @@ body {
 h2 {
     margin-bottom: 20px;
     font-size: 24px;
+}
+
+.register-form {
+    width: 95%;  /* Usa porcentaje si quieres que sea responsive */
+    max-width: 500px; /* Máximo ancho permitido */
+    height: auto; /* Ajusta la altura automáticamente */
+    min-height: 300px; /* Mínima altura */
 }
 
 .form-group {
