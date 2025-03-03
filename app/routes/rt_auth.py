@@ -110,11 +110,11 @@ def register():
         db.session.add(nuevo_usuario)
         db.session.commit()
         
-        resp_hash1 = generate_password_hash(respuesta1, method='scrypt')
-        resp_hash2 = generate_password_hash(respuesta2, method='scrypt')
+        #resp_hash1 = generate_password_hash(respuesta1, method='scrypt')
+        #resp_hash2 = generate_password_hash(respuesta2, method='scrypt')
 
-        respuesta1_db = RespuestasP(usuario_id=nuevo_usuario.id, pregunta_id=pregunta1_id, respuesta_hash=resp_hash1)
-        respuesta2_db = RespuestasP(usuario_id=nuevo_usuario.id, pregunta_id=pregunta2_id, respuesta_hash=resp_hash2)
+        respuesta1_db = RespuestasP(usuario_id=nuevo_usuario.id, pregunta_id=pregunta1_id, respuesta_hash=respuesta1)
+        respuesta2_db = RespuestasP(usuario_id=nuevo_usuario.id, pregunta_id=pregunta2_id, respuesta_hash=respuesta2)
 
         db.session.add(respuesta1_db)
         db.session.add(respuesta2_db)
@@ -377,11 +377,16 @@ def validate_security_questions():
             flash('Respuestas inválidas.', 'danger')
             return render_template('auth/forgot_password_questions.jinja', pregunta_1=pregunta_1, pregunta_2=pregunta_2)
     
-        correctas = all(check_password_hash(pregunta.respuesta_hash, respuesta) for pregunta, respuesta in zip(preguntas, respuestas))
+        #correctas = all(check_password_hash(pregunta.respuesta_hash, respuesta) for pregunta, respuesta in zip(preguntas, respuestas))
+        correctas = all(pregunta.respuesta_hash == respuesta for pregunta, respuesta in zip(preguntas, respuestas))
     
         if correctas:
             if intentos:
                 db.session.delete(intentos)
+                usuario.reset_token = secrets.token_hex(16)
+                usuario.reset_token_expiration = datetime.utcnow() + timedelta(hours=1)
+                db.session.commit()
+                flash('Respuestas correctas. Restablezca su contraseña.', 'success')
                 return render_template('auth/reset_password.jinja', token=usuario.reset_token)
         else:
             if not intentos:
@@ -399,5 +404,6 @@ def validate_security_questions():
 
     usuario.reset_token = secrets.token_hex(16)
     usuario.reset_token_expiration = datetime.utcnow() + timedelta(hours=1)
-    db.session.commit()        
+    db.session.commit()
+    flash('Respuestas correctas. Restablezca su contraseña.', 'success')
     return render_template('auth/reset_password.jinja', token=usuario.reset_token)
