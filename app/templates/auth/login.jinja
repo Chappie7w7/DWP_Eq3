@@ -84,6 +84,15 @@
 
         <!-- Contenedor para mensajes de error -->
         <div id="alert-container">
+            <!-- Mostrar mensaje de token expirado si existe en la sesión -->
+    {% if session.get('token_expired') %}
+    <div class="alert alert-danger">
+        {{ session.pop('token_expired') }}
+    </div>
+    {% endif %}
+
+
+
             {% with messages = get_flashed_messages(with_categories=True) %}
             {% if messages %}
             {% for category, message in messages %}
@@ -140,7 +149,7 @@
         <p>¿No tienes una cuenta? <a href="{{ url_for('auth.register') }}">Crear cuenta</a></p>
         <p>¿Olvidaste tu contraseña? <a href="{{ url_for('auth.forgot_password') }}">Recupérala aquí</a></p>
     </div>
-    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+
 </body>
 
 </html>

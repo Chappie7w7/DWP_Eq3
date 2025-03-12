@@ -1,0 +1,20 @@
+{% extends "base.jinja" %}
+
+{% block title %}Crear Módulo{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Crear un Nuevo Módulo</h2>
+    <form method="POST">
+        <div class="mb-3">
+            <label for="nombre_modulo" class="form-label">Nombre del Módulo</label>
+            <input type="text" class="form-control" id="nombre_modulo" name="nombre_modulo" required>
+        </div>
+        <div class="mb-3">
+            <label for="propietario" class="form-label">Propietario</label>
+            <input type="text" class="form-control" id="propietario" name="propietario" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Crear Módulo</button>
+    </form>
+</div>
+{% endblock %}

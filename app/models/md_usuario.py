@@ -16,6 +16,7 @@ class Usuario(db.Model, UserMixin):
     reset_token = db.Column(db.String(100), nullable=True)
     reset_token_expiration = db.Column(db.DateTime, nullable=True)
     telefono = db.Column(db.String(20), nullable=True)  # Aquí agregas el campo
+    token = db.Column(db.String(500), nullable=True) 
 
     # Relación con la tabla 'rol'
     rol = db.relationship('Rol', back_populates='usuarios', lazy='joined')

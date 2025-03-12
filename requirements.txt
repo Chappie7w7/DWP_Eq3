@@ -11,4 +11,4 @@ cryptography
 Flask-Mail
 requests
 dotenv
-
+PyJWT

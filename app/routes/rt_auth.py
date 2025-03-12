@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta 
 import secrets
-from flask import Blueprint, app, flash, jsonify, redirect, render_template, request, session, url_for
+from flask import Blueprint, Config, app, current_app, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_login import login_user, logout_user
 from flask_mail import Message
+import jwt
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import db, mail 
 from app.models import Usuario, UsuarioModulo, Modulo, Seccion, PreguntaSecreta, RespuestasP, IntentosRecuperacion
@@ -46,6 +47,23 @@ def login():
             return redirect(url_for('auth.login'))
         
         login_user(usuario)
+        
+        # Generar token JWT con expiración de 3 minutos
+        expira = datetime.now() + timedelta(minutes=3)
+        token = jwt.encode(
+            {"usuario_id": usuario.id,
+            "exp": int(expira.timestamp()) }, 
+            current_app.config['JWT_SECRET_KEY'],  
+            algorithm="HS256"
+        )
+        
+        # Guardar el token en la base de datos
+        usuario.token = token
+        db.session.commit()
+
+        # Guardar en sesión de Flask-Login
+        session['usuario_id'] = usuario.id
+        session['token'] = token  # Guardar el token en sesión
 
         # Obtener los módulos y secciones exclusivamente del usuario
         modulos_asignados = UsuarioModulo.query.filter_by(usuario_id=usuario.id).all()
@@ -67,6 +85,10 @@ def login():
         session['usuario_nombre'] = usuario.nombre
         session['rol'] = usuario.rol.nombre
         session['modulos'] = modulos  # Guardar los módulos y secciones del usuario
+        
+        # Si la petición es JSON, devolver el token
+        if request.headers.get("Accept") == "application/json":
+            return jsonify({"message": "Inicio de sesión exitoso.", "token": token})
 
         return redirect(url_for('main.inicio'))  
     

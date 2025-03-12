@@ -4,6 +4,8 @@ from sqlalchemy import func
 from app.models.md_modulo import Modulo
 from app.models.md_seccion import Seccion
 from app.models.md_usuario_modulo import UsuarioModulo
+from app.utils.decorators import token_required
+from app import db
 
 main_bp = Blueprint('main', __name__)
 
@@ -16,7 +18,8 @@ def home():
 
 @main_bp.route('/inicio')
 @login_required
-def inicio():
+@token_required
+def inicio(current_user):
     """
     Página de inicio (dashboard).
     """
@@ -24,7 +27,8 @@ def inicio():
 
 @main_bp.route('/<modulo>')
 @login_required
-def mostrar_modulo(modulo):
+@token_required
+def mostrar_modulo(current_user, modulo):
     """
     Muestra todas las secciones de un módulo específico para el usuario actual.
     """
@@ -56,7 +60,8 @@ def mostrar_modulo(modulo):
 
 @main_bp.route('/<modulo>/<seccion>')
 @login_required
-def mostrar_seccion(modulo, seccion):
+@token_required
+def mostrar_seccion(current_user, modulo, seccion):
     """
     Muestra una sección específica dentro de un módulo.
     """
@@ -292,3 +297,61 @@ def api_buscar_avanzada():
         "secciones": secciones_json,
         "has_more": len(secciones) == limit  # 🔹 Si se obtienen menos de `limit`, ya no hay más datos
     })
+
+@main_bp.route('/modulo/crear', methods=['GET', 'POST'])
+@login_required
+@token_required
+def crear_modulo(current_user):
+    if request.method == 'POST':
+        nombre_modulo = request.form.get('nombre_modulo')
+
+        
+        if not nombre_modulo:
+            flash('Por favor, completa todos los campos.', 'warning')
+            return redirect(url_for('main.crear_modulo'))
+
+        modulo = Modulo(nombre_modulo=nombre_modulo, propietario=current_user.id)
+        db.session.add(modulo)
+        db.session.commit()
+
+        flash(f'Módulo "{nombre_modulo}" creado con éxito!', 'success')
+
+
+        return redirect(url_for('main.mostrar_modulo', modulo_id=modulo.id))
+
+    return render_template('modulo/crear_modulo.jinja')
+
+
+@main_bp.route('/modulo/<int:modulo_id>/seccion/crear', methods=['GET', 'POST'])
+@login_required
+@token_required
+def crear_seccion(modulo_id, current_user):
+    modulo = Modulo.query.get_or_404(modulo_id)
+
+    if request.method == 'POST':
+        categoria = request.form.get('categoria')
+        nombre = request.form.get('nombre')
+        descripcion = request.form.get('descripcion')
+        url = request.form.get('url')
+
+        if not categoria or not nombre or not url:
+            flash('Por favor, completa todos los campos.', 'warning')
+            return redirect(url_for('main.crear_seccion', modulo_id=modulo.id))
+
+        
+        seccion = Seccion(
+            categoria=categoria,
+            nombre=nombre,
+            descripcion=descripcion,
+            url=url,
+            modulo_id=modulo.id
+        )
+        db.session.add(seccion)
+        db.session.commit()
+
+        flash(f'Sección "{nombre}" agregada al módulo "{modulo.nombre_modulo}"', 'success')
+
+
+        return redirect(url_for('main.mostrar_modulo', modulo_id=modulo.id))
+
+    return render_template('modulo/crear_seccion.jinja', modulo=modulo)

@@ -6,7 +6,8 @@ load_dotenv()
 
 class Config:
     # Clave secreta para la aplicación
-    SECRET_KEY = os.getenv('SECRET_KEY')
+    SECRET_KEY = os.getenv('SECRET_KEY', 'supersecreto')  
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'clave_jwt_supersecreta')  # Para firmar los tokens
 
     # Configuración de la base de datos
     SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
