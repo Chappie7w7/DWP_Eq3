@@ -246,7 +246,7 @@ def forgot_password_phone():
         phone = request.form.get('phone')
 
         if not phone:
-            flash('Por favor, ingresa tu número de teléfono.', 'danger')
+            flash('Por favor, ingresa tu número de teléfono personal.', 'danger')
             return render_template('auth/forgot_password_phone.jinja')
 
         usuario = Usuario.query.filter_by(telefono=phone).first()
