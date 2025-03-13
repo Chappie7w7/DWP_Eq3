@@ -221,7 +221,7 @@ def reset_password(token):
         usuario.reset_token_expiration = None
         db.session.commit()
 
-        flash('Tu contraseña ha sido actualizada exitosamente.', 'success')
+        flash('Tu contraseña ha sido actualizada exitosamente felicidades.', 'success')
         return redirect(url_for('auth.login'))
 
     return render_template('auth/reset_password.jinja', token=token)
