@@ -3,10 +3,10 @@ import secrets
 from flask import Blueprint, Config, app, current_app, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_login import login_user, logout_user
 from flask_mail import Message
-import jwt
+import jwt, uuid
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import db, mail 
-from app.models import Usuario, UsuarioModulo, Modulo, Seccion, PreguntaSecreta, RespuestasP, IntentosRecuperacion
+from app.models import Usuario, UsuarioModulo, Modulo, Seccion, PreguntaSecreta, RespuestasP, IntentosRecuperacion, ActiveSession
 from app.models.md_rol import Rol
 from app.utils.sms_helper import enviar_codigo_sms  # Importar la función de envío de SMS
 
@@ -46,18 +46,25 @@ def login():
             flash('La contraseña es incorrecta.', 'danger')
             return redirect(url_for('auth.login'))
         
-        login_user(usuario)
+        
         
         # Generar token JWT con expiración de 3 minutos
-        expira = datetime.now() + timedelta(minutes=3)
+        expira = datetime.now() + timedelta(minutes=1)
         token = jwt.encode(
             {"usuario_id": usuario.id,
             "exp": int(expira.timestamp()) }, 
             current_app.config['JWT_SECRET_KEY'],  
             algorithm="HS256"
         )
+
+        # Verificar si el usuario ya tiene una sesión activa
+        if usuario.token:
+            flash('Tu cuenta ha iniciado sesión en otro dispositivo. ¿Deseas cerrar las sesiones anteriores?', 'warning')
+            session['pending_token'] = token  # Guardamos temporalmente el nuevo token
+            return redirect(url_for('auth.confirm_logout'))  # Redirigir a confirmación
         
         # Guardar el token en la base de datos
+        login_user(usuario)
         usuario.token = token
         db.session.commit()
 
@@ -97,6 +104,17 @@ def login():
     
 
     return render_template('auth/login.jinja')
+
+@auth_bp.route('/confirm-logout', methods=['GET', 'POST'])
+def confirm_logout():
+    if request.method == 'POST':
+        usuario = Usuario.query.filter_by(id=session.get('usuario_id')).first()
+        if usuario:
+            usuario.token = session.pop('pending_token', None)
+            db.session.commit()
+            flash('Se han cerrado las sesiones anteriores.', 'success')
+        return redirect(url_for('main.inicio'))
+    return render_template('auth/confirm_logout.jinja')
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
