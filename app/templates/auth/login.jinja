@@ -91,8 +91,6 @@
     </div>
     {% endif %}
 
-
-
             {% with messages = get_flashed_messages(with_categories=True) %}
             {% if messages %}
             {% for category, message in messages %}
@@ -103,6 +101,14 @@
             {% endif %}
             {% endwith %}
         </div>
+
+        <!-- 🔹 Si el usuario ya tiene una sesión activa en otro dispositivo -->
+        {% if mostrar_cerrar_sesion %}
+        <form method="POST" action="{{ url_for('auth.cerrar_otros_dispositivos', usuario_id=usuario_id) }}">
+            <button type="submit" class="btn btn-danger btn-block">Cerrar otras sesiones y mantener la actual</button>
+        </form>
+    {% endif %}
+    
 
         <!-- Formulario de login -->
         <form id="login-form" action="{{ url_for('auth.login') }}" method="POST" autocomplete="off">
