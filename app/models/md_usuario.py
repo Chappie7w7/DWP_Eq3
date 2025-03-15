@@ -32,6 +32,11 @@ class Usuario(db.Model, UserMixin):
     usuario_modulos = db.relationship('UsuarioModulo', back_populates='usuario', cascade='all, delete-orphan', lazy='joined')
 
     respuestas_preguntas = db.relationship('RespuestasP', back_populates='usuario')
+    
+    # Relaciones con Materia, Juego y Proyecto
+    materias = db.relationship('Materia', back_populates='usuario', cascade='all, delete-orphan')
+    juegos = db.relationship('Juego', back_populates='usuario', cascade='all, delete-orphan')
+    proyectos = db.relationship('Proyecto', back_populates='usuario', cascade='all, delete-orphan')
 
     def set_password(self, password):
         """Genera un hash seguro para la contraseña."""

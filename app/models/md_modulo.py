@@ -11,6 +11,11 @@ class Modulo(db.Model):
     # Relaciones
     secciones = db.relationship('Seccion', back_populates='modulo', cascade='all, delete-orphan', lazy='joined')
     usuario_modulos = db.relationship('UsuarioModulo', back_populates='modulo', cascade='all, delete-orphan', lazy='joined')
+    
+    # Relaciones con las nuevas tablas
+    materias = db.relationship('Materia', back_populates='modulo', cascade='all, delete-orphan')
+    juegos = db.relationship('Juego', back_populates='modulo', cascade='all, delete-orphan')
+    proyectos = db.relationship('Proyecto', back_populates='modulo', cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<Modulo {self.nombre_modulo} - {self.propietario}>'
