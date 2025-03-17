@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+import random
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -17,6 +19,11 @@ class Usuario(db.Model, UserMixin):
     reset_token_expiration = db.Column(db.DateTime, nullable=True)
     telefono = db.Column(db.String(20), nullable=True)  # Aquí agregas el campo
     token = db.Column(db.String(500), nullable=True) 
+    token_sesion = db.Column(db.String(500), nullable=True)  # Para manejar sesiones únicas
+    
+    # OTP (One-Time Password) para autenticación multifactor
+    otp_code = db.Column(db.String(6), nullable=True)
+    otp_expiration = db.Column(db.DateTime, nullable=True)
 
     # Relación con la tabla 'rol'
     rol = db.relationship('Rol', back_populates='usuarios', lazy='joined')
@@ -25,6 +32,11 @@ class Usuario(db.Model, UserMixin):
     usuario_modulos = db.relationship('UsuarioModulo', back_populates='usuario', cascade='all, delete-orphan', lazy='joined')
 
     respuestas_preguntas = db.relationship('RespuestasP', back_populates='usuario')
+    
+    # Relaciones con Materia, Juego y Proyecto
+    materias = db.relationship('Materia', back_populates='usuario', cascade='all, delete-orphan')
+    juegos = db.relationship('Juego', back_populates='usuario', cascade='all, delete-orphan')
+    proyectos = db.relationship('Proyecto', back_populates='usuario', cascade='all, delete-orphan')
 
     def set_password(self, password):
         """Genera un hash seguro para la contraseña."""
@@ -33,6 +45,11 @@ class Usuario(db.Model, UserMixin):
     def check_password(self, password):
         """Verifica si la contraseña ingresada coincide con el hash."""
         return check_password_hash(self.password, password)
+    
+    def generar_otp(self):
+        """Genera un código OTP de 6 dígitos con 2 minutos de expiración."""
+        self.otp_code = f"{random.randint(100000, 999999)}"
+        self.otp_expiration = datetime.now() + timedelta(minutes=2)
 
     def __repr__(self):
         return f'<Usuario {self.email}>'

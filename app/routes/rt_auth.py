@@ -1,28 +1,37 @@
 from datetime import datetime, timedelta 
 import secrets
 from flask import Blueprint, Config, app, current_app, flash, jsonify, redirect, render_template, request, session, url_for
-from flask_login import login_user, logout_user
+from flask_login import current_user, login_required, login_user, logout_user
 from flask_mail import Message
 import jwt
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import db, mail 
 from app.models import Usuario, UsuarioModulo, Modulo, Seccion, PreguntaSecreta, RespuestasP, IntentosRecuperacion
 from app.models.md_rol import Rol
+from app.utils.email_utils import enviar_codigo_otp
 from app.utils.sms_helper import enviar_codigo_sms  # Importar la función de envío de SMS
 
 
 auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/logout')
+@login_required
 def logout():
     """
-    Cerrar sesión y limpiar datos de la sesión.
+    Cerrar sesión, limpiar datos de la sesión y eliminar el token de sesión del usuario.
     """
-    logout_user()
-    session.clear()  # Limpiar la sesión
-    flash('Has cerrado sesión correctamente.', 'info')  # Mensaje para cerrar sesión
-    return redirect(url_for('auth.login'))  # Redirigir al login
+    usuario = current_user
 
+    # Eliminar el token de sesión del usuario en la base de datos
+    usuario.token_sesion = None
+    db.session.commit()
+
+    # Cerrar sesión en Flask-Login
+    logout_user()
+    session.clear()  # Limpiar la sesión en Flask
+
+    flash('Has cerrado sesión correctamente.', 'info')  # Mensaje de confirmación
+    return redirect(url_for('auth.login'))  # Redirigir al login
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -45,58 +54,118 @@ def login():
         if not check_password_hash(usuario.password, password):
             flash('La contraseña es incorrecta.', 'danger')
             return redirect(url_for('auth.login'))
-        
-        login_user(usuario)
-        
-        # Generar token JWT con expiración de 3 minutos
-        expira = datetime.now() + timedelta(minutes=3)
-        token = jwt.encode(
-            {"usuario_id": usuario.id,
-            "exp": int(expira.timestamp()) }, 
-            current_app.config['JWT_SECRET_KEY'],  
-            algorithm="HS256"
-        )
-        
-        # Guardar el token en la base de datos
-        usuario.token = token
+
+        # 🔹 Si el usuario ya tiene una sesión activa en otro dispositivo
+        if usuario.token_sesion:
+            flash('Ya tienes una sesión activa en otro dispositivo.', 'warning')
+
+            # 🔹 Mostrar la opción de cerrar otras sesiones
+            return render_template('auth/login.jinja', usuario_id=usuario.id, mostrar_cerrar_sesion=True)
+
+        # 🔹 Generar OTP y guardarlo en la base de datos
+        usuario.generar_otp()
         db.session.commit()
 
-        # Guardar en sesión de Flask-Login
-        session['usuario_id'] = usuario.id
-        session['token'] = token  # Guardar el token en sesión
+        # 🔹 Enviar OTP por correo
+        enviar_codigo_otp(usuario.email, usuario.id, usuario.otp_code)
 
-        # Obtener los módulos y secciones exclusivamente del usuario
-        modulos_asignados = UsuarioModulo.query.filter_by(usuario_id=usuario.id).all()
-        modulos = []
-
-        for um in modulos_asignados:
-            modulo = Modulo.query.get(um.modulo_id)
-            if modulo:
-                # Filtrar las secciones que pertenecen al módulo actual
-                secciones = Seccion.query.filter_by(modulo_id=modulo.id).all()
-                modulos.append({
-                    "nombre_modulo": modulo.nombre_modulo,
-                    "privilegio": um.privilegio,
-                    "secciones": [{"nombre": s.nombre, "url": s.url} for s in secciones]
-                })
-
-        # Guardar información en sesión
-        session['usuario_id'] = usuario.id
-        session['usuario_nombre'] = usuario.nombre
-        session['rol'] = usuario.rol.nombre
-        session['modulos'] = modulos  # Guardar los módulos y secciones del usuario
-        
-        # Si la petición es JSON, devolver el token
-        if request.headers.get("Accept") == "application/json":
-            return jsonify({"message": "Inicio de sesión exitoso.", "token": token})
-
-        return redirect(url_for('main.inicio'))  
-    
-    if request.method == 'GET' and request.headers.get("Accept") == "application/json":
-        return jsonify({"message": "Por favor, inicia sesión para continuar."}), 401
-    
+        flash('Hemos enviado un correo con un enlace de verificación. Revisa tu correo.', 'info')
+        return redirect(url_for('auth.login'))
 
     return render_template('auth/login.jinja')
+
+
+
+@auth_bp.route('/confirmar-sesion/<int:usuario_id>', methods=['POST'])
+def confirmar_sesion(usuario_id):
+    """Cierra la sesión anterior y permite al usuario continuar."""
+    usuario = Usuario.query.get_or_404(usuario_id)
+
+    # Cerrar la sesión anterior eliminando el token_sesion
+    usuario.token_sesion = None
+    db.session.commit()
+
+    flash('Se cerraron las sesiones anteriores. Ahora puedes continuar.', 'info')
+    return redirect(url_for('auth.login'))
+
+
+
+@auth_bp.route('/verificar-otp/<int:usuario_id>/<codigo>')
+def verificar_otp(usuario_id, codigo):
+    usuario = Usuario.query.get_or_404(usuario_id)
+
+    if usuario.otp_code != codigo or usuario.otp_expiration < datetime.now():
+        flash('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.', 'danger')
+        return redirect(url_for('auth.login'))
+
+    login_user(usuario)
+
+    # 🔹 Limpiar OTP después de la verificación
+    usuario.otp_code = None
+    usuario.otp_expiration = None
+    db.session.commit()
+
+    # 🔹 Generar token JWT con expiración de 3 minutos
+    expira = datetime.now() + timedelta(minutes=3)
+    token = jwt.encode(
+        {"usuario_id": usuario.id, "exp": int(expira.timestamp())}, 
+        current_app.config['JWT_SECRET_KEY'], algorithm="HS256"
+    )
+
+    usuario.token = token
+    usuario.token_sesion = token  # 🔹 Guardar token de sesión para identificar dispositivos
+    db.session.commit()
+
+    # 🔹 Cargar módulos y secciones asignados al usuario
+    modulos_asignados = UsuarioModulo.query.filter_by(usuario_id=usuario.id).all()
+    modulos = []
+
+    for um in modulos_asignados:
+        modulo = Modulo.query.get(um.modulo_id)
+        if modulo:
+            # Obtener las secciones del módulo
+            secciones = Seccion.query.filter_by(modulo_id=modulo.id).all()
+            modulos.append({
+                "nombre_modulo": modulo.nombre_modulo,
+                "privilegio": um.privilegio,
+                "secciones": [{"nombre": s.nombre, "url": s.url} for s in secciones]
+            })
+
+    # 🔹 Guardar información en sesión
+    session['usuario_id'] = usuario.id
+    session['token'] = token
+    session['usuario_nombre'] = usuario.nombre
+    session['rol'] = usuario.rol.nombre
+    session['modulos'] = modulos  
+
+    flash('Código correcto. Iniciando sesión...', 'success')
+    return redirect(url_for('main.inicio'))
+
+
+
+
+@auth_bp.route('/cerrar-otros-dispositivos/<int:usuario_id>', methods=['POST'])
+def cerrar_otros_dispositivos(usuario_id):
+    usuario = Usuario.query.get_or_404(usuario_id)
+
+    # 🔹 Invalidar todas las sesiones anteriores eliminando el token de sesión
+    usuario.token_sesion = None  
+    db.session.commit()
+
+    flash('Se han cerrado todas las sesiones anteriores. Continúa con tu nueva sesión.', 'success')
+
+    # 🔹 Generar OTP y enviarlo nuevamente
+    usuario.generar_otp()
+    db.session.commit()
+
+    # 🔹 Enviar OTP por correo
+    enviar_codigo_otp(usuario.email, usuario.id, usuario.otp_code)
+
+    flash('Hemos enviado un nuevo código de verificación a tu correo.', 'info')
+
+    # 🔹 Redirigir al login para que pueda continuar con la nueva sesión
+    return redirect(url_for('auth.login'))
+
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])

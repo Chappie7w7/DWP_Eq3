@@ -23,3 +23,7 @@ class Config:
     MAIL_USERNAME = os.getenv('MAIL_USERNAME')  # Tu correo Gmail
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')  # Contraseña de aplicación de Gmail
     MAIL_DEFAULT_SENDER = os.getenv('MAIL_USERNAME')  # Remitente predeterminado
+    MAIL_DEBUG = True  # Activa debug para pruebas (en desarrollo)
+
+    # Tiempo de vida del OTP (en minutos)
+    OTP_EXPIRATION_MINUTES = 2
