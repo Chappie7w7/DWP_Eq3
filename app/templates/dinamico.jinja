@@ -46,7 +46,24 @@
                         <div class="card-body text-center">
                             <h5 class="card-title">{{ seccion.nombre }}</h5>
                             <p class="card-text">{{ seccion.descripcion }}</p>
-                            <a href="{{ url_for('main.mostrar_seccion', modulo=titulo.lower(), seccion=seccion.nombre.replace(' ', '_')) }}" class="btn btn-primary">Ver más</a>
+                            <a href="{{ url_for('main.mostrar_seccion', modulo=titulo.lower(), seccion=seccion.nombre.replace(' ', '_')) }}" 
+                            class="btn btn-primary btn-sm">
+                            <i class="fas fa-eye"></i> Ver más
+                        </a>
+
+                        <!-- Botones de Editar y Eliminar en Materias -->
+                        {% if titulo.lower() == "materias" %}
+                            <a href="{{ url_for('materia.editar_materia', materia_id=seccion.id) }}" class="btn btn-warning btn-sm">
+                            <i class="fas fa-edit"></i>
+                            </a>
+                            <form action="{{ url_for('materia.eliminar_materia', materia_id=seccion.id) }}" 
+                                method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash-alt" ></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                            
                         </div>
                     </div>
                 </div>
@@ -56,4 +73,5 @@
         {% endif %}
     </div>
 </div>
+
 {% endblock %}

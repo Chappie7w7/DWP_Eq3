@@ -135,7 +135,7 @@ def buscar_avanzada():
     Realiza una búsqueda avanzada en todas las categorías y módulos.
     """
     usuario_id = session.get('usuario_id')
-    query = request.args.get('advanced_query', '').strip()  # Cambiado de 'query' a 'advanced_query'
+    query = request.args.get('advanced_query', '').strip()  
     categoria = request.args.get('categoria', '').strip()
 
     if not query:
@@ -184,8 +184,14 @@ def api_obtener_secciones(modulo):
         UsuarioModulo.usuario_id == usuario_id
     ).offset(offset).limit(limit).all()  # 🔹 `offset` y `limit` reemplazan `paginate()`
 
+    # 🔹 Asegurar que el ID de la sección se incluya en la respuesta
     secciones_json = [
-        {"nombre": s.nombre, "descripcion": s.descripcion, "url": s.url}
+        {
+            "id": s.id,  
+            "nombre": s.nombre,
+            "descripcion": s.descripcion,
+            "url": s.url
+        }
         for s in secciones
     ]
 
@@ -193,6 +199,7 @@ def api_obtener_secciones(modulo):
         "secciones": secciones_json,
         "has_more": len(secciones) == limit  # 🔹 Si hay menos de `limit`, ya no hay más datos
     })
+
 
 
 @main_bp.route('/api/seccion/<modulo>/<seccion>', methods=['GET'])
