@@ -49,7 +49,7 @@ def login():
         
         
         # Generar token JWT con expiración de 3 minutos
-        expira = datetime.now() + timedelta(minutes=1)
+        expira = datetime.now() + timedelta(minutes=2)
         token = jwt.encode(
             {"usuario_id": usuario.id,
             "exp": int(expira.timestamp()) }, 
@@ -61,6 +61,7 @@ def login():
         if usuario.token:
             flash('Tu cuenta ha iniciado sesión en otro dispositivo. ¿Deseas cerrar las sesiones anteriores?', 'warning')
             session['pending_token'] = token  # Guardamos temporalmente el nuevo token
+            session['pending_usuario_id'] = usuario.id  # Guardamos el ID del usuario
             return redirect(url_for('auth.confirm_logout'))  # Redirigir a confirmación
         
         # Guardar el token en la base de datos
@@ -108,10 +109,13 @@ def login():
 @auth_bp.route('/confirm-logout', methods=['GET', 'POST'])
 def confirm_logout():
     if request.method == 'POST':
-        usuario = Usuario.query.filter_by(id=session.get('usuario_id')).first()
+        usuario = Usuario.query.filter_by(id=session.get('pending_usuario_id')).first()
         if usuario:
             usuario.token = session.pop('pending_token', None)
             db.session.commit()
+            login_user(usuario)  # Iniciar sesión en el nuevo dispositivo
+            session['usuario_id'] = usuario.id
+            session['token'] = usuario.token
             flash('Se han cerrado las sesiones anteriores.', 'success')
         return redirect(url_for('main.inicio'))
     return render_template('auth/confirm_logout.jinja')
