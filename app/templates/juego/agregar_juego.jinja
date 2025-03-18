@@ -1,6 +1,9 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 {% extends "base.jinja" %}
 
 {% block content %}
+<div class="main-content">
+<div class="form-container">
 <h2>Agregar Nuevo Juego</h2>
 
 <form method="POST" action="{{ url_for('juego.agregar_juego') }}">
@@ -22,4 +25,6 @@
 </form>
 
 <a href="{{ url_for('juego.listar_juegos') }}">Volver a la lista</a>
+</div>
+</div>
 {% endblock %}
