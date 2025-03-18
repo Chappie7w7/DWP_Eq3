@@ -85,11 +85,11 @@
         <!-- Contenedor para mensajes de error -->
         <div id="alert-container">
             <!-- Mostrar mensaje de token expirado si existe en la sesión -->
-    {% if session.get('token_expired') %}
-    <div class="alert alert-danger">
-        {{ session.pop('token_expired') }}
-    </div>
-    {% endif %}
+            {% if session.get('token_expired') %}
+            <div class="alert alert-danger">
+                {{ session.pop('token_expired') }}
+            </div>
+            {% endif %}
 
 
 
@@ -103,6 +103,18 @@
             {% endif %}
             {% endwith %}
         </div>
+
+        <!-- 🔹 Si el usuario ya tiene una sesión activa en otro dispositivo -->
+        {% if mostrar_alerta %}
+        <div class="alert alert-warning">
+            <p>Ya tienes una sesión activa en otro dispositivo.</p>
+            <form method="POST" action="{{ url_for('auth.cerrar_otros_dispositivos', usuario_id=usuario_id) }}">
+                <button type="submit" class="btn btn-danger btn-block">Cerrar otras sesiones y mantener la
+                    actual</button>
+            </form>
+        </div>
+        {% endif %}
+
 
         <!-- Formulario de login -->
         <form id="login-form" action="{{ url_for('auth.login') }}" method="POST" autocomplete="off">

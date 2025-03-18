@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+import random
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -17,6 +19,8 @@ class Usuario(db.Model, UserMixin):
     reset_token_expiration = db.Column(db.DateTime, nullable=True)
     telefono = db.Column(db.String(20), nullable=True)  # Aquí agregas el campo
     token = db.Column(db.String(500), nullable=True) 
+    token_sesion = db.Column(db.String(500), nullable=True)  # Para manejar sesiones únicas
+
 
     # Relación con la tabla 'rol'
     rol = db.relationship('Rol', back_populates='usuarios', lazy='joined')
@@ -24,11 +28,8 @@ class Usuario(db.Model, UserMixin):
     # Relación con 'UsuarioModulo'
     usuario_modulos = db.relationship('UsuarioModulo', back_populates='usuario', cascade='all, delete-orphan', lazy='joined')
 
-    #Relación con la tabla 'respuestas'
     respuestas_preguntas = db.relationship('RespuestasP', back_populates='usuario')
-
-    #Relación con la tabla 'session_active'
-    #session_active = db.relationship('ActiveSession', back_populates='id_usuario')
+    
 
     def set_password(self, password):
         """Genera un hash seguro para la contraseña."""
@@ -37,6 +38,7 @@ class Usuario(db.Model, UserMixin):
     def check_password(self, password):
         """Verifica si la contraseña ingresada coincide con el hash."""
         return check_password_hash(self.password, password)
+
 
     def __repr__(self):
         return f'<Usuario {self.email}>'

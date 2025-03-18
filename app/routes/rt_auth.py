@@ -3,10 +3,10 @@ import secrets
 from flask import Blueprint, Config, app, current_app, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_login import login_user, logout_user
 from flask_mail import Message
-import jwt, uuid
+import jwt
 from werkzeug.security import check_password_hash, generate_password_hash
 from app import db, mail 
-from app.models import Usuario, UsuarioModulo, Modulo, Seccion, PreguntaSecreta, RespuestasP, IntentosRecuperacion, ActiveSession
+from app.models import Usuario, UsuarioModulo, Modulo, Seccion, PreguntaSecreta, RespuestasP, IntentosRecuperacion
 from app.models.md_rol import Rol
 from app.utils.sms_helper import enviar_codigo_sms  # Importar la función de envío de SMS
 
@@ -46,7 +46,11 @@ def login():
             flash('La contraseña es incorrecta.', 'danger')
             return redirect(url_for('auth.login'))
         
+        # Si el usuario ya tiene una sesión activa en otro dispositivo
+        if usuario.token_sesion:
+            return render_template('auth/login.jinja', usuario_id=usuario.id, mostrar_alerta=True)
         
+        login_user(usuario)
         
         # Generar token JWT con expiración de 3 minutos
         expira = datetime.now() + timedelta(minutes=2)
@@ -57,16 +61,10 @@ def login():
             algorithm="HS256"
         )
 
-        # Verificar si el usuario ya tiene una sesión activa
-        if usuario.token:
-            flash('Tu cuenta ha iniciado sesión en otro dispositivo. ¿Deseas cerrar las sesiones anteriores?', 'warning')
-            session['pending_token'] = token  # Guardamos temporalmente el nuevo token
-            session['pending_usuario_id'] = usuario.id  # Guardamos el ID del usuario
-            return redirect(url_for('auth.confirm_logout'))  # Redirigir a confirmación
         
         # Guardar el token en la base de datos
-        login_user(usuario)
         usuario.token = token
+        usuario.token_sesion = token
         db.session.commit()
 
         # Guardar en sesión de Flask-Login
@@ -106,19 +104,30 @@ def login():
 
     return render_template('auth/login.jinja')
 
-@auth_bp.route('/confirm-logout', methods=['GET', 'POST'])
-def confirm_logout():
-    if request.method == 'POST':
-        usuario = Usuario.query.filter_by(id=session.get('pending_usuario_id')).first()
-        if usuario:
-            usuario.token = session.pop('pending_token', None)
-            db.session.commit()
-            login_user(usuario)  # Iniciar sesión en el nuevo dispositivo
-            session['usuario_id'] = usuario.id
-            session['token'] = usuario.token
-            flash('Se han cerrado las sesiones anteriores.', 'success')
-        return redirect(url_for('main.inicio'))
-    return render_template('auth/confirm_logout.jinja')
+
+@auth_bp.route('/cerrar-otros-dispositivos/<int:usuario_id>', methods=['POST'])
+def cerrar_otros_dispositivos(usuario_id):
+    usuario = Usuario.query.get_or_404(usuario_id)
+
+    # Invalidar todas las sesiones anteriores eliminando el token de sesión
+    usuario.token_sesion = None  
+    db.session.commit()
+
+    flash('Se han cerrado todas las sesiones anteriores. Continúa con tu nueva sesión.', 'success')
+
+    # Generar nuevo token de sesión
+    expira = datetime.now() + timedelta(minutes=3)
+    token = jwt.encode(
+        {"usuario_id": usuario.id, "exp": int(expira.timestamp())}, 
+        current_app.config['JWT_SECRET_KEY'], algorithm="HS256"
+    )
+    usuario.token = token
+    usuario.token_sesion = token
+    db.session.commit()
+
+    login_user(usuario)
+    flash('Inicio de sesión exitoso.', 'success')
+    return redirect(url_for('main.inicio'))
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
