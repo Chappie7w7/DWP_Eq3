@@ -15,7 +15,6 @@ flask run          # 🚀 Modo normal (Para producción)
 
 
 # 🌟 Configuración de Entorno en Flask
-
 # 🔧 Variables de entorno
 FLASK_ENV=development
 SECRET_KEY=tu_secret_key_generado
@@ -24,7 +23,6 @@ SQLALCHEMY_DATABASE_URI=mysql+pymysql://root:tu_contraseña@127.0.0.1:3306/Nombr
 
 
 # 📌 Inicialización y Migraciones de Base de Datos
-
 # 🔹 Inicializa la carpeta de migraciones
 flask db init
 
