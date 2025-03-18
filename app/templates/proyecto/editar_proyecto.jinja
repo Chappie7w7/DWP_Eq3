@@ -1,0 +1,17 @@
+{% extends "base.jinja" %}
+
+{% block content %}
+<h2>Editar Proyecto</h2>
+
+<form method="POST" action="{{ url_for('proyecto.editar_proyecto', proyecto_id=proyecto.id) }}">
+    <label for="nombre">Nombre del Proyecto:</label>
+    <input type="text" name="nombre" value="{{ proyecto.nombre }}" required>
+
+    <label for="descripcion">Descripción:</label>
+    <textarea name="descripcion" required>{{ proyecto.descripcion }}</textarea>
+
+    <button type="submit">Guardar Cambios</button>
+</form>
+
+<a href="{{ url_for('proyecto.listar_proyectos') }}">Volver a la lista</a>
+{% endblock %}

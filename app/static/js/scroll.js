@@ -89,6 +89,19 @@ $(document).ready(function () {
                                             </button>
                                         </form>
                                     ` : ""}
+
+                                     <!-- Botones de Editar y Eliminar solo en Proyectos -->
+                                ${modulo === "proyectos" ? `
+                                    <a href="/proyectos/editar/${seccion.id}" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-edit" ></i>
+                                    </a>
+                                    <form action="/proyectos/eliminar/${seccion.id}" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash-alt" style="color: gray;"></i>
+                                        </button>
+                                    </form>
+                                ` : ""}
+
                                 </div>
                             </div>
                         </div>
