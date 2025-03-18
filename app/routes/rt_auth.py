@@ -110,20 +110,24 @@ def cerrar_otros_dispositivos(usuario_id):
     usuario = Usuario.query.get_or_404(usuario_id)
 
     # Invalidar todas las sesiones anteriores eliminando el token de sesión
+    usuario.token = None
     usuario.token_sesion = None  
     db.session.commit()
 
     flash('Se han cerrado todas las sesiones anteriores. Continúa con tu nueva sesión.', 'success')
 
     # Generar nuevo token de sesión
-    expira = datetime.now() + timedelta(minutes=3)
+    expira = datetime.now() + timedelta(minutes=2)
     token = jwt.encode(
         {"usuario_id": usuario.id, "exp": int(expira.timestamp())}, 
         current_app.config['JWT_SECRET_KEY'], algorithm="HS256"
     )
+
     usuario.token = token
     usuario.token_sesion = token
     db.session.commit()
+
+    session['token'] = token
 
     login_user(usuario)
     flash('Inicio de sesión exitoso.', 'success')
