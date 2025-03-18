@@ -52,14 +52,25 @@
                                         <!-- 🔹 Botón para agregar una nueva materia con ícono ➕ -->
                                         {% if modulo['nombre_modulo'] == 'Materias' %}
                                             <li>
-                                                <a href="{{ url_for('materia.agregar_materia') }}" class="text-success font-weight-bold">
+                                                <a href="{{ url_for('materia.agregar_materia') }}" 
+                                                class="text-success font-weight-bold">
                                                     <i class="fas fa-plus-circle"></i> &nbsp; Agregar Materia
                                                 </a>
                                             </li>
+                                            { {% elif modulo['nombre_modulo'] == 'Proyectos' %}}
+                                            <li>
+                                            <a href="{{ url_for('proyecto.agregar_proyecto') }}" 
+                                            class="text-success font-weight-bold">
+                                                <i class="fas fa-plus-circle"></i> &nbsp; Agregar proyecto
+                                            </a>
+                                        </li>
+
                                         {% endif %}
+
                                         {% for seccion in modulo['secciones'] %}
                                             <li>
-                                                <a href="{{ seccion['url'] }}"><i class="fas fa-angle-right fa-fw"></i> &nbsp; {{ seccion['nombre'] }}</a>
+                                                <a href="{{ seccion['url'] }}"><i class="fas fa-angle-right fa-fw"></i> &nbsp; {{ 
+                                                    seccion['nombre'] }}</a>
                                             </li>
                                         {% endfor %}
                                     </ul>
@@ -148,6 +159,10 @@
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     
     {% if request.endpoint in ["main.mostrar_modulo", "materia.listar_materias"] %}
+    <script src="{{ url_for('static', filename='js/scroll.js') }}"></script>
+    {% endif %}
+
+    {% if request.endpoint in ["main.mostrar_modulo", "proyecto.listar_proyectos"] %}
     <script src="{{ url_for('static', filename='js/scroll.js') }}"></script>
     {% endif %}
 

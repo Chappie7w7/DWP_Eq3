@@ -8,7 +8,7 @@ from .rt_roles import roles_bp
 from .rt_secciones import secciones_bp
 from .rt_materia import materia_bp
 #from .rt_juego import juego_bp
-#from .rt_proyecto import proyecto_bp
+from .rt_proyecto import proyecto_bp
 
 
 def register_blueprints(app):
@@ -21,4 +21,4 @@ def register_blueprints(app):
     app.register_blueprint(secciones_bp, url_prefix='/secciones')
     app.register_blueprint(materia_bp, url_prefix='/materias')
     #app.register_blueprint(juego_bp, url_prefix='/juegos')
-    #app.register_blueprint(proyecto_bp, url_prefix='/proyectos')
+    app.register_blueprint(proyecto_bp, url_prefix='/proyectos')
