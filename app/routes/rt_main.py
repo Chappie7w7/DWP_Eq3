@@ -93,7 +93,8 @@ def mostrar_seccion(current_user, modulo, seccion):
         'dinamico_seccion.jinja',
         titulo=seccion_data.nombre,
         seccion=seccion_data,
-        breadcrumb=breadcrumb
+        breadcrumb=breadcrumb,
+        modulo=modulo
     )
 
 @main_bp.route('/buscar/<modulo>', methods=['GET'])
