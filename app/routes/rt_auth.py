@@ -106,7 +106,7 @@ def verificar_otp(usuario_id, codigo):
     db.session.commit()
 
     # 🔹 Generar token JWT con expiración de 3 minutos
-    expira = datetime.now() + timedelta(minutes=3)
+    expira = datetime.now() + timedelta(minutes=7200)
     token = jwt.encode(
         {"usuario_id": usuario.id, "exp": int(expira.timestamp())}, 
         current_app.config['JWT_SECRET_KEY'], algorithm="HS256"

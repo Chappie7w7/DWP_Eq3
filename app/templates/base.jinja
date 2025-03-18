@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <title>{% block title %}Página Web{% endblock %}</title>
 
     <!-- Estilos -->
@@ -18,9 +20,10 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/carrusel.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-    
-    
+
+
 </head>
+
 <body>
     <main class="full-box main-container">
         {% if show_sidebar is not defined or show_sidebar %}
@@ -42,31 +45,42 @@
                             <a href="{{ url_for('main.inicio') }}"><i class="fas fa-home fa-fw"></i> &nbsp; Home</a>
                         </li>
                         {% if session.get('modulos') %}
-                            {% for modulo in session['modulos'] %}
+                        {% for modulo in session['modulos'] %}
+                        <li>
+                            <a href="#" class="nav-btn-submenu">
+                                <i class="fas fa-folder fa-fw"></i> &nbsp; {{ modulo['nombre_modulo'] | capitalize }}
+                                <i class="fas fa-chevron-down"></i>
+                            </a>
+                            <ul>
+                                <!-- 🔹 Botón para agregar una nueva materia con ícono ➕ -->
+                                {% if modulo['nombre_modulo'] == 'Materias' %}
                                 <li>
-                                    <a href="#" class="nav-btn-submenu">
-                                        <i class="fas fa-folder fa-fw"></i> &nbsp; {{ modulo['nombre_modulo'] | capitalize }}
-                                        <i class="fas fa-chevron-down"></i>
+                                    <a href="{{ url_for('materia.agregar_materia') }}"
+                                        class="text-success font-weight-bold">
+                                        <i class="fas fa-plus-circle"></i> &nbsp; Agregar Materia
                                     </a>
-                                    <ul>
-                                        <!-- 🔹 Botón para agregar una nueva materia con ícono ➕ -->
-                                        {% if modulo['nombre_modulo'] == 'Materias' %}
-                                            <li>
-                                                <a href="{{ url_for('materia.agregar_materia') }}" class="text-success font-weight-bold">
-                                                    <i class="fas fa-plus-circle"></i> &nbsp; Agregar Materia
-                                                </a>
-                                            </li>
-                                        {% endif %}
-                                        {% for seccion in modulo['secciones'] %}
-                                            <li>
-                                                <a href="{{ seccion['url'] }}"><i class="fas fa-angle-right fa-fw"></i> &nbsp; {{ seccion['nombre'] }}</a>
-                                            </li>
-                                        {% endfor %}
-                                    </ul>
                                 </li>
-                            {% endfor %}
+                                {% elif modulo['nombre_modulo'] == 'Juegos' %}
+                                <li>
+                                    <a href="{{ url_for('juego.agregar_juego') }}"
+                                        class="text-success font-weight-bold">
+                                        <i class="fas fa-plus-circle"></i> &nbsp; Agregar Juego
+                                    </a>
+                                </li>
+                                {% endif %}
+
+                                {% for seccion in modulo['secciones'] %}
+                                <li>
+                                    <a href="{{ seccion['url'] }}"><i class="fas fa-angle-right fa-fw"></i> &nbsp; {{
+                                        seccion['nombre'] }}</a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+
+                        </li>
+                        {% endfor %}
                         {% else %}
-                            <li><a href="#"><i class="fas fa-exclamation-circle"></i> &nbsp; Sin módulos asignados</a></li>
+                        <li><a href="#"><i class="fas fa-exclamation-circle"></i> &nbsp; Sin módulos asignados</a></li>
                         {% endif %}
                     </ul>
                 </nav>
@@ -83,47 +97,46 @@
                             <!-- Filtro desplegable -->
                             <select name="categoria" class="form-select">
                                 <option value="">Todas las categorías</option>
-                                <option value="materias" {% if request.args.get('categoria') == 'materias' %} selected {% endif %}>Materias</option>
-                                <option value="juegos" {% if request.args.get('categoria') == 'juegos' %} selected {% endif %}>Juegos</option>
-                                <option value="proyectos" {% if request.args.get('categoria') == 'proyectos' %} selected {% endif %}>Proyectos</option>
+                                <option value="materias" {% if request.args.get('categoria')=='materias' %} selected {%
+                                    endif %}>Materias</option>
+                                <option value="juegos" {% if request.args.get('categoria')=='juegos' %} selected {%
+                                    endif %}>Juegos</option>
+                                <option value="proyectos" {% if request.args.get('categoria')=='proyectos' %} selected
+                                    {% endif %}>Proyectos</option>
                             </select>
                             <!-- Campo de búsqueda avanzada -->
-                            <input 
-                                type="text" 
-                                class="form-control" 
-                                name="advanced_query"  
-                                placeholder="Buscar en toda la plataforma..." 
-                                value="{{ request.args.get('advanced_query', '') }}"
-                            >
+                            <input type="text" class="form-control" name="advanced_query"
+                                placeholder="Buscar en toda la plataforma..."
+                                value="{{ request.args.get('advanced_query', '') }}">
                             <!-- Botón de búsqueda -->
                             <button class="btn" type="submit">
                                 <i class="fas fa-search"></i>
                             </button>
                         </form>
-                        
+
                     </div>
                 </nav>
-                
-                
-                
+
+
+
 
                 <a href="#" class="float-left show-nav-lateral"><i class="fas fa-exchange-alt"></i></a>
                 <!-- Iconos en la parte superior derecha -->
-    <div class="top-icons">
-        <a href="#" data-toggle="modal" data-target="#ModalHelp"><i class="far fa-question-circle"></i></a>
-        <a href="#"><i class="fas fa-user-cog"></i></a>
-        <a href="#" class="btn-exit-system" data-logout-url="{{ url_for('auth.logout') }}">
-            <i class="fas fa-power-off"></i>
-        </a>
-        
-    </div>
+                <div class="top-icons">
+                    <a href="#" data-toggle="modal" data-target="#ModalHelp"><i class="far fa-question-circle"></i></a>
+                    <a href="#"><i class="fas fa-user-cog"></i></a>
+                    <a href="#" class="btn-exit-system" data-logout-url="{{ url_for('auth.logout') }}">
+                        <i class="fas fa-power-off"></i>
+                    </a>
+
+                </div>
             </nav>
 
             <div>
                 {% block breadcrumb %}
                 {% endblock %}
             </div>
-            
+
 
             {% block content %}
             {% endblock %}
@@ -139,42 +152,47 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('body').bootstrapMaterialDesign();
         });
     </script>
-    
+
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    
+
     {% if request.endpoint in ["main.mostrar_modulo", "materia.listar_materias"] %}
     <script src="{{ url_for('static', filename='js/scroll.js') }}"></script>
     {% endif %}
 
-    
+    {% if request.endpoint in ["main.mostrar_modulo", "juego.listar_juegos"] %}
+    <script src="{{ url_for('static', filename='js/scroll.js') }}"></script>
+    {% endif %}
+
+
     {% if request.endpoint == "main.mostrar_seccion" %}
-        <script src="{{ url_for('static', filename='js/seccion.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/seccion.js') }}"></script>
     {% endif %}
-    
+
     {% if request.endpoint == "main.buscar" %}
-        <script src="{{ url_for('static', filename='js/buscar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/buscar.js') }}"></script>
     {% endif %}
-    
+
     {% if request.endpoint == "main.buscar_avanzada" %}
-        <script src="{{ url_for('static', filename='js/buscar_avanzado.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/buscar_avanzado.js') }}"></script>
     {% endif %}
-    
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const closeButtons = document.querySelectorAll('.close-btn, .close');
-        closeButtons.forEach(button => {
-            button.addEventListener('click', function () {
-                this.closest('.alert').style.display = 'none';
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const closeButtons = document.querySelectorAll('.close-btn, .close');
+            closeButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    this.closest('.alert').style.display = 'none';
+                });
             });
         });
-    });
-</script>
+    </script>
 
-    
+
 </body>
+
 </html>
