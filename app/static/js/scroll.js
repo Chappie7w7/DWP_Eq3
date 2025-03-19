@@ -16,7 +16,7 @@ $(document).ready(function () {
 
         console.log(`🖱️ Scroll detectado - scrollTop: ${scrollTop}, containerHeight: ${containerHeight}, scrollHeight: ${scrollHeight}`);
 
-        if (scrollTop + containerHeight >= scrollHeight - 50) { 
+        if (scrollTop + containerHeight >= scrollHeight - 50) {
             console.log("📌 Detectado scroll al final, cargando más datos...");
             cargarSecciones(modulo, true);
         }
@@ -55,11 +55,54 @@ $(document).ready(function () {
             data.secciones.forEach(seccion => {
                 const tarjeta = `
                     <div class="col-md-4 mb-3">
-                        <div class="card">
+                        <div class="card shadow-lg border-0">
                             <div class="card-body text-center">
-                                <h5 class="card-title">${seccion.nombre}</h5>
-                                <p class="card-text">${seccion.descripcion}</p>
-                                <a href="${seccion.url}" class="btn btn-primary">Ver más</a>
+                                <h5 class="card-title fw-bold">${seccion.nombre}</h5>
+                                <p class="card-text text-muted">${seccion.descripcion}</p>
+            
+                                <div class="d-flex justify-content-center gap-2">
+                                    <!-- Botón Ver Más -->
+                                    <a href="${seccion.url}" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-eye"></i> Ver más
+                                    </a>
+            
+                                    <!-- Botones de Editar y Eliminar en Materias -->
+                                    ${modulo === "materias" ? `
+                                        <a href="/materias/editar/${seccion.id}" class="btn btn-warning btn-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form action="/materias/eliminar/${seccion.id}" method="POST" style="display:inline;">
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </form>
+                                    ` : ""}
+            
+                                    <!-- Botones de Editar y Eliminar en Juegos -->
+                                    ${modulo === "juegos" ? `
+                                        <a href="/juegos/editar/${seccion.id}" class="btn btn-warning btn-sm">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form action="/juegos/eliminar/${seccion.id}" method="POST" style="display:inline;">
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </form>
+                                    ` : ""}
+
+                                     <!-- Botones de Editar y Eliminar solo en Proyectos -->
+                                ${modulo === "proyectos" ? `
+                                    <a href="/proyectos/editar/${seccion.id}" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-edit" ></i>
+                                    </a>
+                                    <form action="/proyectos/eliminar/${seccion.id}" method="POST" style="display:inline;">
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="fas fa-trash-alt" style="color: gray;"></i>
+                                        </button>
+                                    </form>
+                                ` : ""}
+
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -67,7 +110,8 @@ $(document).ready(function () {
                 contenedor.append(tarjeta);
             });
 
-            offset += data.secciones.length;  
+
+            offset += data.secciones.length;
             hasMore = data.has_more;
             console.log(`✅ hasMore actualizado a: ${hasMore}, Nuevo offset: ${offset}`);
             loading = false;

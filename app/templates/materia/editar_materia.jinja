@@ -1,0 +1,17 @@
+{% extends "base.jinja" %}
+
+{% block content %}
+<h2>Editar Materia</h2>
+
+<form method="POST" action="{{ url_for('materia.editar_materia', materia_id=materia.id) }}">
+    <label for="nombre">Nombre de la Materia:</label>
+    <input type="text" name="nombre" value="{{ materia.nombre }}" required>
+
+    <label for="descripcion">Descripción:</label>
+    <textarea name="descripcion" required>{{ materia.descripcion }}</textarea>
+
+    <button type="submit">Guardar Cambios</button>
+</form>
+
+<a href="{{ url_for('materia.listar_materias') }}">Volver a la lista</a>
+{% endblock %}

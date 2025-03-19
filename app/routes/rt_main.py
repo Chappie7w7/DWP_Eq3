@@ -93,7 +93,8 @@ def mostrar_seccion(current_user, modulo, seccion):
         'dinamico_seccion.jinja',
         titulo=seccion_data.nombre,
         seccion=seccion_data,
-        breadcrumb=breadcrumb
+        breadcrumb=breadcrumb,
+        modulo=modulo
     )
 
 @main_bp.route('/buscar/<modulo>', methods=['GET'])
@@ -135,7 +136,7 @@ def buscar_avanzada():
     Realiza una búsqueda avanzada en todas las categorías y módulos.
     """
     usuario_id = session.get('usuario_id')
-    query = request.args.get('advanced_query', '').strip()  # Cambiado de 'query' a 'advanced_query'
+    query = request.args.get('advanced_query', '').strip()  
     categoria = request.args.get('categoria', '').strip()
 
     if not query:
@@ -184,8 +185,14 @@ def api_obtener_secciones(modulo):
         UsuarioModulo.usuario_id == usuario_id
     ).offset(offset).limit(limit).all()  # 🔹 `offset` y `limit` reemplazan `paginate()`
 
+    # 🔹 Asegurar que el ID de la sección se incluya en la respuesta
     secciones_json = [
-        {"nombre": s.nombre, "descripcion": s.descripcion, "url": s.url}
+        {
+            "id": s.id,  
+            "nombre": s.nombre,
+            "descripcion": s.descripcion,
+            "url": s.url
+        }
         for s in secciones
     ]
 
@@ -193,6 +200,7 @@ def api_obtener_secciones(modulo):
         "secciones": secciones_json,
         "has_more": len(secciones) == limit  # 🔹 Si hay menos de `limit`, ya no hay más datos
     })
+
 
 
 @main_bp.route('/api/seccion/<modulo>/<seccion>', methods=['GET'])
@@ -298,60 +306,3 @@ def api_buscar_avanzada():
         "has_more": len(secciones) == limit  # 🔹 Si se obtienen menos de `limit`, ya no hay más datos
     })
 
-@main_bp.route('/modulo/crear', methods=['GET', 'POST'])
-@login_required
-@token_required
-def crear_modulo(current_user):
-    if request.method == 'POST':
-        nombre_modulo = request.form.get('nombre_modulo')
-
-        
-        if not nombre_modulo:
-            flash('Por favor, completa todos los campos.', 'warning')
-            return redirect(url_for('main.crear_modulo'))
-
-        modulo = Modulo(nombre_modulo=nombre_modulo, propietario=current_user.id)
-        db.session.add(modulo)
-        db.session.commit()
-
-        flash(f'Módulo "{nombre_modulo}" creado con éxito!', 'success')
-
-
-        return redirect(url_for('main.mostrar_modulo', modulo_id=modulo.id))
-
-    return render_template('modulo/crear_modulo.jinja')
-
-
-@main_bp.route('/modulo/<int:modulo_id>/seccion/crear', methods=['GET', 'POST'])
-@login_required
-@token_required
-def crear_seccion(modulo_id, current_user):
-    modulo = Modulo.query.get_or_404(modulo_id)
-
-    if request.method == 'POST':
-        categoria = request.form.get('categoria')
-        nombre = request.form.get('nombre')
-        descripcion = request.form.get('descripcion')
-        url = request.form.get('url')
-
-        if not categoria or not nombre or not url:
-            flash('Por favor, completa todos los campos.', 'warning')
-            return redirect(url_for('main.crear_seccion', modulo_id=modulo.id))
-
-        
-        seccion = Seccion(
-            categoria=categoria,
-            nombre=nombre,
-            descripcion=descripcion,
-            url=url,
-            modulo_id=modulo.id
-        )
-        db.session.add(seccion)
-        db.session.commit()
-
-        flash(f'Sección "{nombre}" agregada al módulo "{modulo.nombre_modulo}"', 'success')
-
-
-        return redirect(url_for('main.mostrar_modulo', modulo_id=modulo.id))
-
-    return render_template('modulo/crear_seccion.jinja', modulo=modulo)

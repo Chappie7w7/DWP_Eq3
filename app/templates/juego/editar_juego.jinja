@@ -1,0 +1,22 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+{% extends "base.jinja" %}
+
+{% block content %}
+<div class="main-content">
+<div class="form-container">
+<h2>Editar Juego</h2>
+
+<form method="POST" action="{{ url_for('juego.editar_juego', juego_id=juego.id) }}">
+    <label for="nombre">Nombre del Juego:</label>
+    <input type="text" name="nombre" value="{{ juego.nombre }}" required>
+
+    <label for="descripcion">Descripción:</label>
+    <textarea name="descripcion" required>{{ juego.descripcion }}</textarea>
+
+    <button type="submit">Guardar Cambios</button>
+</form>
+
+<a href="{{ url_for('juego.listar_juegos') }}">Volver a la lista</a>
+</div>
+</div>
+{% endblock %}

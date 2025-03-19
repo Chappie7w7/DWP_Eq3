@@ -6,3 +6,6 @@ from .md_usuario import Usuario
 from .md_preguntas import PreguntaSecreta
 from .md_respuestas import RespuestasP
 from .md_intentosR import IntentosRecuperacion
+from .md_materia import Materia  
+from .md_juego import Juego  
+from .md_proyecto import Proyecto  

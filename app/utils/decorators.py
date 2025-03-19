@@ -1,6 +1,6 @@
 from datetime import datetime
 from functools import wraps
-from flask import Config, current_app, jsonify, redirect, session, abort, url_for
+from flask import Config, current_app, flash, jsonify, redirect, session, abort, url_for
 import jwt
 from app import db
 from app.models.md_usuario import Usuario
@@ -34,50 +34,37 @@ def token_required(f):
 
         try:
             decoded_token = jwt.decode(token, current_app.config['JWT_SECRET_KEY'], algorithms=["HS256"])
-            exp_time = decoded_token.get("exp")
+            usuario = Usuario.query.get(decoded_token["usuario_id"])
 
-            print(f"📥 Token recibido en sesión: {token}")
-            print(f"⌛ Expiración del token: {datetime.fromtimestamp(exp_time)}")
-            print(f"🕒 Hora actual: {datetime.now()}")
-
-            if datetime.now().timestamp() > exp_time:
-                print("⏳ Token expirado, eliminando...")
-
-                usuario = Usuario.query.get(decoded_token["usuario_id"])
-                if usuario:
-                    usuario.token = None  
-                    db.session.commit()
-                    print("🗑️ Token eliminado de la base de datos.")
-
-                session['token_expired'] = "Tu sesión ha expirado. Por favor, inicia sesión nuevamente."
-                session.modified = True  # Permite modificar la sesión antes de limpiarla
+            # 🔹 Verificar si la sesión actual sigue siendo válida
+            if not usuario or usuario.token_sesion != token:
+                print("🚫 Sesión inválida o cerrada en otro dispositivo")
+                session.clear()
+                flash('Tu sesión ha sido cerrada en otro dispositivo. Vuelve a iniciar sesión.', 'danger')
                 return redirect(url_for('auth.login'))
 
-            current_user = Usuario.query.get(decoded_token["usuario_id"])
-            if not current_user:
-                print("❌ Usuario no encontrado")
+            # 🔹 Verificar si el token ha expirado
+            exp_time = decoded_token.get("exp")
+            if datetime.now().timestamp() > exp_time:
+                print("🔥 Token expirado, eliminando...")
+                usuario.token_sesion = None
+                db.session.commit()
                 session.clear()
+                flash('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.', 'danger')
                 return redirect(url_for('auth.login'))
 
         except jwt.ExpiredSignatureError:
-            print("🔥 Token expirado, eliminando en BD...")
-
-            session['token_expired'] = "Tu sesión ha expirado. Por favor, inicia sesión nuevamente."
-            session.modified = True  
-
-            usuario = Usuario.query.filter_by(token=token).first()
-            if usuario:
-                usuario.token = None
-                db.session.commit()
-                print("🗑️ Token eliminado de la base de datos.")
-
-            return redirect(url_for('auth.login'))  
+            print("⚠️ Token expirado")
+            session.clear()
+            flash('Tu sesión ha expirado. Por favor, inicia sesión nuevamente.', 'danger')
+            return redirect(url_for('auth.login'))
 
         except jwt.InvalidTokenError:
             print("⚠️ Token inválido")
             session.clear()
+            flash('Sesión inválida. Por favor, inicia sesión nuevamente.', 'danger')
             return redirect(url_for('auth.login'))
 
-        return f(current_user, *args, **kwargs)
+        return f(usuario, *args, **kwargs)
 
     return decorator
