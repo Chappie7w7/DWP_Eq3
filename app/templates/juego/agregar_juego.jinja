@@ -3,28 +3,20 @@
 
 {% block content %}
 <div class="main-content">
-<div class="form-container">
-<h2>Agregar Nuevo Juego</h2>
+    <div class="form-container">
+        <h2>Agregar Nuevo Juego</h2>
 
-<form method="POST" action="{{ url_for('juego.agregar_juego') }}">
-    <label for="nombre">Nombre del Juego:</label>
-    <input type="text" name="nombre" required>
+        <form method="POST" action="{{ url_for('juego.agregar_juego') }}">
+            <label for="nombre">Nombre del Juego:</label>
+            <input type="text" name="nombre" required>
 
-    <label for="descripcion">Descripción:</label>
-    <textarea name="descripcion" required></textarea>
+            <label for="descripcion">Descripción:</label>
+            <textarea name="descripcion" required></textarea>
 
-    <label for="modulo_id">Módulo:</label>
-    <select name="modulo_id" required>
-        <option value="">Selecciona un módulo</option>
-        <option value="1">Materias</option>
-        <option value="2">Juegos</option>
-        <option value="3">Proyectos</option>
-    </select>
+            <button type="submit">Agregar Juego</button>
+        </form>
 
-    <button type="submit">Agregar Juego</button>
-</form>
-
-<a href="{{ url_for('juego.listar_juegos') }}">Volver a la lista</a>
-</div>
+        <a href="{{ url_for('juego.listar_juegos') }}">Volver a la lista</a>
+    </div>
 </div>
 {% endblock %}

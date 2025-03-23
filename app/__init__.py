@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from config import Config
+from app.utils.filters import tiene_permiso  
 
 # Inicializar extensiones
 db = SQLAlchemy()
@@ -46,5 +47,8 @@ def create_app():
     
     with app.app_context():
         db.create_all()
+        
+    app.jinja_env.globals['tiene_permiso'] = tiene_permiso
+
 
     return app
