@@ -1,40 +1,39 @@
 from flask import Blueprint, request, render_template, redirect, session, url_for, flash
 from app import db
 from app.models.md_materia import Materia
+from app.models.md_modulo import Modulo
+from app.models.md_seccion import Seccion  
 
 materia_bp = Blueprint('materia', __name__, url_prefix='/materias')
-
-from app.models.md_seccion import Seccion  
 
 @materia_bp.route('/agregar', methods=['GET', 'POST'])
 def agregar_materia():
     if request.method == 'POST':
         nombre = request.form.get('nombre')
         descripcion = request.form.get('descripcion')
-        modulo_id = request.form.get('modulo_id')  # Asegurar que se recibe
-        usuario_id = session.get('usuario_id')  # Obtener el usuario logueado
+        usuario_id = session.get('usuario_id')
 
-        if not nombre or not descripcion or not modulo_id:
+        modulo = Modulo.query.filter_by(nombre_modulo="Materias").first()
+
+        if not nombre or not descripcion or not modulo:
             flash('Todos los campos son obligatorios.', 'danger')
             return redirect(url_for('materia.agregar_materia'))
 
-        # Crear la materia
         nueva_materia = Materia(
-            nombre=nombre, 
-            descripcion=descripcion, 
-            modulo_id=modulo_id,
+            nombre=nombre,
+            descripcion=descripcion,
+            modulo_id=modulo.id,
             usuario_id=usuario_id
         )
         db.session.add(nueva_materia)
         db.session.commit()
 
-        # Crear automáticamente una sección en la tabla "seccion"
         nueva_seccion = Seccion(
             categoria="materias",
             nombre=nombre,
             descripcion=descripcion,
             url=f"/materias/{nombre.lower().replace(' ', '_')}",
-            modulo_id=modulo_id
+            modulo_id=modulo.id
         )
         db.session.add(nueva_seccion)
         db.session.commit()
@@ -43,6 +42,7 @@ def agregar_materia():
         return redirect(url_for('materia.listar_materias'))
 
     return render_template('materia/agregar_materia.jinja')
+
 
 
 # 🔹 usenlo si tienen problemas de rutas, si no no

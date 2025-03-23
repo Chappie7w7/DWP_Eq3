@@ -53,34 +53,35 @@
                             </a>
                             <ul>
                                 <!-- 🔹 Botón para agregar una nueva materia con ícono ➕ -->
-                                {% if modulo['nombre_modulo'] == 'Materias' %}
+                            {% if modulo['nombre_modulo'] == 'Materias' and tiene_permiso('materias_crear') %}
                                 <li>
                                     <a href="{{ url_for('materia.agregar_materia') }}"
                                         class="text-success font-weight-bold">
-                                        <i class="fas fa-plus-circle"></i> &nbsp; Agregar Materia
+                                <i class="fas fa-plus-circle"></i> &nbsp; Agregar Materia
                                     </a>
                                 </li>
 
-                                <!-- 🔹 Botón para agregar un nuevo proyecto -->
-                                {% elif modulo['nombre_modulo'] == 'Proyectos' %}
-                                <li>
-                                    <a href="{{ url_for('proyecto.agregar_proyecto') }}"
-                                        class="text-success font-weight-bold">
-                                        <i class="fas fa-plus-circle"></i> &nbsp; Agregar Proyecto
-                                    </a>
-                                </li>
+                            <!-- 🔹 Botón para agregar un nuevo proyecto -->
+                            {% elif modulo['nombre_modulo'] == 'Proyectos' and tiene_permiso('proyectos_crear') %}
+                            <li>
+                                <a href="{{ url_for('proyecto.agregar_proyecto') }}"
+                                    class="text-success font-weight-bold">
+                                    <i class="fas fa-plus-circle"></i> &nbsp; Agregar Proyecto
+                                </a>
+                            </li>
 
-                                <!-- 🔹 Botón para agregar un nuevo juego -->
-                                {% elif modulo['nombre_modulo'] == 'Juegos' %}
-                                <li>
-                                    <a href="{{ url_for('juego.agregar_juego') }}"
-                                        class="text-success font-weight-bold">
-                                        <i class="fas fa-plus-circle"></i> &nbsp; Agregar Juego
-                                    </a>
-                                </li>
-                                {% endif %}
+                            <!-- 🔹 Botón para agregar un nuevo juego -->
+                            {% elif modulo['nombre_modulo'] == 'Juegos' and tiene_permiso('juegos_crear') %}
+                            <li>
+                                <a href="{{ url_for('juego.agregar_juego') }}"
+                                    class="text-success font-weight-bold">
+                                    <i class="fas fa-plus-circle"></i> &nbsp; Agregar Juego
+                                </a>
+                            </li>
+                            {% endif %}
 
-                                <!-- 🔹 Listar todas las secciones -->
+
+                            <!-- 🔹 Listar todas las secciones -->
                                 {% for seccion in modulo['secciones'] %}
                                 <li>
                                     <a href="{{ seccion['url'] }}">
@@ -95,6 +96,14 @@
                         {% else %}
                         <li><a href="#"><i class="fas fa-exclamation-circle"></i> &nbsp; Sin módulos asignados</a></li>
                         {% endif %}
+                        {% if session.get('rol') == 'Administrador' %}
+    <li class="mt-3">
+        <a href="{{ url_for('permiso.gestionar_permisos') }}" class="text-info font-weight-bold">
+            <i class="fas fa-lock"></i> &nbsp; Gestión de Permisos
+        </a>
+    </li>
+{% endif %}
+
                     </ul>
                 </nav>
             </div>

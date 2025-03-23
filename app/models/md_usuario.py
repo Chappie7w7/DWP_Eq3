@@ -27,6 +27,8 @@ class Usuario(db.Model, UserMixin):
 
     # Relación con la tabla 'rol'
     rol = db.relationship('Rol', back_populates='usuarios', lazy='joined')
+    usuario_permisos = db.relationship('UsuarioPermiso', backref='usuario', cascade='all, delete-orphan')
+
 
     # Relación con 'UsuarioModulo'
     usuario_modulos = db.relationship('UsuarioModulo', back_populates='usuario', cascade='all, delete-orphan', lazy='joined')

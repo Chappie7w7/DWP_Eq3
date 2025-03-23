@@ -1,5 +1,6 @@
 from flask import Blueprint, request, render_template, redirect, session, url_for, flash
 from app import db
+from app.models.md_modulo import Modulo
 from app.models.md_proyecto import Proyecto
 from app.models.md_seccion import Seccion
 
@@ -10,17 +11,18 @@ def agregar_proyecto():
     if request.method == 'POST':
         nombre = request.form.get('nombre')
         descripcion = request.form.get('descripcion')
-        modulo_id = request.form.get('modulo_id')
         usuario_id = session.get('usuario_id')
 
-        if not nombre or not descripcion or not modulo_id:
+        modulo = Modulo.query.filter_by(nombre_modulo="Proyectos").first()
+
+        if not nombre or not descripcion or not modulo:
             flash('Todos los campos son obligatorios.', 'danger')
             return redirect(url_for('proyecto.agregar_proyecto'))
 
         nuevo_proyecto = Proyecto(
-            nombre=nombre, 
-            descripcion=descripcion, 
-            modulo_id=modulo_id,
+            nombre=nombre,
+            descripcion=descripcion,
+            modulo_id=modulo.id,
             usuario_id=usuario_id
         )
         db.session.add(nuevo_proyecto)
@@ -31,7 +33,7 @@ def agregar_proyecto():
             nombre=nombre,
             descripcion=descripcion,
             url=f"/proyectos/{nombre.lower().replace(' ', '_')}",
-            modulo_id=modulo_id
+            modulo_id=modulo.id
         )
         db.session.add(nueva_seccion)
         db.session.commit()
@@ -40,6 +42,7 @@ def agregar_proyecto():
         return redirect(url_for('proyecto.listar_proyectos'))
 
     return render_template('proyecto/agregar_proyecto.jinja')
+
 
 @proyecto_bp.route('/', methods=['GET'])
 def fix_trailing_slash():
