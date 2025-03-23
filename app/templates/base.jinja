@@ -144,7 +144,6 @@
 
                 <a href="#" class="float-left show-nav-lateral"><i class="fas fa-exchange-alt"></i></a>
                 <!-- Iconos en la parte superior derecha -->
-                <!-- Iconos en la parte superior derecha -->
                 <div class="top-icons">
                     <a href="#" data-toggle="modal" data-target="#ModalHelp"><i class="far fa-question-circle"></i></a>
                     <a href="#"><i class="fas fa-user-cog"></i></a>
@@ -152,22 +151,7 @@
                         <i class="fas fa-power-off"></i>
                     </a>
 
-                    <!-- 🔹 Checkbox para desactivar/activar opciones -->
-                    <form id="formActualizarSeguridad" method="POST"
-                        action="{{ url_for('auth.actualizar_preferencias') }}"
-                        style="display: inline-block; margin-left: 15px;">
-                        <div class="form-check form-switch" style="margin-left: 10px; display: inline-block;">
-                            <input type="checkbox" class="form-check-input" id="desactivarOpciones"
-                                name="desactivar_opciones"
-                                onchange="document.getElementById('formActualizarSeguridad').submit();" {% if
-                                session.get('confirmar_inicio_sesion')==False and
-                                session.get('cerrar_sesiones_activas')==False %} checked {% endif %}>
-
-                            <label class="form-check-label" for="desactivarOpciones" style="font-size: 14px;">
-                                Desactivar seguridad
-                            </label>
-                        </div>
-                    </form>
+                    
 
                 </div>
 
