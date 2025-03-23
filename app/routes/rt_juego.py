@@ -1,27 +1,29 @@
 from flask import Blueprint, request, render_template, redirect, session, url_for, flash
 from app import db
 from app.models.md_juego import Juego
+from app.models.md_modulo import Modulo
+from app.models.md_seccion import Seccion  
 
 juego_bp = Blueprint('juego', __name__, url_prefix='/juegos')
-
-from app.models.md_seccion import Seccion  
 
 @juego_bp.route('/agregar', methods=['GET', 'POST'])
 def agregar_juego():
     if request.method == 'POST':
         nombre = request.form.get('nombre')
         descripcion = request.form.get('descripcion')
-        modulo_id = request.form.get('modulo_id')
         usuario_id = session.get('usuario_id')
 
-        if not nombre or not descripcion or not modulo_id:
+        # Buscar el módulo "Juegos"
+        modulo = Modulo.query.filter_by(nombre_modulo="Juegos").first()
+
+        if not nombre or not descripcion or not modulo:
             flash('Todos los campos son obligatorios.', 'danger')
             return redirect(url_for('juego.agregar_juego'))
 
         nuevo_juego = Juego(
-            nombre=nombre, 
-            descripcion=descripcion, 
-            modulo_id=modulo_id,
+            nombre=nombre,
+            descripcion=descripcion,
+            modulo_id=modulo.id,
             usuario_id=usuario_id
         )
         db.session.add(nuevo_juego)
@@ -32,7 +34,7 @@ def agregar_juego():
             nombre=nombre,
             descripcion=descripcion,
             url=f"/juegos/{nombre.lower().replace(' ', '_')}",
-            modulo_id=modulo_id
+            modulo_id=modulo.id
         )
         db.session.add(nueva_seccion)
         db.session.commit()

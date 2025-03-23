@@ -8,6 +8,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from app import db, mail 
 from app.models import Usuario, UsuarioModulo, Modulo, Seccion, PreguntaSecreta, RespuestasP, IntentosRecuperacion
 from app.models.md_rol import Rol
+from app.models.md_usuario_permiso import UsuarioPermiso
 from app.utils.email_utils import enviar_codigo_otp
 from app.utils.sms_helper import enviar_codigo_sms  # Importar la función de envío de SMS
 
@@ -130,6 +131,10 @@ def verificar_otp(usuario_id, codigo):
                 "privilegio": um.privilegio,
                 "secciones": [{"nombre": s.nombre, "url": s.url} for s in secciones]
             })
+            
+    # 🔹 Obtener los permisos del usuario desde la tabla usuario_permiso
+    permisos_asignados = UsuarioPermiso.query.filter_by(usuario_id=usuario.id).all()
+    permisos_lista = [p.permiso.nombre for p in permisos_asignados] 
 
     # 🔹 Guardar información en sesión
     session['usuario_id'] = usuario.id
@@ -137,11 +142,10 @@ def verificar_otp(usuario_id, codigo):
     session['usuario_nombre'] = usuario.nombre
     session['rol'] = usuario.rol.nombre
     session['modulos'] = modulos  
+    session['permisos'] = permisos_lista 
 
     flash('Código correcto. Iniciando sesión...', 'success')
     return redirect(url_for('main.inicio'))
-
-
 
 
 @auth_bp.route('/cerrar-otros-dispositivos/<int:usuario_id>', methods=['POST'])

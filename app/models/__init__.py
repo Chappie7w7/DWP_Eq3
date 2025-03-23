@@ -9,3 +9,6 @@ from .md_intentosR import IntentosRecuperacion
 from .md_materia import Materia  
 from .md_juego import Juego  
 from .md_proyecto import Proyecto  
+from .md_permiso import Permiso 
+from .md_rol_permiso import RolPermiso 
+from .md_usuario_permiso import UsuarioPermiso  

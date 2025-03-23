@@ -1,0 +1,82 @@
+{% extends "base.jinja" %}
+
+{% block title %}Gestionar Permisos{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Gestión de Permisos por Usuario</h2>
+
+    {% if mensaje %}
+    <div class="alert {% if tipo_mensaje == 'success' %}alert-success{% else %}alert-danger{% endif %} mt-3" role="alert">
+        {{ mensaje }}
+    </div>
+    {% endif %}
+
+    {% if usuarios and permisos %}
+    <form method="POST">
+        <div class="mb-3">
+            <label for="usuario_id" class="form-label fw-bold">Selecciona un Usuario:</label>
+            <select class="form-select" name="usuario_id" id="usuario_id">
+                <option value="">-- Selecciona --</option>
+                {% for usuario in usuarios %}
+                <option value="{{ usuario.id }}" {% if usuario.id == usuario_id_seleccionado %}selected{% endif %}>
+                    {{ usuario.nombre }} ({{ usuario.email }})
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label fw-bold">Permisos por Módulo:</label>
+
+            {% set modulos = ['materias', 'juegos', 'proyectos'] %}
+            {% set acciones = ['consultar', 'crear', 'actualizar', 'eliminar'] %}
+
+            <div class="d-flex justify-content-between">
+                {% for modulo in modulos %}
+                    <div class="card shadow-sm p-3 mb-4" style="width: 30%;">
+                        <div class="card-header bg-light fw-bold text-capitalize text-center">
+                            {{ modulo }}
+                        </div>
+                        <div class="card-body">
+                            {% for accion in acciones %}
+                                {% set permiso_nombre = modulo ~ '_' ~ accion %}
+                                {% set permiso = permisos|selectattr("nombre", "equalto", permiso_nombre)|first %}
+                                <div class="form-check">
+                                    {% if permiso %}
+                                        <input class="form-check-input" type="checkbox" name="permisos[]" value="{{ permiso.id }}"
+                                            id="permiso_{{ permiso.id }}"
+                                            {% if permisos_usuario and permiso.id in permisos_usuario %}checked{% endif %}>
+                                        <label class="form-check-label" for="permiso_{{ permiso.id }}">
+                                            {{ accion|capitalize }}
+                                        </label>
+                                    {% else %}
+                                        <span class="text-muted">{{ accion|capitalize }} (permiso no encontrado)</span>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar Permisos</button>
+    </form>
+    {% else %}
+    <div class="alert alert-warning text-center">
+        No hay usuarios o permisos disponibles. Agrega primero desde el panel correspondiente.
+    </div>
+    {% endif %}
+</div>
+
+<!--Script para recargar la vista al cambiar de usuario -->
+<script>
+    document.getElementById("usuario_id").addEventListener("change", function() {
+        const selectedId = this.value;
+        if (selectedId) {
+            window.location.href = `/permisos/gestionar?usuario_id=${selectedId}`;
+        }
+    });
+</script>
+{% endblock %}

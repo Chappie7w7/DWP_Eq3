@@ -3,6 +3,8 @@ from functools import wraps
 from flask import Config, current_app, flash, jsonify, redirect, session, abort, url_for
 import jwt
 from app import db
+from app.models.md_permiso import Permiso
+from app.models.md_rol import Rol
 from app.models.md_usuario import Usuario
 
 def requiere_modulo(modulo_nombre, permiso_requerido='lectura'):
@@ -68,3 +70,51 @@ def token_required(f):
         return f(usuario, *args, **kwargs)
 
     return decorator
+
+
+def permiso_requerido(nombre_permiso):
+    def decorador(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            usuario_id = session.get('usuario_id')
+
+            if not usuario_id:
+                flash("Debes iniciar sesión.", "warning")
+                return redirect(url_for('auth.login'))
+
+            # Consultar si el usuario tiene el permiso solicitado
+            permiso = Permiso.query.join(Permiso.roles).join(Rol.usuarios).filter(
+                Rol.usuarios.any(id=usuario_id),
+                Permiso.nombre == nombre_permiso
+            ).first()
+
+            if not permiso:
+                flash("No tienes permiso para realizar esta acción.", "danger")
+                return redirect(url_for('main.inicio'))
+
+            return func(*args, **kwargs)
+        return wrapper
+    return decorador
+
+def admin_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        usuario_id = session.get('usuario_id')
+        print(f"🧪 ID usuario: {usuario_id}")  
+
+        if not usuario_id:
+            print("⚠️ No logueado, redirigiendo a login")
+            flash('Debes iniciar sesión.', 'warning')
+            return redirect(url_for('auth.login'))
+
+        usuario = Usuario.query.get(usuario_id)
+        print(f"🧪 Rol del usuario: {usuario.rol.nombre}")  
+
+        if not usuario or usuario.rol.nombre.lower() != 'administrador':
+            print("🚫 No es admin")
+            flash('No tienes permisos de administrador.', 'danger')
+            return redirect(url_for('main.inicio'))
+
+        print("✅ Acceso como admin")
+        return f(*args, **kwargs)
+    return decorated_function

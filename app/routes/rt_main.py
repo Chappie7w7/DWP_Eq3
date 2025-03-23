@@ -167,40 +167,54 @@ def buscar_avanzada():
 
 @main_bp.route('/api/secciones/<modulo>', methods=['GET'])
 def api_obtener_secciones(modulo):
-    """
-    API para obtener las secciones de un módulo con scroll infinito.
-    """
     usuario_id = session.get('usuario_id')
     if not usuario_id:
         return jsonify({"error": "Usuario no autenticado"}), 403
+    
 
-    offset = request.args.get('offset', default=0, type=int)  # 🔹 Usamos `offset` en lugar de `page`
-    limit = 6  # 🔹 Número de registros por petición
+    #Asegurar que los permisos estén en sesión
+    print("📌 Permisos de sesión disponibles en la API:", session.get('permisos'))
 
-    # Filtrar las secciones del usuario en el módulo solicitado
+    permisos = session.get('permisos', [])
+    if not isinstance(permisos, list):
+        permisos = []
+
+    offset = request.args.get('offset', default=0, type=int)
+    limit = 6
+
     secciones = Seccion.query.join(UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id).join(
         Modulo, Modulo.id == Seccion.modulo_id
     ).filter(
         Modulo.nombre_modulo == modulo,
         UsuarioModulo.usuario_id == usuario_id
-    ).offset(offset).limit(limit).all()  # 🔹 `offset` y `limit` reemplazan `paginate()`
+    ).offset(offset).limit(limit).all()
 
-    # 🔹 Asegurar que el ID de la sección se incluya en la respuesta
+    modulo_lower = modulo.lower()
+
     secciones_json = [
-        {
-            "id": s.id,  
-            "nombre": s.nombre,
-            "descripcion": s.descripcion,
-            "url": s.url
+    {
+        "id": s.id,
+        "nombre": s.nombre,
+        "descripcion": s.descripcion,
+        "url": s.url,
+        "permisos": {
+            "actualizar": f"{modulo_lower}_actualizar" in permisos if permisos else False,
+            "eliminar": f"{modulo_lower}_eliminar" in permisos if permisos else False,
+            "ver": f"{modulo_lower}_consultar" in permisos if permisos else False
         }
-        for s in secciones
+    }
+    for s in secciones
     ]
+
+    print("🔄 Datos enviados al frontend:")
+    for s in secciones_json:
+        print(s)
+
 
     return jsonify({
         "secciones": secciones_json,
-        "has_more": len(secciones) == limit  # 🔹 Si hay menos de `limit`, ya no hay más datos
+        "has_more": len(secciones) == limit
     })
-
 
 
 @main_bp.route('/api/seccion/<modulo>/<seccion>', methods=['GET'])
