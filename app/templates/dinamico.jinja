@@ -118,5 +118,11 @@
 <script>
     const permisosUsuario = {{ session.get('permisos', []) | tojson }};
 </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        fetch(window.location.href, { cache: "reload" });
+    });
+</script>
+
 
 {% endblock %}

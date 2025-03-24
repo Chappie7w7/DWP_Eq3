@@ -13,7 +13,6 @@ def agregar_juego():
         descripcion = request.form.get('descripcion')
         usuario_id = session.get('usuario_id')
 
-        # Buscar el módulo "Juegos"
         modulo = Modulo.query.filter_by(nombre_modulo="Juegos").first()
 
         if not nombre or not descripcion or not modulo:
@@ -44,16 +43,19 @@ def agregar_juego():
 
     return render_template('juego/agregar_juego.jinja')
 
+
 @juego_bp.route('/', methods=['GET'])
 def fix_trailing_slash():
     return redirect(url_for('juego.listar_juegos'), code=301)
 
 @juego_bp.route('', methods=['GET'])  
 def listar_juegos():
-    return render_template("dinamico.jinja", titulo="Juegos", breadcrumb=[
+    secciones = Seccion.query.filter_by(categoria="juegos").all()
+    return render_template("dinamico.jinja", titulo="Juegos", secciones=secciones, breadcrumb=[
         {"name": "Inicio", "url": url_for('main.inicio')},
         {"name": "Juegos"}
     ])
+
 
 @juego_bp.route('/editar/<int:juego_id>', methods=['GET', 'POST'])
 def editar_juego(juego_id):

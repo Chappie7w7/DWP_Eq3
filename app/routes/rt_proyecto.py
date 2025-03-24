@@ -39,21 +39,24 @@ def agregar_proyecto():
         db.session.commit()
 
         flash('Proyecto agregado con éxito.', 'success')
+
+        # ✅ Redirige a listar_proyectos con la lista actualizada
         return redirect(url_for('proyecto.listar_proyectos'))
 
     return render_template('proyecto/agregar_proyecto.jinja')
 
 
-@proyecto_bp.route('/', methods=['GET'])
-def fix_trailing_slash():
-    return redirect(url_for('proyecto.listar_proyectos'), code=301)
-
-@proyecto_bp.route('', methods=['GET'])  
+@proyecto_bp.route('', methods=['GET'])
 def listar_proyectos():
-    return render_template("dinamico.jinja", titulo="Proyectos", breadcrumb=[
+    """
+    Vista de proyectos usando `dinamico.jinja` para mantener el scroll infinito.
+    """
+    secciones = Seccion.query.filter_by(categoria="proyecto").all()
+    return render_template("dinamico.jinja", titulo="Proyecto", secciones=secciones, breadcrumb=[
         {"name": "Inicio", "url": url_for('main.inicio')},
         {"name": "Proyectos"}
     ])
+
 
 @proyecto_bp.route('/editar/<int:proyecto_id>', methods=['GET', 'POST'])
 def editar_proyecto(proyecto_id):
