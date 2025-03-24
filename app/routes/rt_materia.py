@@ -39,26 +39,24 @@ def agregar_materia():
         db.session.commit()
 
         flash('Materia agregada con éxito.', 'success')
+
+        # ✅ Redirige a listar_materias con la lista actualizada
         return redirect(url_for('materia.listar_materias'))
 
     return render_template('materia/agregar_materia.jinja')
 
 
-
-# 🔹 usenlo si tienen problemas de rutas, si no no
-@materia_bp.route('/', methods=['GET'])
-def fix_trailing_slash():
-    return redirect(url_for('materia.listar_materias'), code=301)  # 🔹 Redirección manual
-
-@materia_bp.route('', methods=['GET'])  
+@materia_bp.route('', methods=['GET'])
 def listar_materias():
     """
     Vista de materias usando `dinamico.jinja` para mantener el scroll infinito.
     """
-    return render_template("dinamico.jinja", titulo="Materias", breadcrumb=[
+    secciones = Seccion.query.filter_by(categoria="materias").all()
+    return render_template("dinamico.jinja", titulo="Materias", secciones=secciones, breadcrumb=[
         {"name": "Inicio", "url": url_for('main.inicio')},
         {"name": "Materias"}
     ])
+
 
 
 

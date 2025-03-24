@@ -21,6 +21,17 @@ class Usuario(db.Model, UserMixin):
     token = db.Column(db.String(500), nullable=True) 
     token_sesion = db.Column(db.String(500), nullable=True)  # Para manejar sesiones únicas
     
+        # 🔹 Opciones de seguridad para control de sesiones
+    cerrar_sesiones_activas = db.Column(db.Boolean, default=True)  # Nuevo campo
+    confirmar_inicio_sesion = db.Column(db.Boolean, default=True)  # Nuevo campo
+
+    # 🔹 Método para actualizar preferencias de seguridad
+    def actualizar_preferencias(self, cerrar_sesiones, confirmar_sesion):
+        self.cerrar_sesiones_activas = cerrar_sesiones
+        self.confirmar_inicio_sesion = confirmar_sesion
+        db.session.commit()
+
+    
     # OTP (One-Time Password) para autenticación multifactor
     otp_code = db.Column(db.String(6), nullable=True)
     otp_expiration = db.Column(db.DateTime, nullable=True)
