@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta 
 import secrets
+import smtplib
 from flask import Blueprint, Config, app, current_app, flash, jsonify, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 from flask_mail import Message
@@ -34,62 +35,111 @@ def logout():
     flash('Has cerrado sesión correctamente.', 'info')  # Mensaje de confirmación
     return redirect(url_for('auth.login'))  # Redirigir al login
 
+def generar_token(usuario_id):
+    """Genera un token JWT con expiración de 4 horas."""
+    expira = datetime.utcnow() + timedelta(hours=4)
+    return jwt.encode(
+        {"usuario_id": usuario_id, "exp": int(expira.timestamp())},
+        current_app.config['JWT_SECRET_KEY'],
+        algorithm="HS256"
+    )
+
+
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form.get('username')
         password = request.form.get('password')
 
-        # Validar campos vacíos
         if not email or not password:
             flash('Todos los campos son obligatorios.', 'danger')
             return redirect(url_for('auth.login'))
 
-        # Verificar si el usuario existe en la base de datos
         usuario = Usuario.query.filter_by(email=email).first()
         if not usuario:
             flash('El correo no está registrado.', 'danger')
             return redirect(url_for('auth.login'))
 
-        # Verificar contraseña encriptada
         if not check_password_hash(usuario.password, password):
             flash('La contraseña es incorrecta.', 'danger')
             return redirect(url_for('auth.login'))
 
-        # 🔹 Si el usuario ya tiene una sesión activa en otro dispositivo
-        if usuario.token_sesion:
-            flash('Ya tienes una sesión activa en otro dispositivo.', 'warning')
+        # 🔹 Verificar si hay una sesión activa y si debe cerrarse
+        if usuario.cerrar_sesiones_activas and usuario.token_sesion:
+            flash('Ya tienes una sesión activa en otro dispositivo. Se cerrará automáticamente.', 'warning')
+            usuario.token_sesion = None  # Invalidar sesión anterior
+            db.session.commit()
+            return redirect(url_for('auth.login'))  # 🔹 Volver a login para que el mensaje se muestre
 
-            # 🔹 Mostrar la opción de cerrar otras sesiones
-            return render_template('auth/login.jinja', usuario_id=usuario.id, mostrar_cerrar_sesion=True)
+        # 🔹 Si la opción de OTP está activada, generar y enviar OTP
+        if usuario.confirmar_inicio_sesion:
+            usuario.generar_otp()
+            db.session.commit()
+            
+            print(f"📧 Enviando OTP {usuario.otp_code} a {usuario.email}")  # 🔹 Debug
 
-        # 🔹 Generar OTP y guardarlo en la base de datos
-        usuario.generar_otp()
+            try:
+                enviar_codigo_otp(usuario.email, usuario.id, usuario.otp_code)
+                flash('Hemos enviado un correo con un enlace de verificación. Revisa tu correo.', 'info')
+            except smtplib.SMTPException as e:
+                print(f"❌ Error al enviar correo: {e}")
+                flash('Error al enviar el correo de verificación. Inténtalo más tarde.', 'danger')
+
+            return redirect(url_for('auth.login'))
+
+        # 🔹 Iniciar sesión directamente
+        login_user(usuario)
+        usuario.token_sesion = generar_token(usuario.id)  # Guardar token de sesión
         db.session.commit()
 
-        # 🔹 Enviar OTP por correo
-        enviar_codigo_otp(usuario.email, usuario.id, usuario.otp_code)
+        # 🔹 Cargar módulos y privilegios del usuario
+        modulos_asignados = UsuarioModulo.query.filter_by(usuario_id=usuario.id).all()
+        modulos = []
+        privilegios = [p.permiso.nombre for p in UsuarioPermiso.query.filter_by(usuario_id=usuario.id).all()]
 
-        flash('Hemos enviado un correo con un enlace de verificación. Revisa tu correo.', 'info')
-        return redirect(url_for('auth.login'))
+        for um in modulos_asignados:
+            modulo = Modulo.query.get(um.modulo_id)
+            if modulo:
+                secciones = Seccion.query.filter_by(modulo_id=modulo.id).all()
+                modulos.append({
+                    "nombre_modulo": modulo.nombre_modulo,
+                    "privilegio": um.privilegio,
+                    "secciones": [{"nombre": s.nombre, "url": s.url} for s in secciones],
+                })
+
+        # 🔹 Guardar información en la sesión
+        session.update({
+            'usuario_id': usuario.id,
+            'usuario_nombre': usuario.nombre,
+            'modulos': modulos,
+            'rol': usuario.rol.nombre,
+            'token': usuario.token_sesion,
+            'permisos': privilegios,
+        })
+
+        flash('Inicio de sesión exitoso.', 'success')
+        return redirect(url_for('main.inicio'))
 
     return render_template('auth/login.jinja')
 
-
+@auth_bp.route('/actualizar-preferencias', methods=['POST'])
+@login_required
+def actualizar_preferencias():
+    usuario = current_user
+    usuario.cerrar_sesiones_activas = request.form.get('cerrar_sesiones_activas') == 'on'
+    usuario.confirmar_inicio_sesion = request.form.get('confirmar_inicio_sesion') == 'on'
+    db.session.commit()
+    flash('Preferencias de seguridad actualizadas.', 'success')
+    return redirect(request.referrer or url_for('main.inicio'))
 
 @auth_bp.route('/confirmar-sesion/<int:usuario_id>', methods=['POST'])
 def confirmar_sesion(usuario_id):
-    """Cierra la sesión anterior y permite al usuario continuar."""
     usuario = Usuario.query.get_or_404(usuario_id)
-
-    # Cerrar la sesión anterior eliminando el token_sesion
     usuario.token_sesion = None
     db.session.commit()
-
+    logout_user()
     flash('Se cerraron las sesiones anteriores. Ahora puedes continuar.', 'info')
     return redirect(url_for('auth.login'))
-
-
 
 @auth_bp.route('/verificar-otp/<int:usuario_id>/<codigo>')
 def verificar_otp(usuario_id, codigo):
@@ -100,74 +150,44 @@ def verificar_otp(usuario_id, codigo):
         return redirect(url_for('auth.login'))
 
     login_user(usuario)
-
-    # 🔹 Limpiar OTP después de la verificación
     usuario.otp_code = None
     usuario.otp_expiration = None
-    db.session.commit()
-
-    # 🔹 Generar token JWT con expiración de 3 minutos
-    expira = datetime.now() + timedelta(minutes=14400)
-    token = jwt.encode(
-        {"usuario_id": usuario.id, "exp": int(expira.timestamp())}, 
+    usuario.token_sesion = jwt.encode(
+        {"usuario_id": usuario.id, "exp": int((datetime.now() + timedelta(hours=4)).timestamp())},
         current_app.config['JWT_SECRET_KEY'], algorithm="HS256"
     )
-
-    usuario.token = token
-    usuario.token_sesion = token  # 🔹 Guardar token de sesión para identificar dispositivos
     db.session.commit()
 
-    # 🔹 Cargar módulos y secciones asignados al usuario
-    modulos_asignados = UsuarioModulo.query.filter_by(usuario_id=usuario.id).all()
     modulos = []
-
+    modulos_asignados = UsuarioModulo.query.filter_by(usuario_id=usuario.id).all()
     for um in modulos_asignados:
         modulo = Modulo.query.get(um.modulo_id)
         if modulo:
-            # Obtener las secciones del módulo
             secciones = Seccion.query.filter_by(modulo_id=modulo.id).all()
             modulos.append({
                 "nombre_modulo": modulo.nombre_modulo,
                 "privilegio": um.privilegio,
                 "secciones": [{"nombre": s.nombre, "url": s.url} for s in secciones]
             })
-            
-    # 🔹 Obtener los permisos del usuario desde la tabla usuario_permiso
-    permisos_asignados = UsuarioPermiso.query.filter_by(usuario_id=usuario.id).all()
-    permisos_lista = [p.permiso.nombre for p in permisos_asignados] 
 
-    # 🔹 Guardar información en sesión
-    session['usuario_id'] = usuario.id
-    session['token'] = token
-    session['usuario_nombre'] = usuario.nombre
-    session['rol'] = usuario.rol.nombre
-    session['modulos'] = modulos  
-    session['permisos'] = permisos_lista 
+    session.update({
+        'usuario_id': usuario.id,
+        'token': usuario.token_sesion,
+        'usuario_nombre': usuario.nombre,
+        'rol': usuario.rol.nombre,
+        'modulos': modulos,
+        'permisos': [p.permiso.nombre for p in UsuarioPermiso.query.filter_by(usuario_id=usuario.id).all()]
+    })
 
     flash('Código correcto. Iniciando sesión...', 'success')
     return redirect(url_for('main.inicio'))
 
-
 @auth_bp.route('/cerrar-otros-dispositivos/<int:usuario_id>', methods=['POST'])
 def cerrar_otros_dispositivos(usuario_id):
     usuario = Usuario.query.get_or_404(usuario_id)
-
-    # 🔹 Invalidar todas las sesiones anteriores eliminando el token de sesión
-    usuario.token_sesion = None  
+    usuario.token_sesion = None
     db.session.commit()
-
     flash('Se han cerrado todas las sesiones anteriores. Continúa con tu nueva sesión.', 'success')
-
-    # 🔹 Generar OTP y enviarlo nuevamente
-    usuario.generar_otp()
-    db.session.commit()
-
-    # 🔹 Enviar OTP por correo
-    enviar_codigo_otp(usuario.email, usuario.id, usuario.otp_code)
-
-    flash('Hemos enviado un nuevo código de verificación a tu correo.', 'info')
-
-    # 🔹 Redirigir al login para que pueda continuar con la nueva sesión
     return redirect(url_for('auth.login'))
 
 
