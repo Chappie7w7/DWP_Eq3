@@ -13,7 +13,8 @@ permiso_bp = Blueprint('permiso', __name__, url_prefix='/permisos')
 @permiso_bp.route('/gestionar', methods=['GET', 'POST'])
 @login_required
 @token_required
-def gestionar_permisos(current_user):
+def gestionar_permisos():
+    current_user = Usuario.query.get(session.get("usuario_id"))
     usuarios = Usuario.query.join(Rol).filter(Rol.nombre != "Administrador").all()
     permisos = Permiso.query.all()
 

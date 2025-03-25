@@ -2,11 +2,14 @@ from flask import Blueprint, request, render_template, redirect, session, url_fo
 from app import db
 from app.models.md_juego import Juego
 from app.models.md_modulo import Modulo
-from app.models.md_seccion import Seccion  
+from app.models.md_seccion import Seccion
+from app.utils.decorators import permiso_requerido, token_required  
 
 juego_bp = Blueprint('juego', __name__, url_prefix='/juegos')
 
 @juego_bp.route('/agregar', methods=['GET', 'POST'])
+@token_required
+@permiso_requerido('juegos_crear')
 def agregar_juego():
     if request.method == 'POST':
         nombre = request.form.get('nombre')
@@ -49,6 +52,8 @@ def fix_trailing_slash():
     return redirect(url_for('juego.listar_juegos'), code=301)
 
 @juego_bp.route('', methods=['GET'])  
+@token_required
+@permiso_requerido('ver_juegos')
 def listar_juegos():
     secciones = Seccion.query.filter_by(categoria="juegos").all()
     return render_template("dinamico.jinja", titulo="Juegos", secciones=secciones, breadcrumb=[
@@ -58,6 +63,8 @@ def listar_juegos():
 
 
 @juego_bp.route('/editar/<int:juego_id>', methods=['GET', 'POST'])
+@token_required
+@permiso_requerido('juegos_actualizar')
 def editar_juego(juego_id):
     juego = Seccion.query.get_or_404(juego_id)
 
@@ -108,6 +115,8 @@ def editar_juego(juego_id):
     return render_template('juego/editar_juego.jinja', juego=juego, breadcrumb=breadcrumb)
 
 @juego_bp.route('/eliminar/<int:juego_id>', methods=['POST'])
+@token_required
+@permiso_requerido('juegos_eliminar')
 def eliminar_juego(juego_id):
     juego = Seccion.query.get_or_404(juego_id)
 
