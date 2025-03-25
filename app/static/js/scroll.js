@@ -62,13 +62,6 @@ $(document).ready(function () {
             
                                 <div class="d-flex justify-content-center gap-2 mt-3">
             
-                                    <!-- Ver más -->
-                                    ${seccion.permisos && seccion.permisos.ver ? `
-                                        <a href="${seccion.url}" class="btn btn-primary btn-sm">
-                                            <i class="fas fa-eye"></i> Ver más
-                                        </a>
-                                    ` : ''}
-            
                                     <!-- Editar -->
                                     ${seccion.permisos && seccion.permisos.actualizar ? `
                                         <a href="/${modulo}/editar/${seccion.id}" class="btn btn-warning btn-sm">

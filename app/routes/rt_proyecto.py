@@ -3,10 +3,13 @@ from app import db
 from app.models.md_modulo import Modulo
 from app.models.md_proyecto import Proyecto
 from app.models.md_seccion import Seccion
+from app.utils.decorators import permiso_requerido, token_required
 
 proyecto_bp = Blueprint('proyecto', __name__, url_prefix='/proyectos')
 
 @proyecto_bp.route('/agregar', methods=['GET', 'POST'])
+@token_required
+@permiso_requerido('proyectos_crear')
 def agregar_proyecto():
     if request.method == 'POST':
         nombre = request.form.get('nombre')
@@ -49,6 +52,8 @@ def fix_trailing_slash():
     return redirect(url_for('proyecto.listar_proyectos'), code=301)
 
 @proyecto_bp.route('', methods=['GET'])  
+@token_required
+@permiso_requerido('ver_proyectos')
 def listar_proyectos():
     return render_template("dinamico.jinja", titulo="Proyectos", breadcrumb=[
         {"name": "Inicio", "url": url_for('main.inicio')},
@@ -56,6 +61,8 @@ def listar_proyectos():
     ])
 
 @proyecto_bp.route('/editar/<int:proyecto_id>', methods=['GET', 'POST'])
+@token_required
+@permiso_requerido('proyectos_actualizar') 
 def editar_proyecto(proyecto_id):
     proyecto = Seccion.query.get_or_404(proyecto_id)
 
@@ -108,6 +115,8 @@ def editar_proyecto(proyecto_id):
     return render_template('proyecto/editar_proyecto.jinja', proyecto=proyecto)
 
 @proyecto_bp.route('/eliminar/<int:proyecto_id>', methods=['POST'])
+@token_required
+@permiso_requerido('proyectos_eliminar') 
 def eliminar_proyecto(proyecto_id):
     proyecto = Seccion.query.get_or_404(proyecto_id)
     
