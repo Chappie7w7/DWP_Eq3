@@ -121,17 +121,24 @@ def verificar_otp(usuario_id, codigo):
     modulos_asignados = UsuarioModulo.query.filter_by(usuario_id=usuario.id).all()
     modulos = []
 
+    permisos_asignados = UsuarioPermiso.query.filter_by(usuario_id=usuario.id).all()
+    permisos_lista = [p.permiso.nombre for p in permisos_asignados]
+
     for um in modulos_asignados:
         modulo = Modulo.query.get(um.modulo_id)
         if modulo:
-            # Obtener las secciones del módulo
-            secciones = Seccion.query.filter_by(modulo_id=modulo.id).all()
-            modulos.append({
-                "nombre_modulo": modulo.nombre_modulo,
-                "privilegio": um.privilegio,
-                "secciones": [{"nombre": s.nombre, "url": s.url} for s in secciones]
-            })
-            
+            nombre_lower = modulo.nombre_modulo.lower()
+            permiso_ver = f"ver_{nombre_lower}"
+
+            #Solo agregar si tiene permiso de ver ese módulo
+            if permiso_ver in permisos_lista:
+                secciones = Seccion.query.filter_by(modulo_id=modulo.id).all()
+                modulos.append({
+                    "nombre_modulo": modulo.nombre_modulo,
+                    "privilegio": um.privilegio,
+                    "secciones": [{"nombre": s.nombre, "url": s.url} for s in secciones]
+                })
+
     # 🔹 Obtener los permisos del usuario desde la tabla usuario_permiso
     permisos_asignados = UsuarioPermiso.query.filter_by(usuario_id=usuario.id).all()
     permisos_lista = [p.permiso.nombre for p in permisos_asignados] 
