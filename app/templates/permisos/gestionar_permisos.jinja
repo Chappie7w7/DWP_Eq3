@@ -26,6 +26,38 @@
             </select>
         </div>
 
+        <!-- Checkbox para acceso a módulos -->
+        <div class="mb-4">
+            <label class="form-label fw-bold">Acceso a Módulos:</label>
+            <div class="form-check form-check-inline">
+                {% set ver_materias = permisos | selectattr("nombre", "equalto", "ver_materias") | first %}
+                {% if ver_materias %}
+                    <input class="form-check-input" type="checkbox" name="permisos[]" value="{{ ver_materias.id }}"
+                        id="permiso_{{ ver_materias.id }}"
+                        {% if permisos_usuario and ver_materias.id in permisos_usuario %}checked{% endif %}>
+                    <label class="form-check-label" for="permiso_{{ ver_materias.id }}">Materias</label>
+                {% endif %}
+            </div>
+            <div class="form-check form-check-inline">
+                {% set ver_juegos = permisos | selectattr("nombre", "equalto", "ver_juegos") | first %}
+                {% if ver_juegos %}
+                    <input class="form-check-input" type="checkbox" name="permisos[]" value="{{ ver_juegos.id }}"
+                        id="permiso_{{ ver_juegos.id }}"
+                        {% if permisos_usuario and ver_juegos.id in permisos_usuario %}checked{% endif %}>
+                    <label class="form-check-label" for="permiso_{{ ver_juegos.id }}">Juegos</label>
+                {% endif %}
+            </div>
+            <div class="form-check form-check-inline">
+                {% set ver_proyectos = permisos | selectattr("nombre", "equalto", "ver_proyectos") | first %}
+                {% if ver_proyectos %}
+                    <input class="form-check-input" type="checkbox" name="permisos[]" value="{{ ver_proyectos.id }}"
+                        id="permiso_{{ ver_proyectos.id }}"
+                        {% if permisos_usuario and ver_proyectos.id in permisos_usuario %}checked{% endif %}>
+                    <label class="form-check-label" for="permiso_{{ ver_proyectos.id }}">Proyectos</label>
+                {% endif %}
+            </div>
+        </div>
+
         <div class="mb-4">
             <label class="form-label fw-bold">Permisos por Módulo:</label>
 

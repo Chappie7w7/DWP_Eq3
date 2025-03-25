@@ -146,14 +146,40 @@
                 <!-- Iconos en la parte superior derecha -->
                 <div class="top-icons">
                     <a href="#" data-toggle="modal" data-target="#ModalHelp"><i class="far fa-question-circle"></i></a>
-                    <a href="#"><i class="fas fa-user-cog"></i></a>
                     <a href="#" class="btn-exit-system" data-logout-url="{{ url_for('auth.logout') }}">
                         <i class="fas fa-power-off"></i>
                     </a>
+                    <!-- Seguridad - Opciones de sesión -->
+                <div class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        <i class="fas fa-user-cog"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right p-3">
+                        <form action="{{ url_for('auth.actualizar_preferencias') }}" method="POST">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="cerrarSesiones"
+                                    name="cerrar_sesiones_activas" {% if current_user.cerrar_sesiones_activas
+                                    %}checked{% endif %}>
+                                <label class="form-check-label" for="cerrarSesiones">
+                                    Cerrar sesiones activas en otros dispositivos
+                                </label>
+                            </div>
 
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" id="confirmarSesion"
+                                    name="confirmar_inicio_sesion" {% if current_user.confirmar_inicio_sesion
+                                    %}checked{% endif %}>
+                                <label class="form-check-label" for="confirmarSesion">
+                                    Confirmar inicio de sesión con OTP
+                                </label>
+                            </div>
 
-
+                            <button type="submit" class="btn btn-primary btn-sm mt-3">Guardar</button>
+                        </form>
+                    </div>
                 </div>
+                </div>
+
 
             </nav>
 
