@@ -158,11 +158,18 @@ def verificar_otp(usuario_id, codigo):
     )
     db.session.commit()
 
+    # 🔐 Obtener permisos del usuario
+    permisos_asignados = UsuarioPermiso.query.filter_by(usuario_id=usuario.id).all()
+    permisos_lista = [p.permiso.nombre for p in permisos_asignados]
+
+    # 🔄 Solo agregar a la sesión los módulos que el usuario puede ver
     modulos = []
     modulos_asignados = UsuarioModulo.query.filter_by(usuario_id=usuario.id).all()
     for um in modulos_asignados:
         modulo = Modulo.query.get(um.modulo_id)
-        if modulo:
+        nombre_permiso = f"ver_{modulo.nombre_modulo.lower()}"
+
+        if modulo and nombre_permiso in permisos_lista:
             secciones = Seccion.query.filter_by(modulo_id=modulo.id).all()
             modulos.append({
                 "nombre_modulo": modulo.nombre_modulo,
@@ -176,11 +183,12 @@ def verificar_otp(usuario_id, codigo):
         'usuario_nombre': usuario.nombre,
         'rol': usuario.rol.nombre,
         'modulos': modulos,
-        'permisos': [p.permiso.nombre for p in UsuarioPermiso.query.filter_by(usuario_id=usuario.id).all()]
+        'permisos': permisos_lista
     })
 
     flash('Código correcto. Iniciando sesión...', 'success')
     return redirect(url_for('main.inicio'))
+
 
 @auth_bp.route('/cerrar-otros-dispositivos/<int:usuario_id>', methods=['POST'])
 def cerrar_otros_dispositivos(usuario_id):
