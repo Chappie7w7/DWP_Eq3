@@ -1,16 +1,15 @@
 from flask import Blueprint, request, render_template, redirect, session, url_for, flash
-from flask_login import login_required
 from app import db
 from app.models.md_materia import Materia
 from app.models.md_modulo import Modulo
 from app.models.md_seccion import Seccion
-from app.utils.decorators import permiso_requerido  
+from app.utils.decorators import permiso_requerido, token_required  
 
 materia_bp = Blueprint('materia', __name__, url_prefix='/materias')
 
 @materia_bp.route('/agregar', methods=['GET', 'POST'])
-@login_required
-@permiso_requerido('agregar_materia')
+@token_required
+@permiso_requerido('materias_crear')
 def agregar_materia():
     if request.method == 'POST':
         nombre = request.form.get('nombre')
@@ -43,30 +42,34 @@ def agregar_materia():
         db.session.commit()
 
         flash('Materia agregada con éxito.', 'success')
-
-        # ✅ Redirige a listar_materias con la lista actualizada
         return redirect(url_for('materia.listar_materias'))
 
     return render_template('materia/agregar_materia.jinja')
 
 
-@materia_bp.route('', methods=['GET'])
+
+# 🔹 usenlo si tienen problemas de rutas, si no no
+@materia_bp.route('/', methods=['GET'])
+def fix_trailing_slash():
+    return redirect(url_for('materia.listar_materias'), code=301)  # 🔹 Redirección manual
+
+@materia_bp.route('', methods=['GET'])  
+@token_required
+@permiso_requerido('ver_materias')
 def listar_materias():
     """
     Vista de materias usando `dinamico.jinja` para mantener el scroll infinito.
     """
-    secciones = Seccion.query.filter_by(categoria="materias").all()
-    return render_template("dinamico.jinja", titulo="Materias", secciones=secciones, breadcrumb=[
+    return render_template("dinamico.jinja", titulo="Materias", breadcrumb=[
         {"name": "Inicio", "url": url_for('main.inicio')},
         {"name": "Materias"}
     ])
 
 
 
-
 @materia_bp.route('/editar/<int:materia_id>', methods=['GET', 'POST'])
-@login_required
-@permiso_requerido('editar_materia')
+@token_required
+@permiso_requerido('materias_actualizar')
 def editar_materia(materia_id):
     materia = Seccion.query.get_or_404(materia_id)
 
@@ -123,8 +126,8 @@ def editar_materia(materia_id):
     return render_template('materia/editar_materia.jinja', materia=materia, breadcrumb=breadcrumb)
 
 @materia_bp.route('/eliminar/<int:materia_id>', methods=['POST'])
-@login_required
-@permiso_requerido('eliminar_materia')
+@token_required
+@permiso_requerido('materias_eliminar') 
 def eliminar_materia(materia_id):
     materia = Seccion.query.get_or_404(materia_id)
 

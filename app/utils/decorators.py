@@ -67,7 +67,8 @@ def token_required(f):
             flash('Sesión inválida. Por favor, inicia sesión nuevamente.', 'danger')
             return redirect(url_for('auth.login'))
 
-        return f(usuario, *args, **kwargs)
+        return f(*args, **kwargs)
+
 
     return decorator
 
@@ -82,19 +83,16 @@ def permiso_requerido(nombre_permiso):
                 flash("Debes iniciar sesión.", "warning")
                 return redirect(url_for('auth.login'))
 
-            # Consultar si el usuario tiene el permiso solicitado
-            permiso = Permiso.query.join(Permiso.roles).join(Rol.usuarios).filter(
-                Rol.usuarios.any(id=usuario_id),
-                Permiso.nombre == nombre_permiso
-            ).first()
-
-            if not permiso:
+            permisos = session.get('permisos', [])
+            if nombre_permiso not in permisos:
                 flash("No tienes permiso para realizar esta acción.", "danger")
                 return redirect(url_for('main.inicio'))
 
             return func(*args, **kwargs)
         return wrapper
     return decorador
+
+
 
 def admin_required(f):
     @wraps(f)

@@ -3,6 +3,7 @@ from flask_login import login_required
 from sqlalchemy import func
 from app.models.md_modulo import Modulo
 from app.models.md_seccion import Seccion
+from app.models.md_usuario import Usuario
 from app.models.md_usuario_modulo import UsuarioModulo
 from app.utils.decorators import token_required
 from app import db
@@ -19,7 +20,8 @@ def home():
 @main_bp.route('/inicio')
 @login_required
 @token_required
-def inicio(current_user):
+def inicio():
+    current_user = Usuario.query.get(session.get("usuario_id"))
     """
     Página de inicio (dashboard).
     """
@@ -28,10 +30,20 @@ def inicio(current_user):
 @main_bp.route('/<modulo>')
 @login_required
 @token_required
-def mostrar_modulo(current_user, modulo):
+def mostrar_modulo(modulo):
+    current_user = Usuario.query.get(session.get("usuario_id"))
     """
     Muestra todas las secciones de un módulo específico para el usuario actual.
     """
+    
+    # Verificar permiso de ver el módulo (ej: ver_juegos, ver_materias)
+    permisos = session.get("permisos", [])
+    permiso_necesario = f"ver_{modulo.lower()}"
+
+    if permiso_necesario not in permisos:
+        flash("No tienes permiso para acceder a este módulo.", "danger")
+        return redirect(url_for("main.inicio"))
+        
     usuario_id = session.get('usuario_id')
 
     # Validar si el usuario tiene acceso al módulo
@@ -61,10 +73,20 @@ def mostrar_modulo(current_user, modulo):
 @main_bp.route('/<modulo>/<seccion>')
 @login_required
 @token_required
-def mostrar_seccion(current_user, modulo, seccion):
+def mostrar_seccion(modulo, seccion):
+    current_user = Usuario.query.get(session.get("usuario_id"))
     """
     Muestra una sección específica dentro de un módulo.
     """
+    
+    # Verificar permiso de ver el módulo
+    permisos = session.get("permisos", [])
+    permiso_necesario = f"ver_{modulo.lower()}"
+
+    if permiso_necesario not in permisos:
+        flash("No tienes permiso para acceder a esta sección.", "danger")
+        return redirect(url_for("main.inicio"))
+    
     usuario_id = session.get('usuario_id')
 
     # Normalizar el nombre de la sección para manejar guiones bajos en la URL
@@ -200,7 +222,7 @@ def api_obtener_secciones(modulo):
         "permisos": {
             "actualizar": f"{modulo_lower}_actualizar" in permisos if permisos else False,
             "eliminar": f"{modulo_lower}_eliminar" in permisos if permisos else False,
-            "ver": f"{modulo_lower}_consultar" in permisos if permisos else False
+            #"ver": f"{modulo_lower}_consultar" in permisos if permisos else False
         }
     }
     for s in secciones
