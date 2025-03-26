@@ -73,12 +73,12 @@
                                 <!-- JUEGOS -->
                                 {% if titulo.lower() == "juegos" %}
                                     {% if tiene_permiso('juegos_editar') %}
-                                        <a href="{{ url_for('juegos.editar_juego', juego_id=seccion.id) }}" class="btn btn-warning btn-sm">
+                                        <a href="{{ url_for('juego.editar_juego', juego_id=seccion.id) }}" class="btn btn-warning btn-sm">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                     {% endif %}
                                     {% if tiene_permiso('juegos_eliminar') %}
-                                        <form action="{{ url_for('juegos.eliminar_juego', juego_id=seccion.id) }}" method="POST" style="display:inline;">
+                                        <form action="{{ url_for('juego.eliminar_juego', juego_id=seccion.id) }}" method="POST" style="display:inline;">
                                             <button type="submit" class="btn btn-danger btn-sm">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>
