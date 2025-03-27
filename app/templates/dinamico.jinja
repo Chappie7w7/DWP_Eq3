@@ -38,80 +38,17 @@
 <!-- Contenedor de secciones -->
 <div class="container">
     <h1 class="text-center">{{ titulo }}</h1>
+
+    <!-- 🔄 Spinner visible solo mientras carga -->
+    <div id="loading-secciones" class="text-center my-4">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+    </div>
+
+
     <div id="secciones-container" class="row mt-4">
-        {% if secciones %}
-            {% for seccion in secciones %}
-                <div class="col-md-4 mb-3">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <h5 class="card-title">{{ seccion.nombre }}</h5>
-                            <p class="card-text">{{ seccion.descripcion }}</p>
 
-                            <div class="d-flex justify-content-center gap-2 mt-2">
-                                <!-- Botón Ver más (siempre visible) -->
-                                <a href="{{ url_for('main.mostrar_seccion', modulo=titulo.lower(), seccion=seccion.nombre.replace(' ', '_')) }}" 
-                                class="btn btn-primary btn-sm">
-                                    <i class="fas fa-eye"></i> Ver más
-                                </a>
-
-                                <!-- MATERIAS -->
-                                {% if titulo.lower() == "materias" %}
-                                    {% if tiene_permiso('materias_editar') %}
-                                        <a href="{{ url_for('materia.editar_materia', materia_id=seccion.id) }}" class="btn btn-warning btn-sm">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                    {% endif %}
-                                    {% if tiene_permiso('materias_eliminar') %}
-                                        <form action="{{ url_for('materia.eliminar_materia', materia_id=seccion.id) }}" method="POST" style="display:inline;">
-                                            <button type="submit" class="btn btn-danger btn-sm">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </form>
-                                    {% endif %}
-                                {% endif %}
-
-                                <!-- JUEGOS -->
-                                {% if titulo.lower() == "juegos" %}
-                                    {% if tiene_permiso('juegos_editar') %}
-                                        <a href="{{ url_for('juego.editar_juego', juego_id=seccion.id) }}" class="btn btn-warning btn-sm">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                    {% endif %}
-                                    {% if tiene_permiso('juegos_eliminar') %}
-                                        <form action="{{ url_for('juego.eliminar_juego', juego_id=seccion.id) }}" method="POST" style="display:inline;">
-                                            <button type="submit" class="btn btn-danger btn-sm">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </form>
-                                    {% endif %}
-                                {% endif %}
-
-                                <!-- PROYECTOS -->
-                                {% if titulo.lower() == "proyectos" %}
-                                    {% if tiene_permiso('proyectos_editar') %}
-                                        <a href="{{ url_for('proyectos.editar_proyecto', proyecto_id=seccion.id) }}" class="btn btn-warning btn-sm">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                    {% endif %}
-                                    {% if tiene_permiso('proyectos_eliminar') %}
-                                        <form action="{{ url_for('proyectos.eliminar_proyecto', proyecto_id=seccion.id) }}" method="POST" style="display:inline;">
-                                            <button type="submit" class="btn btn-danger btn-sm">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </form>
-                                    {% endif %}
-                                {% endif %}
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        {% else %}
-            <p class="text-muted text-center">
-                No se encontraron resultados para "<strong>{{ request.args.get('simple_query', '') }}</strong>".
-            </p>
-        {% endif %}
     </div>
 </div>
 

@@ -22,42 +22,48 @@ def home():
 @token_required
 def inicio():
     current_user = Usuario.query.get(session.get("usuario_id"))
-    """
-    Página de inicio (dashboard).
-    """
-    return render_template('dashboard/home.jinja')
+    permisos = session.get("permisos", [])
+
+    modulos_visibles = []
+
+    if 'ver_materias' in permisos or 'materias_agregar' in permisos:
+        modulos_visibles.append('materias')
+    if 'ver_juegos' in permisos or 'juegos_agregar' in permisos:
+        modulos_visibles.append('juegos')
+    if 'ver_proyectos' in permisos or 'proyectos_agregar' in permisos:
+        modulos_visibles.append('proyectos')
+
+    return render_template('dashboard/home.jinja', modulos=modulos_visibles)
+
 
 @main_bp.route('/<modulo>')
 @login_required
 @token_required
 def mostrar_modulo(modulo):
     current_user = Usuario.query.get(session.get("usuario_id"))
-    """
-    Muestra todas las secciones de un módulo específico para el usuario actual.
-    """
-    
-    # Verificar permiso de ver el módulo (ej: ver_juegos, ver_materias)
+
     permisos = session.get("permisos", [])
     permiso_necesario = f"ver_{modulo.lower()}"
 
     if permiso_necesario not in permisos:
         flash("No tienes permiso para acceder a este módulo.", "danger")
         return redirect(url_for("main.inicio"))
-        
+
     usuario_id = session.get('usuario_id')
 
-    # Validar si el usuario tiene acceso al módulo
-    secciones = Seccion.query.join(UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id).join(
-        Modulo, Modulo.id == Seccion.modulo_id
-    ).filter(
-        Modulo.nombre_modulo == modulo,  # Usar nombre_modulo del modelo Modulo
-        UsuarioModulo.usuario_id == usuario_id
+    # Solo secciones del módulo asignado al usuario Y creadas por él
+    secciones = Seccion.query.join(Modulo).join(UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id).filter(
+        Modulo.nombre_modulo == modulo,
+        UsuarioModulo.usuario_id == usuario_id,
+        Seccion.usuario_id == usuario_id
     ).all()
 
-    if not secciones:
-        abort(404)  # Si no hay secciones o el módulo no existe, muestra error 404
 
-    # Construir breadcrumb
+    if not secciones:
+        permiso_agregar = f"{modulo.lower()}_crear"
+        if permiso_agregar not in permisos:
+            abort(404)
+
     breadcrumb = [
         {'name': 'Inicio', 'url': '/inicio'},
         {'name': modulo.capitalize(), 'url': None},
@@ -69,6 +75,9 @@ def mostrar_modulo(modulo):
         secciones=secciones,
         breadcrumb=breadcrumb
     )
+
+
+
 
 @main_bp.route('/<modulo>/<seccion>')
 @login_required
@@ -128,16 +137,34 @@ def buscar(modulo):
         flash('Por favor, ingresa un término de búsqueda.', 'warning')
         return redirect(url_for('main.mostrar_modulo', modulo=modulo))
 
-    # Filtrar las secciones del módulo basado en el término de búsqueda (nombre o descripción)
-    secciones = Seccion.query.join(UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id).join(
+    # Obtener permisos
+    permisos = session.get('permisos', [])
+    modulo_lower = modulo.lower()
+
+    # Buscar secciones
+    secciones_raw = Seccion.query.join(UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id).join(
         Modulo, Modulo.id == Seccion.modulo_id
     ).filter(
         Modulo.nombre_modulo == modulo,
         UsuarioModulo.usuario_id == usuario_id,
-        (Seccion.nombre.ilike(f'%{query}%')) | (Seccion.descripcion.ilike(f'%{query}%'))  # Busca en nombre y descripción
+        (Seccion.nombre.ilike(f'%{query}%')) | (Seccion.descripcion.ilike(f'%{query}%'))
     ).all()
 
-    # Construir breadcrumb
+    # Enriquecer con permisos
+    secciones = []
+    for s in secciones_raw:
+        secciones.append({
+            "id": s.id,
+            "nombre": s.nombre,
+            "descripcion": s.descripcion,
+            "url": url_for('main.mostrar_seccion', modulo=modulo, seccion=s.nombre.replace(" ", "_")),
+            "permisos": {
+                "actualizar": f"{modulo_lower}_actualizar" in permisos,
+                "eliminar": f"{modulo_lower}_eliminar" in permisos
+            }
+        })
+
+    # Breadcrumb
     breadcrumb = [
         {'name': 'Inicio', 'url': '/inicio'},
         {'name': modulo.capitalize(), 'url': f'/{modulo}'},
@@ -152,29 +179,51 @@ def buscar(modulo):
     )
 
 
+
 @main_bp.route('/buscar-avanzada', methods=['GET'])
 def buscar_avanzada():
-    """
-    Realiza una búsqueda avanzada en todas las categorías y módulos.
-    """
     usuario_id = session.get('usuario_id')
-    query = request.args.get('advanced_query', '').strip()  
+    query = request.args.get('advanced_query', '').strip()
     categoria = request.args.get('categoria', '').strip()
 
     if not query:
         flash('Por favor, ingresa un término de búsqueda.', 'warning')
         return redirect(url_for('main.inicio'))
 
-    # Filtrar secciones según el término de búsqueda y categoría
-    secciones = Seccion.query.join(UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id).join(
-        Modulo, Modulo.id == Seccion.modulo_id
+    permisos = session.get('permisos', [])
+
+    # ✅ Validar permiso de visualización por categoría
+    if categoria:
+        permiso_modulo = f"ver_{categoria.lower()}"
+        if permiso_modulo not in permisos:
+            flash("No tienes permiso para acceder a esta categoría.", "danger")
+            return redirect(url_for("main.inicio"))
+
+    # Buscar secciones
+    secciones_raw = Seccion.query.join(Modulo, Modulo.id == Seccion.modulo_id).join(
+        UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id
     ).filter(
         UsuarioModulo.usuario_id == usuario_id,
         (Seccion.nombre.ilike(f'%{query}%')) | (Seccion.descripcion.ilike(f'%{query}%')),
         (Seccion.categoria == categoria if categoria else True)
     ).all()
 
-    # Construir breadcrumb
+    # Enriquecer cada sección con permisos
+    secciones = []
+    for s in secciones_raw:
+        modulo_lower = s.modulo.nombre_modulo.lower()
+        secciones.append({
+            "id": s.id,
+            "nombre": s.nombre,
+            "descripcion": s.descripcion,
+            "url": url_for('main.mostrar_seccion', modulo=s.modulo.nombre_modulo, seccion=s.nombre.replace(" ", "_")),
+            "modulo": modulo_lower,
+            "permisos": {
+                "actualizar": f"{modulo_lower}_actualizar" in permisos,
+                "eliminar": f"{modulo_lower}_eliminar" in permisos
+            }
+        })
+
     breadcrumb = [
         {'name': 'Inicio', 'url': '/inicio'},
         {'name': f'Resultados de búsqueda: "{query}"', 'url': None},
@@ -186,6 +235,7 @@ def buscar_avanzada():
         secciones=secciones,
         breadcrumb=breadcrumb
     )
+
 
 @main_bp.route('/api/secciones/<modulo>', methods=['GET'])
 def api_obtener_secciones(modulo):
@@ -241,19 +291,17 @@ def api_obtener_secciones(modulo):
 
 @main_bp.route('/api/seccion/<modulo>/<seccion>', methods=['GET'])
 def api_obtener_seccion(modulo, seccion):
-    """
-    API para obtener una sección específica dentro de un módulo en formato JSON.
-    """
     usuario_id = session.get('usuario_id')
-
     if not usuario_id:
         return jsonify({"error": "Usuario no autenticado"}), 403
 
-    # Reemplazar _ por espacios para hacer match con la base de datos
+    permisos = session.get("permisos", [])
+    modulo_lower = modulo.lower()
+
     seccion_formateada = seccion.replace("_", " ")
 
     seccion_obj = Seccion.query.join(Modulo, Modulo.id == Seccion.modulo_id).filter(
-        func.lower(Modulo.nombre_modulo) == modulo.lower(),
+        func.lower(Modulo.nombre_modulo) == modulo_lower,
         func.lower(Seccion.nombre) == seccion_formateada.lower(),
         UsuarioModulo.usuario_id == usuario_id
     ).first()
@@ -262,44 +310,57 @@ def api_obtener_seccion(modulo, seccion):
         return jsonify({"error": "Sección no encontrada"}), 404
 
     return jsonify({
+        "id": seccion_obj.id,
         "nombre": seccion_obj.nombre,
         "descripcion": seccion_obj.descripcion,
-        "url": seccion_obj.url
+        "modulo": modulo_lower,
+        "permisos": {
+            "actualizar": f"{modulo_lower}_actualizar" in permisos,
+            "eliminar": f"{modulo_lower}_eliminar" in permisos
+        }
     })
 
 @main_bp.route('/api/buscar/<modulo>', methods=['GET'])
 def api_buscar(modulo):
-    """
-    API para buscar secciones dentro de un módulo en formato JSON con paginación (scroll infinito).
-    """
     usuario_id = session.get('usuario_id')
     query = request.args.get('q', '').strip()
-    offset = request.args.get('offset', default=0, type=int)  # 🔹 Usa `offset` para manejar el scroll infinito
-    limit = 6  # 🔹 Número de resultados por petición
+    offset = request.args.get('offset', default=0, type=int)
+    limit = 6
 
     if not query:
-        return jsonify({"secciones": [], "has_more": False})  # 🔹 Devuelve un JSON vacío si no hay búsqueda
+        return jsonify({"secciones": [], "has_more": False})
 
-    # Filtrar las secciones del módulo basado en el término de búsqueda
-    secciones_query = Seccion.query.join(UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id).join(
-        Modulo, Modulo.id == Seccion.modulo_id
+    permisos = session.get('permisos', [])
+    modulo_lower = modulo.lower()
+
+    secciones_query = Seccion.query.join(Modulo, Modulo.id == Seccion.modulo_id).join(
+        UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id
     ).filter(
         Modulo.nombre_modulo == modulo,
         UsuarioModulo.usuario_id == usuario_id,
         (Seccion.nombre.ilike(f'%{query}%')) | (Seccion.descripcion.ilike(f'%{query}%'))
     )
 
-    total_secciones = secciones_query.count()  # 🔹 Total de coincidencias
-    secciones = secciones_query.offset(offset).limit(limit).all()  # 🔹 Obtiene los resultados paginados
+    total = secciones_query.count()
+    secciones = secciones_query.offset(offset).limit(limit).all()
 
     secciones_json = [
-        {"nombre": s.nombre, "descripcion": s.descripcion, "url": url_for('main.mostrar_seccion', modulo=modulo, seccion=s.nombre.replace(" ", "_"))}
+        {
+            "id": s.id,
+            "nombre": s.nombre,
+            "descripcion": s.descripcion,
+            "modulo": modulo_lower,
+            "permisos": {
+                "actualizar": f"{modulo_lower}_actualizar" in permisos,
+                "eliminar": f"{modulo_lower}_eliminar" in permisos
+            }
+        }
         for s in secciones
     ]
 
     return jsonify({
         "secciones": secciones_json,
-        "has_more": offset + limit < total_secciones  # 🔹 Si hay más datos, devuelve `True`
+        "has_more": offset + limit < total
     })
 
 
@@ -307,38 +368,54 @@ def api_buscar(modulo):
 
 @main_bp.route('/api/buscar-avanzada', methods=['GET'])
 def api_buscar_avanzada():
-    """
-    API para realizar una búsqueda avanzada en todas las categorías y módulos con paginación.
-    """
     usuario_id = session.get('usuario_id')
     query = request.args.get('q', '').strip()
     categoria = request.args.get('categoria', '').strip()
-    offset = request.args.get('offset', default=0, type=int)  # 🔹 Iniciar en 0
-    limit = 6  # 🔹 Máximo de 6 resultados por petición
+    offset = request.args.get('offset', default=0, type=int)
+    limit = 6
 
     if not query:
-        return jsonify({"secciones": [], "has_more": False})  # 🔹 Ahora devuelve estructura completa
+        return jsonify({"secciones": [], "has_more": False})
 
-    # Filtrar secciones según el término de búsqueda y categoría
-    secciones = Seccion.query.join(UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id).join(
-        Modulo, Modulo.id == Seccion.modulo_id
+    permisos = session.get('permisos', [])
+
+    # Base query
+    secciones_query = Seccion.query.join(Modulo, Modulo.id == Seccion.modulo_id).join(
+        UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id
     ).filter(
         UsuarioModulo.usuario_id == usuario_id,
-        (Seccion.nombre.ilike(f'%{query}%')) | (Seccion.descripcion.ilike(f'%{query}%')),
-        (Seccion.categoria == categoria if categoria else True)  # 🔹 Filtrar por categoría si existe
-    ).offset(offset).limit(limit).all()  # 🔹 Agregar paginación con `offset` y `limit`
+        (Seccion.nombre.ilike(f'%{query}%')) | (Seccion.descripcion.ilike(f'%{query}%'))
+    )
+
+    # ✅ Si hay categoría, verificar permiso
+    if categoria:
+        permiso_modulo = f"ver_{categoria.lower()}"
+        if permiso_modulo not in permisos:
+            return jsonify({"secciones": [], "has_more": False})
+        secciones_query = secciones_query.filter(Seccion.categoria == categoria)
+    else:
+        # ✅ Si no hay categoría, filtrar solo por módulos con permiso de visualización
+        modulos_visibles = [p.replace("ver_", "") for p in permisos if p.startswith("ver_")]
+        secciones_query = secciones_query.filter(func.lower(Modulo.nombre_modulo).in_(modulos_visibles))
+
+    total = secciones_query.count()
+    secciones = secciones_query.offset(offset).limit(limit).all()
 
     secciones_json = [
         {
+            "id": s.id,
             "nombre": s.nombre,
             "descripcion": s.descripcion,
-            "url": url_for('main.mostrar_seccion', modulo=s.modulo.nombre_modulo, seccion=s.nombre.replace(" ", "_"))
+            "modulo": s.modulo.nombre_modulo.lower(),
+            "permisos": {
+                "actualizar": f"{s.modulo.nombre_modulo.lower()}_actualizar" in permisos,
+                "eliminar": f"{s.modulo.nombre_modulo.lower()}_eliminar" in permisos
+            }
         }
         for s in secciones
     ]
 
     return jsonify({
         "secciones": secciones_json,
-        "has_more": len(secciones) == limit  # 🔹 Si se obtienen menos de `limit`, ya no hay más datos
+        "has_more": offset + limit < total
     })
-

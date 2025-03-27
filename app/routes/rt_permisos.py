@@ -5,6 +5,8 @@ from app.models.md_permiso import Permiso
 from app.models.md_rol import Rol
 from app.models.md_usuario import Usuario
 from app.models.md_usuario_permiso import UsuarioPermiso
+from app.models.md_modulo import Modulo
+from app.models.md_usuario_modulo import UsuarioModulo
 from app.utils.decorators import token_required
 
 permiso_bp = Blueprint('permiso', __name__, url_prefix='/permisos')
@@ -24,7 +26,7 @@ def gestionar_permisos():
 
     usuario_id = request.form.get('usuario_id') or request.args.get('usuario_id')
     if usuario_id:
-        usuario_id = int(usuario_id)  
+        usuario_id = int(usuario_id)
 
     # 🔄 Guardar permisos
     if request.method == 'POST':
@@ -42,9 +44,44 @@ def gestionar_permisos():
             for permiso_id in permisos_seleccionados:
                 db.session.add(UsuarioPermiso(usuario_id=usuario_id, permiso_id=int(permiso_id)))
 
+            # Obtener los nombres de los permisos seleccionados
+            permisos_nombres = [
+                p.nombre for p in Permiso.query.filter(Permiso.id.in_(permisos_seleccionados)).all()
+            ]
+
+            for nombre in permisos_nombres:
+                if nombre.endswith("_crear"):
+                    nombre_modulo = nombre.replace("_crear", "").capitalize()
+
+                    # 🔍 Buscar módulo con ese nombre y ese propietario
+                    modulo_existente = Modulo.query.filter_by(nombre_modulo=nombre_modulo, propietario=usuario_id).first()
+
+                    if not modulo_existente:
+                        # Crear módulo nuevo con ese propietario
+                        nuevo_modulo = Modulo(nombre_modulo=nombre_modulo, propietario=usuario_id)
+                        db.session.add(nuevo_modulo)
+                        db.session.flush()  # Para obtener el ID
+
+                        db.session.add(UsuarioModulo(
+                            usuario_id=usuario_id,
+                            modulo_id=nuevo_modulo.id,
+                            privilegio='admin'
+                        ))
+                    else:
+                        # Ya existe el módulo, verificar si está en usuario_modulo
+                        existe = UsuarioModulo.query.filter_by(
+                            usuario_id=usuario_id,
+                            modulo_id=modulo_existente.id
+                        ).first()
+                        if not existe:
+                            db.session.add(UsuarioModulo(
+                                usuario_id=usuario_id,
+                                modulo_id=modulo_existente.id,
+                                privilegio='admin'
+                            ))
+
             db.session.commit()
 
-            # Redireccionar para evitar doble submit y mostrar mensaje
             return redirect(url_for(
                 'permiso.gestionar_permisos',
                 usuario_id=usuario_id,
@@ -52,7 +89,6 @@ def gestionar_permisos():
                 tipo="success"
             ))
 
-    # Cargar permisos asignados si ya hay usuario seleccionado
     if usuario_id:
         permisos_usuario = [
             up.permiso_id for up in UsuarioPermiso.query.filter_by(usuario_id=usuario_id).all()

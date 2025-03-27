@@ -36,7 +36,8 @@ def agregar_materia():
             nombre=nombre,
             descripcion=descripcion,
             url=f"/materias/{nombre.lower().replace(' ', '_')}",
-            modulo_id=modulo.id
+            modulo_id=modulo.id,
+            usuario_id=usuario_id
         )
         db.session.add(nueva_seccion)
         db.session.commit()
@@ -57,13 +58,15 @@ def fix_trailing_slash():
 @token_required
 @permiso_requerido('ver_materias')
 def listar_materias():
-    """
-    Vista de materias usando `dinamico.jinja` para mantener el scroll infinito.
-    """
-    return render_template("dinamico.jinja", titulo="Materias", breadcrumb=[
+    usuario_id = session.get("usuario_id")
+
+    secciones = Seccion.query.filter_by(categoria="materias", usuario_id=usuario_id).all()
+
+    return render_template("dinamico.jinja", titulo="Materias", secciones=secciones, breadcrumb=[
         {"name": "Inicio", "url": url_for('main.inicio')},
         {"name": "Materias"}
     ])
+
 
 
 
@@ -71,7 +74,10 @@ def listar_materias():
 @token_required
 @permiso_requerido('materias_actualizar')
 def editar_materia(materia_id):
-    materia = Seccion.query.get_or_404(materia_id)
+    usuario_id = session.get("usuario_id")
+
+    # 🔐 Verifica que la sección pertenezca al usuario
+    materia = Seccion.query.filter_by(id=materia_id, usuario_id=usuario_id).first_or_404()
 
     if request.method == 'POST':
         nuevo_nombre = request.form.get('nombre')
@@ -129,13 +135,10 @@ def editar_materia(materia_id):
 @token_required
 @permiso_requerido('materias_eliminar') 
 def eliminar_materia(materia_id):
-    materia = Seccion.query.get_or_404(materia_id)
+    usuario_id = session.get("usuario_id")
 
-    # Buscar y eliminar la sección asociada
-    seccion = Seccion.query.filter_by(nombre=materia.nombre, modulo_id=materia.modulo_id).first()
-    if seccion:
-        db.session.delete(seccion)
-
+    # 🔐 Verifica que la sección pertenezca al usuario
+    materia = Seccion.query.filter_by(id=materia_id, usuario_id=usuario_id).first_or_404()
     # Eliminar la materia
     db.session.delete(materia)
     db.session.commit()

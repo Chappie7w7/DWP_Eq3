@@ -10,9 +10,11 @@ class Seccion(db.Model):
     descripcion = db.Column(db.Text, nullable=True)
     url = db.Column(db.String(255), nullable=False)
     modulo_id = db.Column(db.Integer, db.ForeignKey('modulo.id', ondelete='CASCADE'), nullable=False)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id', ondelete='CASCADE'), nullable=False)
 
     # Relaciones
     modulo = db.relationship('Modulo', back_populates='secciones', lazy='joined')
+    usuario = db.relationship('Usuario', backref='secciones', lazy=True)
 
     def __repr__(self):
         return f'<Seccion {self.nombre}>'

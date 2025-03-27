@@ -36,7 +36,8 @@ def agregar_proyecto():
             nombre=nombre,
             descripcion=descripcion,
             url=f"/proyectos/{nombre.lower().replace(' ', '_')}",
-            modulo_id=modulo.id
+            modulo_id=modulo.id,
+            usuario_id=usuario_id
         )
         db.session.add(nueva_seccion)
         db.session.commit()
@@ -55,7 +56,11 @@ def fix_trailing_slash():
 @token_required
 @permiso_requerido('ver_proyectos')
 def listar_proyectos():
-    return render_template("dinamico.jinja", titulo="Proyectos", breadcrumb=[
+    usuario_id = session.get("usuario_id")
+
+    secciones = Seccion.query.filter_by(categoria="proyectos", usuario_id=usuario_id).all()
+
+    return render_template("dinamico.jinja", titulo="Proyectos", secciones=secciones, breadcrumb=[
         {"name": "Inicio", "url": url_for('main.inicio')},
         {"name": "Proyectos"}
     ])
@@ -64,7 +69,9 @@ def listar_proyectos():
 @token_required
 @permiso_requerido('proyectos_actualizar') 
 def editar_proyecto(proyecto_id):
-    proyecto = Seccion.query.get_or_404(proyecto_id)
+    usuario_id = session.get("usuario_id")
+
+    proyecto = Seccion.query.filter_by(id=proyecto_id, usuario_id=usuario_id).first_or_404()
 
     if request.method == 'POST':
         nuevo_nombre = request.form.get('nombre')
@@ -118,11 +125,10 @@ def editar_proyecto(proyecto_id):
 @token_required
 @permiso_requerido('proyectos_eliminar') 
 def eliminar_proyecto(proyecto_id):
-    proyecto = Seccion.query.get_or_404(proyecto_id)
-    
-    seccion = Seccion.query.filter_by(nombre=proyecto.nombre, modulo_id=proyecto.modulo_id).first()
-    if seccion:
-        db.session.delete(seccion)
+    usuario_id = session.get("usuario_id")
+
+    proyecto = Seccion.query.filter_by(id=proyecto_id, usuario_id=usuario_id).first_or_404()
+
 
     db.session.delete(proyecto)
     db.session.commit()

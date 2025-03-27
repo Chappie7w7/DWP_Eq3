@@ -18,20 +18,14 @@ function cargarSeccion(modulo, seccion) {
 
     fetch(`/api/seccion/${modulo}/${seccion}`)
         .then(response => {
-            console.log(`Respuesta recibida: ${response.status}`);
-            
-            // Si la respuesta no es correcta, no lanzar error, solo detener ejecución
             if (!response.ok) {
                 console.warn(`⚠️ No se encontró la sección (${response.status})`);
                 return;
             }
-
             return response.json();
         })
         .then(data => {
             if (!data) return;
-
-            console.log("Datos recibidos:", data);
 
             const contenedor = document.getElementById("secciones-container");
             if (!contenedor) return;
@@ -46,11 +40,32 @@ function cargarSeccion(modulo, seccion) {
             const div = document.createElement("div");
             div.classList.add("col-12", "mb-3");
 
+            let botonesHTML = "";
+
+            if (data.permisos?.actualizar) {
+                botonesHTML += `
+                    <a href="/${data.modulo}/editar/${data.id}" class="btn btn-warning btn-sm mx-1">
+                        <i class="fas fa-edit"></i> Editar
+                    </a>`;
+            }
+
+            if (data.permisos?.eliminar) {
+                botonesHTML += `
+                    <form action="/${data.modulo}/eliminar/${data.id}" method="POST" style="display:inline;">
+                        <button type="submit" class="btn btn-danger btn-sm mx-1">
+                            <i class="fas fa-trash-alt"></i> Eliminar
+                        </button>
+                    </form>`;
+            }
+
             div.innerHTML = `
                 <div class="card">
                     <div class="card-body text-center">
                         <h5 class="card-title">${data.nombre}</h5>
                         <p class="card-text">${data.descripcion}</p>
+                        <div class="d-flex justify-content-center mt-3">
+                            ${botonesHTML}
+                        </div>
                     </div>
                 </div>
             `;

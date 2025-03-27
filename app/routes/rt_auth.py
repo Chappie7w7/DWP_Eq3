@@ -162,21 +162,28 @@ def verificar_otp(usuario_id, codigo):
     permisos_asignados = UsuarioPermiso.query.filter_by(usuario_id=usuario.id).all()
     permisos_lista = [p.permiso.nombre for p in permisos_asignados]
 
-    # 🔄 Solo agregar a la sesión los módulos que el usuario puede ver
+    # 🔄 Solo mostrar módulos si tiene permiso de ver o crear
     modulos = []
     modulos_asignados = UsuarioModulo.query.filter_by(usuario_id=usuario.id).all()
     for um in modulos_asignados:
         modulo = Modulo.query.get(um.modulo_id)
-        nombre_permiso = f"ver_{modulo.nombre_modulo.lower()}"
+        if not modulo:
+            continue
 
-        if modulo and nombre_permiso in permisos_lista:
-            secciones = Seccion.query.filter_by(modulo_id=modulo.id).all()
+        nombre_modulo = modulo.nombre_modulo.lower()
+        permiso_ver = f"ver_{nombre_modulo}"
+        permiso_crear = f"{nombre_modulo}_crear"
+
+        if permiso_ver in permisos_lista or permiso_crear in permisos_lista:
+            # 🔐 Filtrar secciones que pertenezcan a este usuario
+            secciones = Seccion.query.filter_by(modulo_id=modulo.id, usuario_id=usuario.id).all()
             modulos.append({
                 "nombre_modulo": modulo.nombre_modulo,
                 "privilegio": um.privilegio,
                 "secciones": [{"nombre": s.nombre, "url": s.url} for s in secciones]
             })
 
+    # 🔄 Guardar en sesión
     session.update({
         'usuario_id': usuario.id,
         'token': usuario.token_sesion,
@@ -188,6 +195,7 @@ def verificar_otp(usuario_id, codigo):
 
     flash('Código correcto. Iniciando sesión...', 'success')
     return redirect(url_for('main.inicio'))
+
 
 
 @auth_bp.route('/cerrar-otros-dispositivos/<int:usuario_id>', methods=['POST'])

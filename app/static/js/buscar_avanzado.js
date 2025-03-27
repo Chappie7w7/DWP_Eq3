@@ -65,19 +65,40 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
                 data.secciones.forEach(seccion => {
+                    let botones = "";
+                
+                    if (seccion.permisos?.actualizar) {
+                        botones += `
+                            <a href="/${seccion.modulo}/editar/${seccion.id}" class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>`;
+                    }
+                
+                    if (seccion.permisos?.eliminar) {
+                        botones += `
+                            <form action="/${seccion.modulo}/eliminar/${seccion.id}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>`;
+                    }
+                
                     const tarjeta = `
                         <div class="col-md-4 mb-3">
                             <div class="card">
                                 <div class="card-body text-center">
                                     <h5 class="card-title">${seccion.nombre}</h5>
                                     <p class="card-text">${seccion.descripcion}</p>
-                                    <a href="${seccion.url}" class="btn btn-primary">Ver más</a>
+                                    <div class="d-flex justify-content-center gap-2 mt-3">
+                                        ${botones}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     `;
                     contenedor.insertAdjacentHTML("beforeend", tarjeta);
                 });
+                
 
                 offset += data.secciones.length;  
                 hasMore = data.has_more;

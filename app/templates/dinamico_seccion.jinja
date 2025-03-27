@@ -3,7 +3,6 @@
 {% block title %}{{ seccion.nombre | default("Sección") }}{% endblock %}
 
 {% block content %}
-<!-- Breadcrumb dinámico -->
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="{{ url_for('main.inicio') }}">Inicio</a></li>
@@ -14,7 +13,6 @@
     </ol>
 </nav>
 
-<!-- Contenido dinámico -->
 <div class="container text-center">
     <h1>{{ seccion.nombre | default("Sin nombre") }}</h1>
     <p>{{ seccion.descripcion | default("No hay descripción disponible.") }}</p>

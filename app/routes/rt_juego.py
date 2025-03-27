@@ -36,7 +36,8 @@ def agregar_juego():
             nombre=nombre,
             descripcion=descripcion,
             url=f"/juegos/{nombre.lower().replace(' ', '_')}",
-            modulo_id=modulo.id
+            modulo_id=modulo.id,
+            usuario_id=usuario_id
         )
         db.session.add(nueva_seccion)
         db.session.commit()
@@ -55,18 +56,24 @@ def fix_trailing_slash():
 @token_required
 @permiso_requerido('ver_juegos')
 def listar_juegos():
-    secciones = Seccion.query.filter_by(categoria="juegos").all()
+    usuario_id = session.get("usuario_id")
+    
+    secciones = Seccion.query.filter_by(categoria="juegos", usuario_id=usuario_id).all()
+    
     return render_template("dinamico.jinja", titulo="Juegos", secciones=secciones, breadcrumb=[
         {"name": "Inicio", "url": url_for('main.inicio')},
         {"name": "Juegos"}
     ])
 
 
+
 @juego_bp.route('/editar/<int:juego_id>', methods=['GET', 'POST'])
 @token_required
 @permiso_requerido('juegos_actualizar')
 def editar_juego(juego_id):
-    juego = Seccion.query.get_or_404(juego_id)
+    usuario_id = session.get("usuario_id")
+
+    juego = Seccion.query.filter_by(id=juego_id, usuario_id=usuario_id).first_or_404()
 
     if request.method == 'POST':
         nuevo_nombre = request.form.get('nombre')
@@ -118,12 +125,9 @@ def editar_juego(juego_id):
 @token_required
 @permiso_requerido('juegos_eliminar')
 def eliminar_juego(juego_id):
-    juego = Seccion.query.get_or_404(juego_id)
+    usuario_id = session.get("usuario_id")
 
-    seccion = Seccion.query.filter_by(nombre=juego.nombre, modulo_id=juego.modulo_id).first()
-    if seccion:
-        db.session.delete(seccion)
-
+    juego = Seccion.query.filter_by(id=juego_id, usuario_id=usuario_id).first_or_404()
     db.session.delete(juego)
     db.session.commit()
 

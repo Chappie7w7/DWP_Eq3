@@ -15,11 +15,9 @@
     </ol>
 </nav>
 
-
-
-<!-- resultado busqueda avanzada -->
 <div class="container">
     <h1 class="text-center">Resultados de búsqueda</h1>
+    
     <div id="secciones-container" class="row mt-4">  
         {% if secciones|length > 0 %}
             {% for seccion in secciones %}
@@ -28,7 +26,50 @@
                     <div class="card-body text-center">
                         <h5 class="card-title">{{ seccion.nombre }}</h5>
                         <p class="card-text">{{ seccion.descripcion }}</p>
-                        <a href="{{ seccion.url }}" class="btn btn-primary">Ver más</a>
+
+                        <div class="d-flex justify-content-center gap-2 mt-2">
+                            <!-- MATERIAS -->
+                            {% if seccion.modulo == 'materias' and seccion.permisos.actualizar %}
+                            <a href="{{ url_for('materia.editar_materia', materia_id=seccion.id) }}" class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            {% endif %}
+                            {% if seccion.modulo == 'materias' and seccion.permisos.eliminar %}
+                            <form action="{{ url_for('materia.eliminar_materia', materia_id=seccion.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+
+                            <!-- JUEGOS -->
+                            {% if seccion.modulo == 'juegos' and seccion.permisos.actualizar %}
+                            <a href="{{ url_for('juego.editar_juego', juego_id=seccion.id) }}" class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            {% endif %}
+                            {% if seccion.modulo == 'juegos' and seccion.permisos.eliminar %}
+                            <form action="{{ url_for('juego.eliminar_juego', juego_id=seccion.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+
+                            <!-- PROYECTOS -->
+                            {% if seccion.modulo == 'proyectos' and seccion.permisos.actualizar %}
+                            <a href="{{ url_for('proyectos.editar_proyecto', proyecto_id=seccion.id) }}" class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            {% endif %}
+                            {% if seccion.modulo == 'proyectos' and seccion.permisos.eliminar %}
+                            <form action="{{ url_for('proyecto.eliminar_proyecto', proyecto_id=seccion.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>
