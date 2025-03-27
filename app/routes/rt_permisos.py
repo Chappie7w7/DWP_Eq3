@@ -40,7 +40,7 @@ def gestionar_permisos():
             # Limpiar permisos anteriores
             UsuarioPermiso.query.filter_by(usuario_id=usuario_id).delete()
 
-            # Asignar los nuevos
+            # Asignar los nuevos permisos
             for permiso_id in permisos_seleccionados:
                 db.session.add(UsuarioPermiso(usuario_id=usuario_id, permiso_id=int(permiso_id)))
 
@@ -53,14 +53,13 @@ def gestionar_permisos():
                 if nombre.endswith("_crear"):
                     nombre_modulo = nombre.replace("_crear", "").capitalize()
 
-                    # 🔍 Buscar módulo con ese nombre y ese propietario
-                    modulo_existente = Modulo.query.filter_by(nombre_modulo=nombre_modulo, propietario=usuario_id).first()
+                    # Verificar si ya existe un módulo con ese nombre para ese usuario
+                    modulo_existente = Modulo.query.filter_by(nombre_modulo=nombre_modulo, propietario=str(usuario_id)).first()
 
                     if not modulo_existente:
-                        # Crear módulo nuevo con ese propietario
-                        nuevo_modulo = Modulo(nombre_modulo=nombre_modulo, propietario=usuario_id)
+                        nuevo_modulo = Modulo(nombre_modulo=nombre_modulo, propietario=str(usuario_id))
                         db.session.add(nuevo_modulo)
-                        db.session.flush()  # Para obtener el ID
+                        db.session.flush()  # Obtener ID del nuevo módulo
 
                         db.session.add(UsuarioModulo(
                             usuario_id=usuario_id,
@@ -68,12 +67,11 @@ def gestionar_permisos():
                             privilegio='admin'
                         ))
                     else:
-                        # Ya existe el módulo, verificar si está en usuario_modulo
-                        existe = UsuarioModulo.query.filter_by(
+                        ya_asignado = UsuarioModulo.query.filter_by(
                             usuario_id=usuario_id,
                             modulo_id=modulo_existente.id
                         ).first()
-                        if not existe:
+                        if not ya_asignado:
                             db.session.add(UsuarioModulo(
                                 usuario_id=usuario_id,
                                 modulo_id=modulo_existente.id,

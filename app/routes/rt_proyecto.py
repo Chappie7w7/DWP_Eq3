@@ -16,7 +16,7 @@ def agregar_proyecto():
         descripcion = request.form.get('descripcion')
         usuario_id = session.get('usuario_id')
 
-        modulo = Modulo.query.filter_by(nombre_modulo="Proyectos").first()
+        modulo = Modulo.query.filter_by(nombre_modulo="Proyectos", propietario=usuario_id).first()
 
         if not nombre or not descripcion or not modulo:
             flash('Todos los campos son obligatorios.', 'danger')

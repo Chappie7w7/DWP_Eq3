@@ -162,11 +162,13 @@ def verificar_otp(usuario_id, codigo):
     permisos_asignados = UsuarioPermiso.query.filter_by(usuario_id=usuario.id).all()
     permisos_lista = [p.permiso.nombre for p in permisos_asignados]
 
-    # 🔄 Solo mostrar módulos si tiene permiso de ver o crear
+    # 🔄 Cargar solo módulos creados por este usuario
     modulos = []
     modulos_asignados = UsuarioModulo.query.filter_by(usuario_id=usuario.id).all()
+
     for um in modulos_asignados:
-        modulo = Modulo.query.get(um.modulo_id)
+        # ✅ Validar que el módulo sea de este usuario
+        modulo = Modulo.query.filter_by(id=um.modulo_id, propietario=usuario.id).first()
         if not modulo:
             continue
 
@@ -175,7 +177,6 @@ def verificar_otp(usuario_id, codigo):
         permiso_crear = f"{nombre_modulo}_crear"
 
         if permiso_ver in permisos_lista or permiso_crear in permisos_lista:
-            # 🔐 Filtrar secciones que pertenezcan a este usuario
             secciones = Seccion.query.filter_by(modulo_id=modulo.id, usuario_id=usuario.id).all()
             modulos.append({
                 "nombre_modulo": modulo.nombre_modulo,
@@ -195,7 +196,6 @@ def verificar_otp(usuario_id, codigo):
 
     flash('Código correcto. Iniciando sesión...', 'success')
     return redirect(url_for('main.inicio'))
-
 
 
 @auth_bp.route('/cerrar-otros-dispositivos/<int:usuario_id>', methods=['POST'])

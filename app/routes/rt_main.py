@@ -40,8 +40,7 @@ def inicio():
 @login_required
 @token_required
 def mostrar_modulo(modulo):
-    current_user = Usuario.query.get(session.get("usuario_id"))
-
+    usuario_id = session.get('usuario_id')
     permisos = session.get("permisos", [])
     permiso_necesario = f"ver_{modulo.lower()}"
 
@@ -49,15 +48,14 @@ def mostrar_modulo(modulo):
         flash("No tienes permiso para acceder a este módulo.", "danger")
         return redirect(url_for("main.inicio"))
 
-    usuario_id = session.get('usuario_id')
+    # ✅ Buscar el módulo exacto que es propiedad del usuario
+    modulo_usuario = Modulo.query.filter_by(nombre_modulo=modulo.capitalize(), propietario=usuario_id).first()
 
-    # Solo secciones del módulo asignado al usuario Y creadas por él
-    secciones = Seccion.query.join(Modulo).join(UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id).filter(
-        Modulo.nombre_modulo == modulo,
-        UsuarioModulo.usuario_id == usuario_id,
-        Seccion.usuario_id == usuario_id
-    ).all()
+    if not modulo_usuario:
+        abort(404)
 
+    # ✅ Mostrar solo secciones del módulo del usuario actual
+    secciones = Seccion.query.filter_by(modulo_id=modulo_usuario.id, usuario_id=usuario_id).all()
 
     if not secciones:
         permiso_agregar = f"{modulo.lower()}_crear"
@@ -77,47 +75,40 @@ def mostrar_modulo(modulo):
     )
 
 
-
-
 @main_bp.route('/<modulo>/<seccion>')
 @login_required
 @token_required
 def mostrar_seccion(modulo, seccion):
-    current_user = Usuario.query.get(session.get("usuario_id"))
-    """
-    Muestra una sección específica dentro de un módulo.
-    """
-    
-    # Verificar permiso de ver el módulo
+    usuario_id = session.get("usuario_id")
     permisos = session.get("permisos", [])
     permiso_necesario = f"ver_{modulo.lower()}"
 
     if permiso_necesario not in permisos:
         flash("No tienes permiso para acceder a esta sección.", "danger")
         return redirect(url_for("main.inicio"))
-    
-    usuario_id = session.get('usuario_id')
 
-    # Normalizar el nombre de la sección para manejar guiones bajos en la URL
     seccion_normalizada = seccion.replace('_', ' ')
 
-    # Validar si la sección pertenece al usuario actual
-    seccion_data = Seccion.query.join(UsuarioModulo, UsuarioModulo.modulo_id == Seccion.modulo_id).join(
-        Modulo, Modulo.id == Seccion.modulo_id
-    ).filter(
-        Modulo.nombre_modulo == modulo,  # Cambiado
-        Seccion.nombre == seccion_normalizada,
-        UsuarioModulo.usuario_id == usuario_id
+    # ✅ Buscar el módulo que le pertenece al usuario
+    modulo_usuario = Modulo.query.filter_by(nombre_modulo=modulo.capitalize(), propietario=usuario_id).first()
+
+    if not modulo_usuario:
+        abort(404)
+
+    # ✅ Buscar la sección asociada a ese módulo y al usuario
+    seccion_data = Seccion.query.filter_by(
+        nombre=seccion_normalizada,
+        modulo_id=modulo_usuario.id,
+        usuario_id=usuario_id
     ).first()
 
     if not seccion_data:
         abort(404)
 
-    # Construir breadcrumb
     breadcrumb = [
         {'name': 'Inicio', 'url': '/inicio'},
         {'name': modulo.capitalize(), 'url': f'/{modulo}'},
-        {'name': seccion_data.nombre, 'url': None},  # Último nivel
+        {'name': seccion_data.nombre, 'url': None},
     ]
 
     return render_template(

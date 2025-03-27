@@ -16,7 +16,8 @@ def agregar_juego():
         descripcion = request.form.get('descripcion')
         usuario_id = session.get('usuario_id')
 
-        modulo = Modulo.query.filter_by(nombre_modulo="Juegos").first()
+        # ✅ Buscar módulo que le pertenece al usuario
+        modulo = Modulo.query.filter_by(nombre_modulo="Juegos", propietario=usuario_id).first()
 
         if not nombre or not descripcion or not modulo:
             flash('Todos los campos son obligatorios.', 'danger')
@@ -48,6 +49,7 @@ def agregar_juego():
     return render_template('juego/agregar_juego.jinja')
 
 
+
 @juego_bp.route('/', methods=['GET'])
 def fix_trailing_slash():
     return redirect(url_for('juego.listar_juegos'), code=301)
@@ -57,13 +59,19 @@ def fix_trailing_slash():
 @permiso_requerido('ver_juegos')
 def listar_juegos():
     usuario_id = session.get("usuario_id")
-    
-    secciones = Seccion.query.filter_by(categoria="juegos", usuario_id=usuario_id).all()
-    
+
+    # Obtener el módulo de juegos que le pertenece al usuario
+    modulo = Modulo.query.filter_by(nombre_modulo="Juegos", propietario=usuario_id).first()
+
+    secciones = []
+    if modulo:
+        secciones = Seccion.query.filter_by(modulo_id=modulo.id, usuario_id=usuario_id).all()
+
     return render_template("dinamico.jinja", titulo="Juegos", secciones=secciones, breadcrumb=[
         {"name": "Inicio", "url": url_for('main.inicio')},
         {"name": "Juegos"}
     ])
+
 
 
 
