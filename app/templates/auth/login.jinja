@@ -85,11 +85,11 @@
         <!-- Contenedor para mensajes de error -->
         <div id="alert-container">
             <!-- Mostrar mensaje de token expirado si existe en la sesión -->
-    {% if session.get('token_expired') %}
-    <div class="alert alert-danger">
-        {{ session.pop('token_expired') }}
-    </div>
-    {% endif %}
+            {% if session.get('token_expired') %}
+            <div class="alert alert-danger">
+                {{ session.pop('token_expired') }}
+            </div>
+            {% endif %}
 
             {% with messages = get_flashed_messages(with_categories=True) %}
             {% if messages %}
@@ -102,13 +102,17 @@
             {% endwith %}
         </div>
 
-        <!-- 🔹 Si el usuario ya tiene una sesión activa en otro dispositivo -->
-        {% if mostrar_cerrar_sesion %}
-        <form method="POST" action="{{ url_for('auth.cerrar_otros_dispositivos', usuario_id=usuario_id) }}">
-            <button type="submit" class="btn btn-danger btn-block">Cerrar otras sesiones y mantener la actual</button>
-        </form>
-    {% endif %}
-    
+        {% if session.get('sesion_activa') %}
+        <!-- 🔥 Mostrar botón para cerrar sesión activa si está habilitada -->
+        <div class="mt-3 text-center">
+            <form method="POST"
+                action="{{ url_for('auth.cerrar_otros_dispositivos', usuario_id=session.get('usuario_id_activo')) }}">
+                <button type="submit" class="btn btn-warning w-100">Cerrar Sesión Activa</button>
+            </form>
+        </div>
+        {% endif %}
+
+
 
         <!-- Formulario de login -->
         <form id="login-form" action="{{ url_for('auth.login') }}" method="POST" autocomplete="off">

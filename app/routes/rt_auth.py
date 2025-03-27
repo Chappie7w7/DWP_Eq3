@@ -66,10 +66,13 @@ def login():
 
         # 🔹 Verificar si hay una sesión activa y si debe cerrarse
         if usuario.cerrar_sesiones_activas and usuario.token_sesion:
-            flash('Ya tienes una sesión activa en otro dispositivo. Se cerrará automáticamente.', 'warning')
-            usuario.token_sesion = None  # Invalidar sesión anterior
-            db.session.commit()
-            return redirect(url_for('auth.login'))  # 🔹 Volver a login para que el mensaje se muestre
+            session['sesion_activa'] = True  # Almacenar estado de sesión activa
+            session['usuario_id_activo'] = usuario.id  # ID para cerrar sesión activa
+            flash('Tienes una sesión activa en otro dispositivo. Puedes cerrarla manualmente si lo deseas.', 'warning')
+            return redirect(url_for('auth.login'))  # 🔥 Volver al login para mostrar el botón
+        else:
+            session.pop('sesion_activa', None)
+            session.pop('usuario_id_activo', None)
 
         # 🔹 Si la opción de OTP está activada, generar y enviar OTP
         if usuario.confirmar_inicio_sesion:
@@ -141,6 +144,53 @@ def confirmar_sesion(usuario_id):
     flash('Se cerraron las sesiones anteriores. Ahora puedes continuar.', 'info')
     return redirect(url_for('auth.login'))
 
+@auth_bp.route('/cerrar-otros-dispositivos/<int:usuario_id>', methods=['POST'])
+def cerrar_otros_dispositivos(usuario_id):
+    usuario = Usuario.query.get_or_404(usuario_id)
+    usuario.token_sesion = None  # Invalidar sesión activa anterior
+    db.session.commit()
+    
+    # 🔥 Limpiar variables de sesión para que el botón desaparezca
+    session.pop('sesion_activa', None)
+    session.pop('usuario_id_activo', None)
+    
+    # ✅ Iniciar sesión automáticamente después de cerrar sesión activa
+    login_user(usuario)
+    usuario.token_sesion = generar_token(usuario.id)  # Generar nuevo token
+    db.session.commit()
+
+    # ✅ Cargar módulos y privilegios del usuario nuevamente
+    modulos_asignados = UsuarioModulo.query.filter_by(usuario_id=usuario.id).all()
+    modulos = []
+    privilegios = [p.permiso.nombre for p in UsuarioPermiso.query.filter_by(usuario_id=usuario.id).all()]
+
+    for um in modulos_asignados:
+        modulo = Modulo.query.get(um.modulo_id)
+        if modulo:
+            secciones = Seccion.query.filter_by(modulo_id=modulo.id).all()
+            modulos.append({
+                "nombre_modulo": modulo.nombre_modulo,
+                "privilegio": um.privilegio,
+                "secciones": [{"nombre": s.nombre, "url": s.url} for s in secciones],
+            })
+
+    # ✅ Actualizar la sesión con nueva info
+    session.update({
+        'usuario_id': usuario.id,
+        'usuario_nombre': usuario.nombre,
+        'modulos': modulos,
+        'rol': usuario.rol.nombre,
+        'token': usuario.token_sesion,
+        'permisos': privilegios,
+    })
+    
+    flash('Se han cerrado todas las sesiones anteriores. Bienvenido de nuevo.', 'success')
+    return redirect(url_for('main.inicio'))  # 🚀 Redirige directamente a la página de inicio
+
+
+
+
+
 @auth_bp.route('/verificar-otp/<int:usuario_id>/<codigo>')
 def verificar_otp(usuario_id, codigo):
     usuario = Usuario.query.get_or_404(usuario_id)
@@ -189,14 +239,6 @@ def verificar_otp(usuario_id, codigo):
     flash('Código correcto. Iniciando sesión...', 'success')
     return redirect(url_for('main.inicio'))
 
-
-@auth_bp.route('/cerrar-otros-dispositivos/<int:usuario_id>', methods=['POST'])
-def cerrar_otros_dispositivos(usuario_id):
-    usuario = Usuario.query.get_or_404(usuario_id)
-    usuario.token_sesion = None
-    db.session.commit()
-    flash('Se han cerrado todas las sesiones anteriores. Continúa con tu nueva sesión.', 'success')
-    return redirect(url_for('auth.login'))
 
 
 
