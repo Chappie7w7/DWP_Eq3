@@ -47,7 +47,7 @@
                         {% if session.get('modulos') %}
                                     {% for modulo in session['modulos'] %}
                                     {% set nombre = modulo['nombre_modulo'].lower() %}
-                                    {% if 'ver_' ~ nombre in session['permisos'] or nombre ~ '_crear' in session['permisos'] %}
+                                    {% if 'ver_' ~ nombre in session['permisos'] %}
                                 <li>
                                     <a href="#" class="nav-btn-submenu">
                                     <i class="fas fa-folder fa-fw"></i> &nbsp; {{ modulo['nombre_modulo'] | capitalize }}
@@ -166,7 +166,7 @@
                                     name="confirmar_inicio_sesion" {% if current_user.confirmar_inicio_sesion
                                     %}checked{% endif %}>
                                 <label class="form-check-label" for="confirmarSesion">
-                                    Confirmar inicio de sesión con 2 pasos
+                                    Verificación en 2 pasos 
                                 </label>
                             </div>
 
