@@ -3,20 +3,26 @@ $(document).ready(function () {
     let loading = false;
     let hasMore = true;
     const modulo = window.location.pathname.split("/").filter(Boolean)[0];
+    const limit = 6; // 🔥 Ahora forzamos que siempre sean de 6 en 6
 
     cargarSecciones(modulo);
 
     $("#secciones-container").on("scroll", function () {
+        verificarScroll();
+    });
+
+    function verificarScroll() {
         if (!hasMore || loading) return;
 
-        const scrollTop = $(this).scrollTop();
-        const containerHeight = $(this).height();
-        const scrollHeight = this.scrollHeight;
+        const contenedor = $("#secciones-container");
+        const scrollTop = contenedor.scrollTop();
+        const containerHeight = contenedor.height();
+        const scrollHeight = contenedor[0].scrollHeight;
 
         if (scrollTop + containerHeight >= scrollHeight - 50) {
             cargarSecciones(modulo, true);
         }
-    });
+    }
 
     function cargarSecciones(modulo, append = false) {
         if (loading || !hasMore) return;
@@ -25,9 +31,10 @@ $(document).ready(function () {
         if (!append) {
             $("#secciones-container").empty();
             $("#loading-secciones").show();
+            offset = 0; // 🔥 Reiniciar offset en cada nueva carga completa
         }
 
-        $.getJSON(`/api/secciones/${modulo}?offset=${offset}`, function (data) {
+        $.getJSON(`/api/secciones/${modulo}?offset=${offset}&limit=${limit}`, function (data) {
             $("#loading-secciones").hide();
             $("#loading-indicator").remove();
 
@@ -42,6 +49,11 @@ $(document).ready(function () {
             if (data.secciones.length === 0) {
                 hasMore = false;
                 return;
+            }
+
+            // 🔥 Forzar que siempre sean múltiplos de 6
+            if (data.secciones.length < limit) {
+                hasMore = false; // Si no se recibió el bloque completo, ya no hay más
             }
 
             // Esperar 100ms antes de pintar para asegurar orden
@@ -75,8 +87,12 @@ $(document).ready(function () {
                 });
 
                 offset += data.secciones.length;
-                hasMore = data.has_more;
                 loading = false;
+
+                // 🔥 Simular scroll para forzar carga de más contenido si es necesario
+                setTimeout(() => {
+                    verificarScroll();
+                }, 200);
             }, 100);
         }).fail(function (error) {
             console.error("❌ Error al cargar secciones:", error);
@@ -84,4 +100,9 @@ $(document).ready(function () {
             loading = false;
         });
     }
+
+    // 🔥 Disparar la detección de scroll al cargar la página
+    setTimeout(() => {
+        verificarScroll();
+    }, 500);
 });
