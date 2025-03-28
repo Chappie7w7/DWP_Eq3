@@ -11,7 +11,7 @@
 /* Estilo del breadcrumb */
 .breadcrumb {
     margin: 0; /* Eliminar márgenes */
-    padding: 5px 0; /* Espaciado interno */
+    padding: 50px 0; /* Mantener el espaciado interno */
     font-size: 14px; /* Tamaño del texto */
     background: transparent; /* Sin fondo */
 }
@@ -30,7 +30,7 @@
 .search-bar-advanced {
     display: flex;
     align-items: center;
-    gap: 10px; /* Espaciado entre los elementos */
+    gap: 1px; /* Espaciado entre los elementos */
 }
 
 .search-bar-advanced .form-select,

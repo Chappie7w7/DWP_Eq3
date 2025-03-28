@@ -42,13 +42,19 @@
     justify-content: flex-start;
 }
 
+
+/* Ajuste para eliminar espacio entre breadcrumb y barra de búsqueda */
+.search-bar {
+    margin-top: -60px; /* Ajustar para reducir el espacio sin afectar el padding */
+}
+
 .search-bar .form-control {
     height: 30px;
     width: 300px;
-    font-size: 14px;
+    font-size: 5px;
     color: #000;
     border: 1px solid #ccc;
-    border-radius: 4px 0 0 4px;
+    border-radius: 1px 0 0 1px;
     padding: 5px;
 }
 
