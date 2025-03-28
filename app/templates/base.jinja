@@ -45,24 +45,24 @@
                             <a href="{{ url_for('main.inicio') }}"><i class="fas fa-home fa-fw"></i> &nbsp; Home</a>
                         </li>
                         {% if session.get('modulos') %}
-                                    {% for modulo in session['modulos'] %}
-                                    {% set nombre = modulo['nombre_modulo'].lower() %}
-                                    {% if 'ver_' ~ nombre in session['permisos'] %}
-                                <li>
-                                    <a href="#" class="nav-btn-submenu">
-                                    <i class="fas fa-folder fa-fw"></i> &nbsp; {{ modulo['nombre_modulo'] | capitalize }}
-                                    <i class="fas fa-chevron-down"></i>
-                                    </a>
-                                <ul>
-                                    {% if modulo['nombre_modulo'] == 'Materias' and tiene_permiso('materias_crear') %}
+                        {% for modulo in session['modulos'] %}
+                        {% set nombre = modulo['nombre_modulo'].lower() %}
+                        {% if 'ver_' ~ nombre in session['permisos'] %}
+                        <li>
+                            <a href="#" class="nav-btn-submenu">
+                                <i class="fas fa-folder fa-fw"></i> &nbsp; {{ modulo['nombre_modulo'] | capitalize }}
+                                <i class="fas fa-chevron-down"></i>
+                            </a>
+                            <ul>
+                                {% if modulo['nombre_modulo'] == 'Materias' and tiene_permiso('materias_crear') %}
                                 <li>
                                     <a href="{{ url_for('materia.agregar_materia') }}"
                                         class="text-success font-weight-bold">
                                         <i class="fas fa-plus-circle"></i> &nbsp; Agregar Materia
                                     </a>
                                 </li>
-                                    {% elif modulo['nombre_modulo'] == 'Proyectos' and tiene_permiso('proyectos_crear') %}
-                                <li>    
+                                {% elif modulo['nombre_modulo'] == 'Proyectos' and tiene_permiso('proyectos_crear') %}
+                                <li>
                                     <a href="{{ url_for('proyecto.agregar_proyecto') }}"
                                         class="text-success font-weight-bold">
                                         <i class="fas fa-plus-circle"></i> &nbsp; Agregar Proyecto
@@ -83,13 +83,13 @@
                                         <i class="fas fa-angle-right fa-fw"></i> &nbsp; {{ seccion['nombre'] }}
                                     </a>
                                 </li>
-                                    {% endfor %}
-                                </ul>
-                            </li>
-                            {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </li>
+                        {% endif %}
                         {% endfor %}
-                    {% else %}
-                            <li><a href="#"><i class="fas fa-exclamation-circle"></i> &nbsp; Sin módulos asignados</a></li>
+                        {% else %}
+                        <li><a href="#"><i class="fas fa-exclamation-circle"></i> &nbsp; Sin módulos asignados</a></li>
                         {% endif %}
 
                         {% if session.get('rol') == 'Administrador' %}
@@ -111,70 +111,88 @@
 
                 <nav class="navbar navbar-expand-lg navbar-light bg-light">
                     <div class="container-fluid">
-                        <form method="GET" action="{{ url_for('main.buscar_avanzada') }}" class="search-bar-advanced">
+                        <form method="GET" action="{{ url_for('main.buscar_avanzada') }}"
+                            class="search-bar-advanced w-100 d-flex align-items-center">
                             <!-- Filtro desplegable -->
-                            <select name="categoria" class="form-select">
-                                <option value="">Todas las categorías</option>
-                                <option value="materias" {% if request.args.get('categoria')=='materias' %} selected {%
-                                    endif %}>Materias</option>
-                                <option value="juegos" {% if request.args.get('categoria')=='juegos' %} selected {%
-                                    endif %}>Juegos</option>
-                                <option value="proyectos" {% if request.args.get('categoria')=='proyectos' %} selected
-                                    {% endif %}>Proyectos</option>
-                            </select>
-                            <!-- Campo de búsqueda avanzada -->
-                            <input type="text" class="form-control" name="advanced_query"
-                                placeholder="Buscar en toda la plataforma..."
-                                value="{{ request.args.get('advanced_query', '') }}">
-                            <!-- Botón de búsqueda -->
-                            <button class="btn" type="submit">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </form>
+                            <div class="me-2">
+                                <select name="categoria" class="form-select form-select-sm">
+                                    <option value="">Todas las categorías</option>
+                                    <option value="materias" {% if request.args.get('categoria')=='materias' %} selected
+                                        {% endif %}>Materias</option>
+                                    <option value="juegos" {% if request.args.get('categoria')=='juegos' %} selected {%
+                                        endif %}>Juegos</option>
+                                    <option value="proyectos" {% if request.args.get('categoria')=='proyectos' %}
+                                        selected {% endif %}>Proyectos</option>
+                                </select>
+                            </div>
 
+                            <!-- Barra de búsqueda -->
+                            <div class="me-2 d-flex">
+                                <input type="text" class="form-control form-control-sm" name="advanced_query"
+                                    placeholder="Buscar en toda la plataforma..."
+                                    value="{{ request.args.get('advanced_query', '') }}">
+
+                                <!-- Botón de búsqueda -->
+                                <button class="btn btn-primary btn-sm ms-2" type="submit">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </nav>
 
-
-
+        
 
                 <a href="#" class="float-left show-nav-lateral"><i class="fas fa-exchange-alt"></i></a>
                 <!-- Iconos en la parte superior derecha -->
                 <div class="top-icons">
-                    <a href="#" data-toggle="modal" data-target="#ModalHelp"><i class="far fa-question-circle"></i></a>
-                    <a href="#" class="btn-exit-system" data-logout-url="{{ url_for('auth.logout') }}">
-                        <i class="fas fa-power-off"></i>
-                    </a>
-                    <!-- Seguridad - Opciones de sesión -->
-                <div class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                        <i class="fas fa-user-cog"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right p-3">
-                        <form action="{{ url_for('auth.actualizar_preferencias') }}" method="POST">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="cerrarSesiones"
-                                    name="cerrar_sesiones_activas" {% if current_user.cerrar_sesiones_activas
-                                    %}checked{% endif %}>
-                                <label class="form-check-label" for="cerrarSesiones">
-                                    Cerrar sesiones activas en otros dispositivos
-                                </label>
-                            </div>
+                    <!-- Cuadro desplegable para todos los botones -->
+                    <div class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                            aria-expanded="false">
+                            <i class="fas fa-cogs"></i> <!-- Icono de ajustes -->
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right p-3 custom-dropdown">
+                            <!-- Opción de ayuda -->
+                            <a href="#" data-toggle="modal" data-target="#ModalHelp"
+                                class="dropdown-item custom-dropdown-item">
+                                <i class="far fa-question-circle"></i> Ayuda
+                            </a>
 
-                            <div class="form-check mt-2">
-                                <input class="form-check-input" type="checkbox" id="confirmarSesion"
-                                    name="confirmar_inicio_sesion" {% if current_user.confirmar_inicio_sesion
-                                    %}checked{% endif %}>
-                                <label class="form-check-label" for="confirmarSesion">
-                                    Verificación en 2 pasos 
-                                </label>
-                            </div>
+                            <!-- Opción de cerrar sesión -->
+                            <a href="#" class="dropdown-item btn-exit-system custom-dropdown-item"
+                                data-logout-url="{{ url_for('auth.logout') }}">
+                                <i class="fas fa-power-off"></i> Cerrar sesión
+                            </a>
 
-                            <button type="submit" class="btn btn-primary btn-sm mt-3">Guardar</button>
-                        </form>
+                            <!-- Opciones de seguridad -->
+                            <div class="dropdown-header custom-dropdown-header">Opciones de seguridad</div>
+                            <form action="{{ url_for('auth.actualizar_preferencias') }}" method="POST">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="cerrarSesiones"
+                                        name="cerrar_sesiones_activas" {% if current_user.cerrar_sesiones_activas
+                                        %}checked{% endif %}>
+                                    <label class="form-check-label" for="cerrarSesiones">
+                                        Cerrar sesiones activas en otros dispositivos
+                                    </label>
+                                </div>
+
+                                <div class="form-check mt-2">
+                                    <input class="form-check-input" type="checkbox" id="confirmarSesion"
+                                        name="confirmar_inicio_sesion" {% if current_user.confirmar_inicio_sesion
+                                        %}checked{% endif %}>
+                                    <label class="form-check-label" for="confirmarSesion">
+                                        Verificación en 2 pasos
+                                    </label>
+                                </div>
+
+                                <button type="submit"
+                                    class="btn btn-primary btn-sm mt-3 custom-btn-save">Guardar</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
-                </div>
+
 
 
             </nav>
