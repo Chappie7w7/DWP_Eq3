@@ -27,6 +27,6 @@ jobs:
           pip install -r requirements.txt
           pip install pytest
 
-      # 6️ Paso: Ejecutar las pruebas
+      # 6️ Paso: Ejecutar las pruebas.
       - name:  Ejecutar pruebas con Pytest
         run: pytest -v
