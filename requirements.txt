@@ -12,3 +12,4 @@ Flask-Mail
 requests
 dotenv
 PyJWT
+pytest
