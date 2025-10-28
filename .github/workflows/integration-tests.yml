@@ -1,0 +1,32 @@
+name: Pruebas de Integración Flask con Pytest
+
+on:
+  push:        
+  pull_request:  
+
+# 2️ Qué se ejecutará
+jobs:
+  test:
+    runs-on: ubuntu-latest   
+
+    steps:
+      # 3️ Paso: Descargar tu código del repositorio
+      - name:  Descargar el código
+        uses: actions/checkout@v3
+
+      # 4️ Paso: Instalar Python
+      - name:  Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      # 5️ Paso: Instalar dependencias del proyecto
+      - name:  Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
+
+      # 6️ Paso: Ejecutar las pruebas
+      - name:  Ejecutar pruebas con Pytest
+        run: pytest -v
