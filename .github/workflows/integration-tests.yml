@@ -1,4 +1,5 @@
-name: Pruebas de Integración Flask con Pytest
+name: Pruebas de Integración Flask con unittest
+
 
 on:
   push:        
@@ -25,8 +26,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest
+     
 
       # 6️ Paso: Ejecutar las pruebas
-      - name:  Ejecutar pruebas con Pytest
-        run: pytest -v
+      - name: Ejecutar pruebas con unittest
+        run: python -m unittest discover -s tests -p "*.py"
+
